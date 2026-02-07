@@ -3,48 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report | SmartLight</title>
+    <title>Reportar Falha | SmartLight</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <style>
+        :root { --primary-color: #0d6efd; --secondary-color: #ffc107; }
+        body { background-color: #f8f9fa; }
+        .report-card { max-width: 700px; margin: 30px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .btn-location { background-color: #e9ecef; border: 2px dashed #adb5bd; color: #495057; width: 100%; padding: 15px; border-radius: 10px; transition: 0.3s; }
+        .btn-location:hover { background-color: #dee2e6; border-color: var(--primary-color); color: var(--primary-color); }
+        .photo-upload { border: 2px dashed var(--primary-color); border-radius: 15px; padding: 40px; text-align: center; cursor: pointer; background: #f0f7ff; }
+        .img-preview { max-width: 100%; border-radius: 10px; margin-top: 15px; display: none; }
+        .step-title { font-weight: 700; color: #212529; margin-bottom: 20px; border-left: 5px solid var(--secondary-color); padding-left: 15px; }
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; color: white; }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <img class="logoImg" src="img/icone.PNG" alt="logotipo.png">
-                <a href="index.html"><h1>SmartLight</h1></a>
+
+    <!-- Overlay de Envio -->
+    <div id="loader-overlay" class="loader-overlay">
+        <div class="text-center">
+            <div class="spinner-border text-warning" role="status"></div>
+            <p class="mt-3">A enviar o seu reporte, por favor aguarde...</p>
+        </div>
+    </div>
+
+    <header class="bg-white py-3 border-bottom shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logo d-flex align-items-center">
+                <img src="img/icone.PNG" alt="logo" style="width: 35px;">
+                <a href="index.html" class="text-decoration-none ms-2"><h1 class="h4 m-0 fw-bold text-dark">SmartLight</h1></a>
             </div>
-            <div class="nav">
-                <nav>
-                    <a href="login.html">Entrar</a>
-                    <a href="register.html">Registrar</a>
-                </nav>
-            </div>
+            <a href="dashboard.html" class="btn btn-outline-dark btn-sm">Voltar</a>
         </div>
     </header>
-    <h1>Area de Report</h1>
 
-    <!--Footer Section-->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p>Sistema de Monitoramento de Falhas de Iluminação Pública</p>
+    <main class="container px-3">
+        <div class="report-card">
+            <h2 class="text-center mb-4">Avisar Falha de Iluminação</h2>
+            <p class="text-center text-muted mb-5">Ajude-nos a identificar o problema na sua rua. É rápido e seguro.</p>
+
+            <form id="reportForm">
+                <!-- Passo 1: Localização -->
+                <div class="mb-5">
+                    <h5 class="step-title">1. Onde está o poste?</h5>
+                    <button type="button" id="getLocation" class="btn-location">
+                        <i class="fas fa-map-marker-alt fa-2x mb-2"></i><br>
+                        <span id="locationStatus">Clique para capturar a localização atual</span>
+                    </button>
+                    <input type="hidden" id="coords">
                 </div>
-                <div class="footer-section">
-                    <h4>Links</h4>
-                    <ul>
-                        <li><a href="#">Sobre</a></li>
-                        <li><a href="#">Termos</a></li>
-                        <li><a href="#">Políticas</a></li>
-                        <li><a href="#">Contactos</a></li>
-                    </ul>
+
+                <!-- Passo 2: Tipo de Problema -->
+                <div class="mb-5">
+                    <h5 class="step-title">2. Qual é o problema?</h5>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipoProblema" id="p1" value="Lâmpada Fundida" checked>
+                            <label class="btn btn-outline-primary w-100 py-3" for="p1"><i class="fas fa-lightbulb d-block mb-1"></i>Fundida</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipoProblema" id="p2" value="Poste Partido">
+                            <label class="btn btn-outline-primary w-100 py-3" for="p2"><i class="fas fa-hammer d-block mb-1"></i>Partido</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipoProblema" id="p3" value="Curto-Circuito">
+                            <label class="btn btn-outline-primary w-100 py-3" for="p3"><i class="fas fa-bolt d-block mb-1"></i>Fios Soltos</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipoProblema" id="p4" value="Outro">
+                            <label class="btn btn-outline-primary w-100 py-3" for="p4"><i class="fas fa-ellipsis-h d-block mb-1"></i>Outro</label>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="footer-bottom">
-                    <p>&copy; 2026 SmartLight. Todos os direitos revervados</p>
+
+                <!-- Passo 3: Foto -->
+                <div class="mb-5">
+                    <h5 class="step-title">3. Foto da Ocorrência</h5>
+                    <div class="photo-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-camera fa-3x mb-2 text-primary"></i>
+                        <p class="m-0">Tirar foto ou escolher da galeria</p>
+                        <input type="file" id="fileInput" accept="image/*" class="d-none" onchange="previewImage(event)">
+                        <img id="preview" class="img-preview">
+                    </div>
                 </div>
+
+                <!-- Passo 4: Descrição -->
+                <div class="mb-5">
+                    <h5 class="step-title">4. Detalhes Adicionais</h5>
+                    <textarea class="form-control" id="descricao" rows="4" placeholder="Ex: O poste está em frente à padaria do Sr. João..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-lg w-100 py-3 fw-bold text-dark shadow">
+                    <i class="fas fa-paper-plane me-2"></i>Enviar Aviso de Falha
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="small m-0">&copy; 2026 SmartLight Angola. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <!-- Scripts do Firebase e Lógica de Localização -->
+    <script src="https://www.gstatic.com"></script>
+    <script src="https://www.gstatic.com"></script>
+    <script src="https://www.gstatic.com"></script>
+    
+    <script>
+        // Preview da Imagem
+        function previewImage(event) {
+            const preview = document.getElementById('preview');
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.style.display = 'block';
+        }
+
+        // Captura de GPS
+        document.getElementById('getLocation').addEventListener('click', () => {
+            const status = document.getElementById('locationStatus');
+            if (navigator.geolocation) {
+                status.innerText = "A localizar... (Ative o GPS)";
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    document.getElementById('coords').value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    status.innerHTML = `<span class="text-success"><i class="fas fa-check"></i> Localização capturada com sucesso!</span>`;
+                }, (err) => {
+                    status.innerText = "Erro ao capturar GPS. Verifique as permissões.";
+                });
+            }
+        } );
+
+        // Lógica de Envio (Simplified)
+        document.getElementById('reportForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('loader-overlay').style.display = 'flex';
+            
+            // Aqui entra a lógica de upload para Firebase Storage e Realtime DB
+            setTimeout(() => {
+                alert("Obrigado! O seu reporte foi enviado com sucesso para os nossos técnicos.");
+                window.location.href = "dashboard.html";
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
