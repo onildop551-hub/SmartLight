@@ -3,91 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
     <title>DashBoard | SmartLight</title>
-     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos para manter a identidade visual e garantir responsividade */
+        .medicoes { padding: 40px 0; background: #f4f7f6; min-height: 80vh; }
+        .card-valor { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: 100%;
+            transition: 0.3s;
+        }
+        .card-valor:hover { transform: translateY(-5px); }
+        .card-valor i { font-size: 2.5rem; color: #0d6efd; margin-bottom: 15px; }
+        .card-valor h1 { font-size: 1.2rem; color: #6c757d; }
+        .card-valor h2 { font-size: 2rem; font-weight: bold; color: #212529; }
+        .estado { color: #0d6efd; text-decoration: none; font-weight: 500; }
+        header { border-bottom: 1px solid #eee; padding: 10px 0; background: white; }
+        footer { background: #212529; color: white; padding: 40px 0 20px; }
+    </style>
 </head>
 <body>
-    <!--Cabeçalho-->
+    <!--Cabeçalho Responsivo-->
     <header>
-        <div class="container">
-            <div class="logo">
-                <img class="logoImg" src="img/icone.PNG" alt="logotipo.png">
-                <a href="index.html"><h1>SmartLight</h1></a>
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <div class="logo d-flex align-items-center">
+                <img class="logoImg me-2" src="img/icone.PNG" alt="logotipo" style="max-width: 40px;">
+                <a href="index.html" class="text-decoration-none text-dark"><h1 class="h4 m-0">SmartLight</h1></a>
             </div>
-            <div class="nav">
-                <nav>
-                    <a href="login.html">Entrar</a>
-                    <a href="register.html">Registrar</a>
-                </nav>
-            </div>
+            <nav class="mt-2 mt-sm-0">
+                <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Registrar</a>
+            </nav>
         </div>
     </header>
     
-    <section class="medicoes">
+    <section class="medicoes px-3">
         <div class="container">
-            <h1>DashBoard</h1>
-            <div class="cargas">
-                <div class="valores">
-                    <i class="fas fa-sun"></i>
-                    <h1>Luminosidade</h1>
-                    <h2 id="valor-luminosidade">Carregando...</h2>
-                    <br>
-                    <br>
-                    <a href="#" class="estado">Mais Detalhes</a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-bold">DashBoard</h1>
+                <span class="badge bg-success">Poste 03 - Online</span>
+            </div>
+
+            <!-- Grid Responsiva: 1 coluna em mobile, 3 colunas em Desktop -->
+            <div class="row g-4">
+                <!-- Luminosidade -->
+                <div class="col-12 col-md-4">
+                    <div class="card-valor">
+                        <i class="fas fa-sun"></i>
+                        <h1>Luminosidade</h1>
+                        <h2 id="valor-luminosidade">--%</h2>
+                        <a href="#" class="estado">Mais Detalhes</a>
+                    </div>
                 </div>
-                <div class="valores">
-                    <i class="fas fa-bolt"></i>
-                    <h1>Corrente</h1>
-                    <h2 id="valor-corrente">Carregando...</h2>
-                    <br>
-                    <br>
-                    <a href="#" class="estado">Mais Detalhes</a>
+                <!-- Corrente -->
+                <div class="col-12 col-md-4">
+                    <div class="card-valor">
+                        <i class="fas fa-bolt"></i>
+                        <h1>Corrente</h1>
+                        <h2 id="valor-corrente">-- A</h2>
+                        <a href="#" class="estado">Mais Detalhes</a>
+                    </div>
                 </div>
-                <div class="valores">
-                    <i class="fas fa-plug"></i>
-                    <h1>Potência</h1>
-                    <h2 id="valor-potencia">Carregando...</h2>
-                    <br>
-                    <br>
-                    <a href="#" class="estado">Mais Detalhes</a>
+                <!-- Potência -->
+                <div class="col-12 col-md-4">
+                    <div class="card-valor">
+                        <i class="fas fa-plug"></i>
+                        <h1>Potência</h1>
+                        <h2 id="valor-potencia">-- W</h2>
+                        <a href="#" class="estado">Mais Detalhes</a>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Data e Hora (Opcional, centralizado abaixo) -->
+            <div class="text-center mt-4 text-muted">
+                <small><i class="fas fa-clock me-2"></i>Última atualização: <span id="val-datetime">A carregar...</span></small>
             </div>
         </div>
     </section>
 
-      <!--Footer Section-->
-    <footer>
+    <!--Footer Section-->
+    <footer class="mt-auto">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
+            <div class="row gy-4 text-center text-md-start">
+                <div class="col-md-8">
                     <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p>Sistema de Monitoramento de Falhas de Iluminação Pública</p>
+                    <p class="small text-white-50">Monitoramento em Tempo Real via LoRa & Firebase.</p>
                 </div>
-                <div class="footer-section">
-                    <h4>Links</h4>
-                    <ul>
-                        <li><a href="#">Sobre</a></li>
-                        <li><a href="#">Termos</a></li>
-                        <li><a href="#">Políticas</a></li>
-                        <li><a href="#">Contactos</a></li>
+                <div class="col-md-4 text-md-end">
+                    <h4 class="h6">Links</h4>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white-50 text-decoration-none">Políticas</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Contactos</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                    <p>&copy; 2026 SmartLight. Todos os direitos revervados</p>
-                </div>
+            <div class="border-top border-secondary mt-4 pt-3 text-center">
+                <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            </div>
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="module">
+        // Importações corrigidas
         import { initializeApp } from "https://www.gstatic.com";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com";
 
-        // SUAS CONFIGURAÇÕES DO FIREBASE (Copie do Console)
         const firebaseConfig = {
             apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
             authDomain: "smartlight-pap-2026.firebaseapp.com",
@@ -97,20 +126,18 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
-        // Referência ao poste específico (ID 03 que vem do teu emissor)
         const posteRef = ref(db, 'postes/03');
 
         onValue(posteRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-            document.getElementById('val-luminosidade').innerText = data.luminosidade + "%";
-            document.getElementById('val-datetime').innerText = data.hora;
-            document.getElementById('val-corrente').innerText = data.corrente + " A";
-            document.getElementById('val-potencia').innerText = data.potencia.toFixed(2) + " W";
+                // Atualização dos IDs corrigida para bater com o HTML acima
+                document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
+                document.getElementById('val-datetime').innerText = data.hora;
+                document.getElementById('valor-corrente').innerText = data.corrente + " A";
+                document.getElementById('valor-potencia').innerText = data.potencia.toFixed(2) + " W";
             }
         });
     </script>
-
 </body>
 </html>
