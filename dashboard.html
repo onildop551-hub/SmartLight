@@ -33,15 +33,7 @@
                 <div class="valores">
                     <i class="fas fa-sun"></i>
                     <h1>Luminosidade</h1>
-                    <h2>18.98%</h2>
-                    <br>
-                    <br>
-                    <a href="#" class="estado">Mais Detalhes</a>
-                </div>
-                <div class="valores">
-                    <i class="fas fa-clock"></i>
-                    <h1>Data e Hora</h1>
-                    <h2>04/02/2026 13:30</h2>
+                    <h2 id="valor-luminosidade">Carregando...</h2>
                     <br>
                     <br>
                     <a href="#" class="estado">Mais Detalhes</a>
@@ -49,7 +41,7 @@
                 <div class="valores">
                     <i class="fas fa-bolt"></i>
                     <h1>Corrente</h1>
-                    <h2>1.02 A</h2>
+                    <h2 id="valor-corrente">Carregando...</h2>
                     <br>
                     <br>
                     <a href="#" class="estado">Mais Detalhes</a>
@@ -57,7 +49,7 @@
                 <div class="valores">
                     <i class="fas fa-plug"></i>
                     <h1>Potência</h1>
-                    <h2>221.02 W</h2>
+                    <h2 id="valor-potencia">Carregando...</h2>
                     <br>
                     <br>
                     <a href="#" class="estado">Mais Detalhes</a>
@@ -90,5 +82,35 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com";
+
+        // SUAS CONFIGURAÇÕES DO FIREBASE (Copie do Console)
+        const firebaseConfig = {
+            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+            authDomain: "smartlight-pap-2026.firebaseapp.com",
+            databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com",
+            projectId: "smartlight-pap-2026"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Referência ao poste específico (ID 03 que vem do teu emissor)
+        const posteRef = ref(db, 'postes/03');
+
+        onValue(posteRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+            document.getElementById('val-luminosidade').innerText = data.luminosidade + "%";
+            document.getElementById('val-datetime').innerText = data.hora;
+            document.getElementById('val-corrente').innerText = data.corrente + " A";
+            document.getElementById('val-potencia').innerText = data.potencia.toFixed(2) + " W";
+            }
+        });
+    </script>
+
 </body>
 </html>
