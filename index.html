@@ -3,95 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartLight | sistema de monitoramento d falhas de iluuminação pública</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>SmartLight | Monitoramento de Iluminação</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Ajustes rápidos para garantir a responsividade sem depender apenas do seu style.css */
+        .logoImg { max-width: 50px; height: auto; }
+        .hero { padding: 60px 0; background: #f8f9fa; text-align: center; }
+        .passo { padding: 20px; border: 1px solid #ddd; border-radius: 8px; height: 100%; transition: 0.3s; }
+        .passo:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        header { border-bottom: 1px solid #eee; padding: 10px 0; }
+        footer { background: #212529; color: white; padding: 40px 0 20px; }
+        footer a { color: #adb5bd; text-decoration: none; }
+    </style>
 </head>
 <body>
-    <!--Cabeçalho-->
+    <!-- Cabeçalho Responsivo -->
     <header>
-        <div class="container">
-            <div class="logo">
-                <img class="logoImg" src="img/icone.PNG" alt="logotipo.png">
-                <a href="index.html"><h1>SmartLight</h1></a>
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <div class="logo d-flex align-items-center">
+                <img class="logoImg me-2" src="img/icone.PNG" alt="logotipo">
+                <a href="index.html" class="text-decoration-none text-dark"><h1 class="h4 m-0">SmartLight</h1></a>
             </div>
-            <div class="nav">
-                <nav>
-                    <a href="login.html">Entrar</a>
-                    <a href="register.html">Registrar</a>
-                </nav>
-            </div>
+            <nav class="mt-2 mt-sm-0">
+                <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Registrar</a>
+            </nav>
         </div>
     </header>
     
-    <!--Hero Section-->
-    <section class="hero">
+    <!-- Hero Section -->
+    <section class="hero px-3">
         <div class="container">
-            <div class="heroContent">
-                <h1>Sistema de Monitoramento de Falhas de Iluminação Pública</h1>
-                <p>Saiba das condições de Iluminação da sua estrada, ou faça um aviso de falha de iluminação pública aqui.</p>
-                <a href="report.html" class="report">Fazer aviso</a>
-            </div>
-        </div>
-    </section>
-    <section class="como-funciona">
-        <div class="container">
-            <h1>Como Funciona</h1>
-            <div class="passos">
-                <div class="passo">
-                    <i class="fas fa-user"></i>
-                    <h1>1</h1>
-                    Crie a sua Conta como Técnico ou cidadão.
-                </div>
-                <div class="passo">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <h1>2</h1>
-                    Faça login na sua Conta.
-                </div>
-                <div class="passo">
-                    <i class="fas fa-warning"></i>
-                    <h1>3</h1>
-                    Faça um Report de uma falha de iluminação perto da sua região
-                </div>
-                <div class="passo">
-                    <i class="fas fa-tools"></i>
-                    <h1>4</h1>
-                    Os técnicos irão fazer a manutenção do poste com falhas.
-                </div>
-                <div class="passo">
-                    <i class="fas fa-check-circle"></i>
-                    <h1>5</h1>
-                    Continue ajudando o país
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold">Sistema de Monitoramento de Falhas de Iluminação Pública</h1>
+                    <p class="lead mb-4">Saiba das condições de iluminação da sua estrada ou reporte uma falha agora mesmo.</p>
+                    <a href="report.html" class="btn btn-danger btn-lg px-5">Fazer aviso</a>
                 </div>
             </div>
-            
         </div>
     </section>
 
-    <!--Footer Section-->
+    <!-- Como Funciona - Grid Responsiva (1 col em mobile, 3 em tablet, 5 em PC) -->
+    <section class="como-funciona py-5">
+        <div class="container text-center">
+            <h2 class="mb-5">Como Funciona</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-12 col-md-6 col-lg-2">
+                    <div class="passo">
+                        <i class="fas fa-user fa-2x mb-3 text-primary"></i>
+                        <h1 class="h4">1</h1>
+                        <p class="small">Crie a sua Conta como Técnico ou cidadão.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <div class="passo">
+                        <i class="fas fa-sign-in-alt fa-2x mb-3 text-primary"></i>
+                        <h1 class="h4">2</h1>
+                        <p class="small">Faça login na sua Conta.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <div class="passo">
+                        <i class="fas fa-warning fa-2x mb-3 text-primary"></i>
+                        <h1 class="h4">3</h1>
+                        <p class="small">Reporte uma falha de iluminação na sua região.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <div class="passo">
+                        <i class="fas fa-tools fa-2x mb-3 text-primary"></i>
+                        <h1 class="h4">4</h1>
+                        <p class="small">Os técnicos farão a manutenção do poste.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <div class="passo">
+                        <i class="fas fa-check-circle fa-2x mb-3 text-primary"></i>
+                        <h1 class="h4">5</h1>
+                        <p class="small">Continue ajudando o país.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Responsivo -->
     <footer>
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
+            <div class="row gy-4">
+                <div class="col-md-6">
                     <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p>Sistema de Monitoramento de Falhas de Iluminação Pública</p>
+                    <p>Sistema Inteligente de Gestão Urbana.</p>
                 </div>
-                <div class="footer-section">
-                    <h4>Links</h4>
-                    <ul>
+                <div class="col-md-6 text-md-end">
+                    <h4>Links Rápidos</h4>
+                    <ul class="list-unstyled">
                         <li><a href="#">Sobre</a></li>
                         <li><a href="#">Termos</a></li>
-                        <li><a href="#">Políticas</a></li>
                         <li><a href="#">Contactos</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                    <p>&copy; 2026 SmartLight. Todos os direitos revervados</p>
-                </div>
+            <hr class="mt-4">
+            <div class="text-center">
+                <p class="small m-0">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            </div>
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

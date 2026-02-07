@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 
 <head>
     <meta charset="UTF-8">
@@ -8,129 +8,129 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Ajustes de cores para manter o padrão anterior */
+        .loginSection { padding: 60px 0; background: #fdfdfd; }
+        .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .error { color: #dc3545; font-size: 0.85rem; display: none; margin-top: 5px; }
+        .btn-google { background: white; border: 1px solid #dadce0; color: #3c4043; padding: 10px; width: 100%; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-google img { width: 18px; margin-right: 10px; }
+        .btn-google:hover { background: #f8f9fa; }
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .esqueciSenha { background: none; border: none; color: #0d6efd; font-size: 0.9rem; padding: 0; cursor: pointer; text-decoration: none; }
+    </style>
 </head>
 
 <body>
+    <!-- Overlay de Carregamento -->
     <div id="loader-overlay" class="loader-overlay d-none">
-        <div class="text-center">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Carregando...</span>
-            </div>
-            <h5 class="mt-3 text-white">Processando...</h5>
+        <div class="text-center text-white">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <h5 class="mt-3">Processando...</h5>
         </div>
     </div>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <img class="logoImg" src="img/icone.PNG" alt="logotipo.png">
-                <a href="index.html">
-                    <h1>SmartLight</h1>
-                </a>
+
+    <header class="py-3 border-bottom">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <div class="logo d-flex align-items-center">
+                <img class="logoImg me-2" src="img/icone.PNG" alt="logotipo" style="max-width: 40px;">
+                <a href="index.html" class="text-decoration-none text-dark"><h1 class="h4 m-0">SmartLight</h1></a>
             </div>
-            <div class="nav">
-                <nav>
-                    <a href="login.html">Entrar</a>
-                    <a href="register.html">Registrar</a>
-                </nav>
-            </div>
+            <nav class="mt-2 mt-sm-0">
+                <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Registrar</a>
+            </nav>
         </div>
     </header>
-    <section class="loginSection">
+
+    <section class="loginSection px-3">
         <div class="container">
-            <h1>Login</h1>
-            <form id="formLogin" onsubmit="event.preventDefault(); login();">
-                <div id="error-login" class="error-login text-center">
-                    Email ou Senha Incorrecta!
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="email" placeholder="Usuário" class="form-control" id="email" oninput="ValidarCampos()">
-                    <label for="email">
-                        <i class="fas fa-user me-2"></i>Email
-                    </label>
-                    <div class="error" id="email-required-error"> <i class="fas fa-warning"></i> Campo Vazio: "O e-mail
-                        é obrigatório."</div>
-                    <div class="error" id="email-invalid-error"> <i class="fas fa-warning"></i> Formato Inválido:
-                        "Introduza um e-mail válido (ex: nome@dominio.com)."</div>
-                    <div class="error"> <i class="fas fa-warning"></i> E-mail não encontrado: "Este e-mail não está
-                        associado a nenhuma conta."</div>
-
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="password" placeholder="Senha" class="form-control" id="password"
-                        onchange="ValidarCampos()">
-                    <label for="password">
-                        <i class="fas fa-lock me-2"></i>
-                        Senha
-                    </label>
-                    <div class="error" id="pw-min-error"> <i class="fas fa-warning"></i> Curta demais: "A palavra-passe deve ter pelo
-                        menos 8 caracteres."</div>
-                    <div class="error" id="pw-upper-error"> <i class="fas fa-warning"></i> "Adicione pelo menos uma letra maiúscula."</div>
-                    <div class="error" id="pw-special-error"> <i class="fas fa-warning"></i> "Falta um caractere especial (ex: @, #, $)."
+            <div class="form-container">
+                <h1 class="text-center mb-4 fw-bold">Login</h1>
+                
+                <form id="formLogin" onsubmit="event.preventDefault(); login();">
+                    <div id="error-login" class="alert alert-danger text-center d-none" role="alert">
+                        Email ou Senha Incorrecta!
                     </div>
 
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input">
-                    <label for="lembrar" class="form-check-label">Lembrar-me</label>
-                    <button type="button" onclick="recoverPassword()" class="esqueciSenha float-end" id="recuperar-senha">Esqueci a senha</button>
-                </div>
-                <button type="submit" class="btn btn-login btn-primary w-100 py-3" id="login" disabled="true">
-                    <i class="fas fa-sign-in-alt me-3"></i>
-                    Entrar
-                </button>
-                <hr class="my-4">
-                <div class="text-center">
-                    <p class="text-muted mb-2">Não tem uma Conta?</p>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <a href="register.html" class="btn btn-outline-primary">
-                                <i class="fas fa-eye me-2"></i>
-                                Sou Cidadão</a>
+                    <!-- Email -->
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="nome@exemplo.com" oninput="ValidarCampos()">
+                        <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                        <div class="error" id="email-required-error"><i class="fas fa-exclamation-triangle"></i> O e-mail é obrigatório.</div>
+                    </div>
+
+                    <!-- Senha -->
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="password" placeholder="Senha" oninput="ValidarCampos()">
+                        <label for="password"><i class="fas fa-lock me-2"></i>Senha</label>
+                        <div class="error" id="pw-min-error"><i class="fas fa-exclamation-triangle"></i> Mínimo de 8 caracteres.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="lembrar">
+                            <label class="form-check-label small" for="lembrar">Lembrar-me</label>
                         </div>
-                        <div class="col-md-6">
-                            <button type="button" id="googleLogin" class="btn-google">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-                                Entrar com Google
-                            </button>
-                        </div>
-                        <div class="col-md-6">
-                            <a href="register.html" class="btn btn-outline-primary">
-                                <i class="fas fa-user"></i>
-                                Sou Técnico
-                            </a>
+                        <button type="button" onclick="recoverPassword()" class="esqueciSenha small">Esqueci a senha</button>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-3" id="login" disabled>
+                        <i class="fas fa-sign-in-alt me-2"></i> Entrar
+                    </button>
+
+                    <button type="button" id="googleLogin" class="btn-google mb-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+                        Entrar com Google
+                    </button>
+
+                    <hr>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted small">Ainda não tem conta?</p>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="register.html" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-user me-1"></i> Cidadão
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="register.html" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-tools me-1"></i> Técnico
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </section>
-    <!--Footer Section-->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p>Sistema de Monitoramento de Falhas de Iluminação Pública</p>
+
+    <footer class="bg-dark text-white py-5 mt-auto">
+        <div class="container text-center text-md-start">
+            <div class="row gy-4">
+                <div class="col-md-8">
+                    <h3 class="h5"><i class="fas fa-lightbulb me-2"></i>SmartLight</h3>
+                    <p class="small text-white-50">Sistema de Monitoramento de Falhas de Iluminação Pública</p>
                 </div>
-                <div class="footer-section">
-                    <h4>Links</h4>
-                    <ul>
-                        <li><a href="#">Sobre</a></li>
-                        <li><a href="#">Termos</a></li>
-                        <li><a href="#">Políticas</a></li>
-                        <li><a href="#">Contactos</a></li>
+                <div class="col-md-4">
+                    <h4 class="h6">Links</h4>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white-50 text-decoration-none">Termos e Políticas</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Contactos</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 SmartLight. Todos os direitos revervados</p>
+            <div class="border-top border-secondary mt-4 pt-3 text-center">
+                <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Scripts do Firebase e Lógica -->
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
     <script src="js/login.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
