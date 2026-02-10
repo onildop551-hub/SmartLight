@@ -126,16 +126,18 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const posteRef = ref(db, 'postes/03');
-
+        
+        const posteRef = ref(db, 'postes'); 
         onValue(posteRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                // Atualização dos IDs corrigida para bater com o HTML acima
-                document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
-                document.getElementById('val-datetime').innerText = data.hora;
-                document.getElementById('valor-corrente').innerText = data.corrente + " A";
-                document.getElementById('valor-potencia').innerText = data.potencia.toFixed(2) + " W";
+            const todosPostes = snapshot.val();
+            if (todosPostes) {
+                const ids = Object.keys(todosPostes);
+                const ultimoId = ids[ids.length - 1]; // Pega o ID 799 automaticamente
+                const info = todosPostes[ultimoId];
+                
+                document.getElementById('valor-luminosidade').innerText = info.luminosidade + "%";
+                document.getElementById('valor-corrente').innerText = info.corrente + " A";
+                document.getElementById('valor-potencia').innerText = info.potencia + " W";
             }
         });
     </script>
