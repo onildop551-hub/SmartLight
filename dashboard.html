@@ -112,37 +112,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-        <script type="module">
-            // URLs COMPLETAS para evitar erro de CORS
-            import { initializeApp } from "https://www.gstatic.com";
-            import { getDatabase, ref, onValue } from "https://www.gstatic.com";
+    <script type="module">
+        // URLs COMPLETAS para evitar erro de CORS
+        import { initializeApp } from "https://www.gstatic.com";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com";
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-                authDomain: "smartlight-pap-2026.firebaseapp.com",
-                databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com",
-                projectId: "smartlight-pap-2026"
-            };
+        const firebaseConfig = {
+            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+            authDomain: "smartlight-pap-2026.firebaseapp.com",
+            databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com",
+            projectId: "smartlight-pap-2026"
+        };
 
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-            // Escuta o último poste que enviou dados (ex: ID 28)
-            const posteRef = ref(db, 'postes/28'); 
+        // Escuta o último poste que enviou dados (ex: ID 28)
+        const posteRef = ref(db, 'postes/28'); 
 
-            onValue(posteRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Atualiza os teus IDs do HTML
-                    document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
-                    document.getElementById('valor-corrente').innerText = data.corrente + " A";
-                    document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
-                    // Se tiveres um campo de hora:
-                    if(document.getElementById('val-datetime')) 
-                        document.getElementById('val-datetime').innerText = data.hora;
-                }
-            });
-        </script>
+        onValue(posteRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Atualiza os teus IDs do HTML
+                document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
+                document.getElementById('valor-corrente').innerText = data.corrente + " A";
+                document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
+                // Se tiveres um campo de hora:
+                if(document.getElementById('val-datetime')) 
+                    document.getElementById('val-datetime').innerText = data.hora;
+            }
+        });
     </script>
 </body>
 </html>
