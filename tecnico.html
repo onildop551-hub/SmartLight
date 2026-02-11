@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Técnico | SmartLight</title>
+    <style>
+    .tech-bg { background: linear-gradient(135deg, #232526 0%, #414345 100%); color: white; min-height: 100vh; }
+    .task-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+<div class="tech-bg p-4">
+    <div class="container">
+        <h3><i class="fas fa-tools"></i> Minhas Manutenções</h3>
+        <div id="minhasTarefas" class="mt-4"></div>
+    </div>
+</div>
+
+<script src="js/firebase_config.js"></script>
+<script type="module">
+    import { db, collection, query, where, onSnapshot, doc, updateDoc } from "./firebase-config.js";
+
+    // Simulando login do técnico João
+    const tecnicoLogado = "Tecnico_Joao"; 
+
+    const q = query(collection(db, "reportes"), where("tecnicoAtribuido", "==", tecnicoLogado), where("status", "==", "em_manutencao"));
+
+    onSnapshot(q, (snapshot) => {
+        const container = document.getElementById('minhasTarefas');
+        container.innerHTML = "";
+        snapshot.forEach(t => {
+            const d = t.data();
+            container.innerHTML += `
+                <div class="card task-card p-3 mb-3">
+                    <h4>${d.tipo}</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> ${d.localizacao.endereco}</p>
+                    <a href="https://maps.google.com{d.localizacao.lat},${d.localizacao.lng}" target="_blank" class="btn btn-sm btn-outline-info mb-2">Ver Rota</a>
+                    <button onclick="finalizar('${t.id}')" class="btn btn-success w-100">Marcar como Concluído</button>
+                </div>
+            `;
+        });
+    });
+
+    window.finalizar = async (id) => {
+        await updateDoc(doc(db, "reportes", id), { status: "concluido" });
+        alert("Trabalho finalizado com sucesso!");
+    };
+</script>
+
+</body>
+</html>
