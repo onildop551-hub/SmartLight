@@ -1,7 +1,7 @@
 // 1. Importações Modulares do Firebase (Necessárias para type="module")
-import { initializeApp } from "https://www.gstatic.com";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com";
-import { getDatabase, ref, set } from "https://www.gstatic.com";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // 2. Configuração do Firebase
 const firebaseConfig = {
