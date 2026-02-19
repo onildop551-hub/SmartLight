@@ -44,21 +44,22 @@ function register(){
      try {
         const userCredential =  firebase.auth().createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
         const uid = userCredential.user.uid;
-
-        // SALVAR O PERFIL NO DATABASE
-         firebase.database().ref('usuarios/' + uid).set({
-            nome: name,
-            email: email,
-            tipo: tipoConta , // Aqui salvamos se é 'user' ou 'tecnico'
-            criadoEm: new Date().toISOString()
-        });
-        loader.classList.add("d-none");
-        alert("Conta criada com sucesso!");
-        window.location.href = "login.html";
-    } catch (error) {
-        loader.classList.add("d-none");
-        console.error(error);
-    }
+         if (userCredential && userCredential.user) {
+            // SALVAR O PERFIL NO DATABASE
+            firebase.database().ref('usuarios/' + uid).set({
+                nome: name,
+                email: email,
+                tipo: tipoConta , // Aqui salvamos se é 'user' ou 'tecnico'
+                criadoEm: new Date().toISOString()
+            });
+            loader.classList.add("d-none");
+            alert("Conta criada com sucesso!");
+            window.location.href = "login.html";
+        }
+        } catch (error) {
+            loader.classList.add("d-none");
+            console.error(error);
+        }
     
     /*
     loader.classList.remove("d-none");
