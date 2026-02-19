@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre | SmartLight</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Ajustes rápidos para garantir a responsividade sem depender apenas do seu style.css */
+        .logoImg { max-width: 50px; height: auto; }
+        .hero { padding: 60px 0; background: #f8f9fa; text-align: center; }
+        .passo { padding: 20px; border: 1px solid #ddd; border-radius: 8px; height: 100%; transition: 0.3s; }
+        .passo:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        header { border-bottom: 1px solid #eee; padding: 10px 0; }
+        footer { background: #212529; color: white; padding: 40px 0 20px; }
+        footer a { color: #adb5bd; text-decoration: none; }
+    </style>
 </head>
 <body>
     <!-- Cabeçalho Responsivo -->
@@ -41,5 +53,30 @@
             </div>
         </div>
     </section>
+    <!-- Footer Responsivo -->
+    <footer>
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-6">
+                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
+                    <p>Sistema Inteligente de Gestão Urbana.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h4>Links Rápidos</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="about.html">Sobre</a></li>
+                        <li><a href="termos.html">Termos</a></li>
+                        <li><a href="#">Contactos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4">
+            <div class="text-center">
+                <p class="small m-0">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
