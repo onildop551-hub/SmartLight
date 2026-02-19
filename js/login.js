@@ -1,13 +1,13 @@
 // 1. Importações Modulares (Essencial para Vercel e Firebase v10)
-import { initializeApp } from "https://www.gstatic.com";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
     getAuth, 
     signInWithEmailAndPassword, 
     GoogleAuthProvider, 
     signInWithPopup, 
     sendPasswordResetEmail 
-} from "https://www.gstatic.com";
-import { getDatabase, ref, get } from "https://www.gstatic.com";
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // 2. Configuração
 const firebaseConfig = {
