@@ -33,30 +33,14 @@ const getEl = (id) => document.getElementById(id);
  * VALIDAÇÃO DE CAMPOS
  */
 window.ValidarCampos = function() {
-    const email = getEl("email").value;
-    const password = getEl("password").value;
-    const entrarBtn = getEl("login");
-    const recuperarSenhaLink = document.querySelector("#recuperar-senha");
-    const errorLogin = getEl("error-login");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const btn = document.getElementById("login");
 
-    if (errorLogin) errorLogin.style.display = "none";
+    const emailValido = email.includes("@") && email.length > 5;
+    const senhaValida = password.length >= 8;
 
-    const emailValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
-    const senhaValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-
-    // Lógica do Link de Recuperar Senha
-    if (recuperarSenhaLink) {
-        if (emailValido) {
-            recuperarSenhaLink.style.pointerEvents = "auto";
-            recuperarSenhaLink.style.opacity = "1";
-        } else {
-            recuperarSenhaLink.style.pointerEvents = "none";
-            recuperarSenhaLink.style.opacity = "0.5";
-        }
-    }
-    
-    toggleErrors(email, password, emailValido);
-    if (entrarBtn) entrarBtn.disabled = !(emailValido && senhaValida);
+    if (btn) btn.disabled = !(emailValido && senhaValida);
 };
 
 function toggleErrors(email, pw, emailValido) {
@@ -77,34 +61,36 @@ function toggleErrors(email, pw, emailValido) {
  * LOGIN COM EMAIL/SENHA E REDIRECIONAMENTO POR TIPO
  */
 window.login = async function() {
-    const email = getEl("email").value;
-    const password = getEl("password").value;
-    const loader = getEl("loader-overlay");
-    const errorLogin = getEl("error-login");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const loader = document.getElementById("loader-overlay");
+    const errorLogin = document.getElementById("error-login");
 
     if (loader) loader.classList.remove("d-none");
     if (errorLogin) errorLogin.style.display = "none";
 
     try {
+        // 1. Autenticação
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // BUSCAR TIPO DE CONTA NO REALTIME DATABASE
+        // 2. Busca o Tipo de Conta (Técnico ou Cidadão)
         const userRef = ref(db, 'usuarios/' + user.uid);
         const snapshot = await get(userRef);
 
         if (snapshot.exists()) {
             const tipo = snapshot.val().tipo;
+            // 3. Redirecionamento baseado no tipo salvo no registro
             window.location.href = (tipo === "tecnico") ? "dashboard.html" : "report.html";
         } else {
-            alert("Erro: Dados de perfil não encontrados.");
+            alert("Perfil de utilizador não encontrado.");
             if (loader) loader.classList.add("d-none");
         }
     } catch (error) {
         if (loader) loader.classList.add("d-none");
         if (errorLogin) {
             errorLogin.style.display = "block";
-            errorLogin.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Email ou Senha Incorretos!';
+            errorLogin.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Dados Incorretos!';
         }
         console.error("Erro no login:", error.code);
     }
