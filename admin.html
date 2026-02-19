@@ -3,78 +3,146 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - SmartLight</title>
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
+    
     <style>
-        body { background: #f4f7f6; }
-        .sidebar { background: linear-gradient(180deg, #4e54c8, #8f94fb); min-height: 100vh; color: white; }
-        .card-report { border-left: 5px solid #667eea; transition: 0.3s; }
-        .card-report:hover { transform: scale(1.01); }
-        .badge-pendente { background: #ffc107; color: #000; }
+        /* Esconde o body por padrão para evitar "piscada" de conteúdo antes do redirect */
+        body { 
+            background: #f4f7f6; 
+            display: none; 
+        }
+        .sidebar { 
+            background: linear-gradient(180deg, #4e54c8, #8f94fb); 
+            min-height: 100vh; 
+            color: white; 
+        }
+        .card-report { 
+            border-left: 5px solid #667eea; 
+            transition: 0.3s; 
+        }
+        .card-report:hover { 
+            transform: scale(1.01); 
+        }
+        .badge-pendente { 
+            background: #ffc107; 
+            color: #000; 
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
+            <!-- Sidebar -->
             <nav class="col-md-2 sidebar p-4">
                 <h4><i class="fas fa-user-shield"></i> Admin Panel</h4>
                 <hr>
                 <p>Ocorrências Ativas</p>
+                <button class="btn btn-outline-light btn-sm mt-4" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
             </nav>
+
+            <!-- Main Content -->
             <main class="col-md-10 p-4">
                 <h2 class="mb-4">Monitor de Ocorrências</h2>
                 <div id="listaReportes" class="row">
                     <!-- Cards carregados via JS -->
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p>A carregar ocorrências...</p>
+                    </div>
                 </div>
             </main>
         </div>
     </div>
-    
-    <script src="js/firebase_config.js"></script>
-    <script type="module">
-        import { db, collection, onSnapshot, query, where, doc, updateDoc } from "./firebase-config.js";
 
+    <!-- Scripts -->
+    <script type="module">
+        // Importação dos serviços necessários do Firebase SDK
+        import { db } from "./firebase-config.js";
+        import { collection, onSnapshot, query, where, doc, updateDoc } from "https://www.gstatic.com";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com";
+
+        const auth = getAuth();
         const listaContainer = document.getElementById('listaReportes');
 
-        // Escuta reportes "pendentes" em tempo real
-        const q = query(collection(db, "reportes"), where("status", "==", "pendente"));
-        
-        onSnapshot(q, (snapshot) => {
-            listaContainer.innerHTML = "";
-            snapshot.forEach((reporte) => {
-                const data = reporte.data();
-                const id = reporte.id;
-                
-                listaContainer.innerHTML += `
-                    <div class="col-md-6 mb-3">
-                        <div class="card card-report shadow-sm p-3">
-                            <div class="d-flex justify-content-between">
-                                <h5>${data.tipo}</h5>
-                                <span class="badge badge-pendente">Pendente</span>
-                            </div>
-                            <p class="text-muted small">${data.localizacao.endereco}</p>
-                            <img src="${data.foto}" class="img-fluid rounded mb-2" style="max-height: 150px; object-fit: cover;">
-                            <div class="input-group">
-                                <select class="form-select" id="tec-${id}">
-                                    <option value="Tecnico_Joao">Técnico João (Luanda)</option>
-                                    <option value="Tecnico_Maria">Técnica Maria (Viana)</option>
-                                </select>
-                                <button class="btn btn-primary" onclick="atribuir('${id}')">Enviar Técnico</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
+        // 1. VERIFICAÇÃO DE SEGURANÇA (ESTADO DA SESSÃO)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Utilizador autenticado: Mostra a página e carrega dados
+                document.body.style.display = "block";
+                iniciarMonitoramento();
+            } else {
+                // Utilizador não autenticado: Redireciona para o login
+                console.warn("Acesso negado. Redirecionando...");
+                window.location.href = "login.html"; 
+            }
         });
 
+        // 2. FUNÇÃO PARA CARREGAR DADOS DO FIRESTORE
+        function iniciarMonitoramento() {
+            const q = query(collection(db, "reportes"), where("status", "==", "pendente"));
+            
+            onSnapshot(q, (snapshot) => {
+                listaContainer.innerHTML = "";
+                
+                if (snapshot.empty) {
+                    listaContainer.innerHTML = '<div class="alert alert-info">Nenhuma ocorrência pendente no momento.</div>';
+                    return;
+                }
+
+                snapshot.forEach((reporte) => {
+                    const data = reporte.data();
+                    const id = reporte.id;
+                    
+                    listaContainer.innerHTML += `
+                        <div class="col-md-6 mb-3">
+                            <div class="card card-report shadow-sm p-3">
+                                <div class="d-flex justify-content-between">
+                                    <h5>${data.tipo || 'Ocorrência'}</h5>
+                                    <span class="badge badge-pendente">Pendente</span>
+                                </div>
+                                <p class="text-muted small">${data.localizacao?.endereco || 'Localização não informada'}</p>
+                                <img src="${data.foto || 'https://via.placeholder.com'}" class="img-fluid rounded mb-2" style="max-height: 150px; width: 100%; object-fit: cover;">
+                                <div class="input-group">
+                                    <select class="form-select" id="tec-${id}">
+                                        <option value="Tecnico_Joao">Técnico João (Luanda)</option>
+                                        <option value="Tecnico_Maria">Técnica Maria (Viana)</option>
+                                    </select>
+                                    <button class="btn btn-primary" onclick="atribuir('${id}')">Enviar Técnico</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // 3. ATRIBUIR TÉCNICO
         window.atribuir = async (id) => {
             const tecnico = document.getElementById(`tec-${id}`).value;
-            await updateDoc(doc(db, "reportes", id), {
-                status: "em_manutencao",
-                tecnicoAtribuido: tecnico
+            try {
+                await updateDoc(doc(db, "reportes", id), {
+                    status: "em_manutencao",
+                    tecnicoAtribuido: tecnico,
+                    dataAtribuicao: new Date()
+                });
+                alert("Técnico " + tecnico + " notificado com sucesso!");
+            } catch (error) {
+                console.error("Erro ao atualizar:", error);
+                alert("Erro ao atribuir técnico.");
+            }
+        };
+
+        // 4. FUNÇÃO DE LOGOUT
+        window.logout = () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
             });
-            alert("Técnico notificado!");
         };
     </script>
 </body>
