@@ -1,168 +1,154 @@
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const recuperarSenhaLink = document.querySelector("#recuperar-senha");
-const entrarBtn = document.getElementById("login");
-const errorLogin=document.getElementById("error-login");
-const loader = document.getElementById("loader-overlay");
+// 1. Importações Modulares (Essencial para Vercel e Firebase v10)
+import { initializeApp } from "https://www.gstatic.com";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    sendPasswordResetEmail 
+} from "https://www.gstatic.com";
+import { getDatabase, ref, get } from "https://www.gstatic.com";
 
-// 1. Configuração do Firebase
+// 2. Configuração
 const firebaseConfig = {
   apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
   authDomain: "smartlight-pap-2026.firebaseapp.com",
   projectId: "smartlight-pap-2026",
+  databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com",
   storageBucket: "smartlight-pap-2026.firebasestorage.app",
   messagingSenderId: "953509556806",
   appId: "1:953509556806:web:96ed896142e7b5433f5047"
 };
 
-// 2. Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+// 3. Inicialização
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const provider = new GoogleAuthProvider();
 
-// 3. Configurar o Provedor Google
-const provider = new firebase.auth.GoogleAuthProvider();
+// Elementos do DOM (Funções para evitar erro de 'null' se o elemento ainda não carregou)
+const getEl = (id) => document.getElementById(id);
 
-// 4. Ação do Botão
-document.getElementById('googleLogin').addEventListener('click', () => {
-    loader.classList.remove("d-none");
-    auth.signInWithPopup(provider)
-    .then((result) => {
-        // Usuário logado com sucesso
-        const user = result.user;
-        console.log("Login realizado:", user.displayName);
-        alert("Logado como: " + user.displayName);
-    }).catch((error) => {
-        loader.classList.add("d-none");
-        // Erro no login
-        console.error("Erro no login:", error);
-    });
-});
+/**
+ * VALIDAÇÃO DE CAMPOS
+ */
+window.ValidarCampos = function() {
+    const email = getEl("email").value;
+    const password = getEl("password").value;
+    const entrarBtn = getEl("login");
+    const recuperarSenhaLink = document.querySelector("#recuperar-senha");
+    const errorLogin = getEl("error-login");
 
-function ValidarCampos() {
-    const emailValue = emailInput.value;
-    const passwordValue = passwordInput.value;
-    errorLogin.style.display = "none";
+    if (errorLogin) errorLogin.style.display = "none";
+
+    const emailValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    const senhaValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
 
     // Lógica do Link de Recuperar Senha
-    if (validarEmail(emailValue)) {
-        recuperarSenhaLink.style.pointerEvents = "auto";
-        recuperarSenhaLink.style.opacity = "1";
-        recuperarSenhaLink.href = "index.html";
-    } else {
-        recuperarSenhaLink.style.pointerEvents = "none";
-        recuperarSenhaLink.style.opacity = "0.5";
-        recuperarSenhaLink.removeAttribute("href");
+    if (recuperarSenhaLink) {
+        if (emailValido) {
+            recuperarSenhaLink.style.pointerEvents = "auto";
+            recuperarSenhaLink.style.opacity = "1";
+        } else {
+            recuperarSenhaLink.style.pointerEvents = "none";
+            recuperarSenhaLink.style.opacity = "0.5";
+        }
     }
     
-    toggleErrors();
-    entrarBtn.disabled = !(validarEmail(emailValue) && validarPassword(passwordValue));
+    toggleErrors(email, password, emailValido);
+    if (entrarBtn) entrarBtn.disabled = !(emailValido && senhaValida);
+};
+
+function toggleErrors(email, pw, emailValido) {
+    const eReq = getEl("email-required-error");
+    const eInv = getEl("email-invalid-error");
+    const pMin = getEl("pw-min-error");
+    const pUpp = getEl("pw-upper-error");
+    const pSpe = getEl("pw-special-error");
+
+    if (eReq) eReq.style.display = (email.trim() === "") ? "block" : "none";
+    if (eInv) eInv.style.display = (email !== "" && !emailValido) ? "block" : "none";
+    if (pMin) pMin.style.display = (pw !== "" && pw.length < 8) ? "block" : "none";
+    if (pUpp) pUpp.style.display = (pw !== "" && !/[A-Z]/.test(pw)) ? "block" : "none";
+    if (pSpe) pSpe.style.display = (pw !== "" && !/[@$!%*?&]/.test(pw)) ? "block" : "none";
 }
-function login(){
-    const email=emailInput.value;
-    const password=passwordInput.value;
 
-    loader.classList.remove("d-none");
-    errorLogin.style.display = "none";
-        try {
-        const userCredential = firebase.auth().signInWithEmailAndPassword(email, password);
-        const uid = userCredential.user.uid;
+/**
+ * LOGIN COM EMAIL/SENHA E REDIRECIONAMENTO POR TIPO
+ */
+window.login = async function() {
+    const email = getEl("email").value;
+    const password = getEl("password").value;
+    const loader = getEl("loader-overlay");
+    const errorLogin = getEl("error-login");
 
-        // BUSCAR O TIPO DE CONTA NO DATABASE
-        const snapshot =  firebase.database().ref('usuarios/' + uid).once('value');
-        const userData = snapshot.val();
+    if (loader) loader.classList.remove("d-none");
+    if (errorLogin) errorLogin.style.display = "none";
 
-        if (userData) {
-            if (userData.tipo === "tecnico") {
-                // Se for técnico, vai para o Dashboard (ver dados do LoRa)
-                window.location.href = "dashboard.html";
-            } else {
-                // Se for cidadão (user), vai para o Report (avisar falhas)
-                window.location.href = "report.html";
-            }
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // BUSCAR TIPO DE CONTA NO REALTIME DATABASE
+        const userRef = ref(db, 'usuarios/' + user.uid);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+            const tipo = snapshot.val().tipo;
+            window.location.href = (tipo === "tecnico") ? "dashboard.html" : "report.html";
         } else {
-            alert("Perfil de utilizador não encontrado.");
+            alert("Erro: Dados de perfil não encontrados.");
+            if (loader) loader.classList.add("d-none");
         }
-
     } catch (error) {
-        loader.classList.add('d-none');
-        document.getElementById('error-login').classList.remove('d-none');
-        console.error("Erro no login:", error.message);
-    }
-    /*
-    //entrarBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Entrando...';
-    //entrarBtn.disabled = true;
-    //Fazer Login com email e senha
-    auth.signInWithEmailAndPassword(email,password).then(Response =>{
-        alert("Login Realiado com sucesso!");
-        window.location.href = "dashboard.html";
-    }).catch(error=>{
+        if (loader) loader.classList.add("d-none");
+        if (errorLogin) {
+            errorLogin.style.display = "block";
+            errorLogin.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Email ou Senha Incorretos!';
+        }
         console.error("Erro no login:", error.code);
-        loader.classList.add("d-none");
-        errorLogin.style.display="block";
-         switch (error.code) {
-                case 'auth/user-not-found':
-                case 'auth/wrong-password':
-                case 'auth/invalid-login-credentials':
-                    errorLogin.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Email ou Senha Incorretos!';
-                    break;
-                case 'auth/too-many-requests':
-                    errorLogin.innerHTML = '<i class="fas fa-clock me-2"></i> Muitas tentativas falhadas. Tente mais tarde.';
-                    break;
-                case 'auth/user-disabled':
-                    errorLogin.innerHTML = '<i class="fas fa-ban me-2"></i> Esta conta foi desativada.';
-                    break;
-                default:
-                    errorLogin.innerHTML = '<i class="fas fa-bug me-2"></i> Ocorreu um erro inesperado.';
-            }
-    });*/
-}
-function recoverPassword(){
-    const email = emailInput.value;
-
-    if (!email) {
-        alert("Por favor, introduza o seu e-mail primeiro.");
-        return;
     }
-    loader.classList.remove("d-none");
-    firebase.auth().sendPasswordResetEmail(emailInput.value).then(()=>{
-        loader.classList.add("d-none");
-        alert("E-mail de recuperação enviado! Verifique a sua caixa de entrada.");
-    }).catch(error=>{
-        loader.classList.add("d-none");
-            console.error("Erro na recuperação:", error.code);
-            
-            if (error.code === 'auth/user-not-found') {
-                alert("Este e-mail não está registado no sistema.");
-            } else {
-                alert("Erro ao enviar e-mail: " + error.message);
-            }
+};
+
+/**
+ * LOGIN COM GOOGLE
+ */
+const googleBtn = getEl('googleLogin');
+if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+        const loader = getEl("loader-overlay");
+        if (loader) loader.classList.remove("d-none");
+        
+        try {
+            const result = await signInWithPopup(auth, provider);
+            // Nota: Para login social, pode ser necessário criar o registro no DB se for a primeira vez
+            window.location.href = "report.html"; 
+        } catch (error) {
+            if (loader) loader.classList.add("d-none");
+            console.error("Erro Google:", error);
+        }
     });
 }
 
-function toggleErrors() {
-    const email = emailInput.value;
-    const pw = passwordInput.value;
+/**
+ * RECUPERAR SENHA
+ */
+window.recoverPassword = async function() {
+    const email = getEl("email").value;
+    const loader = getEl("loader-overlay");
 
-    // Erros de Email
-    document.getElementById("email-required-error").style.display = (email.trim() === "") ? "block" : "none";
-    document.getElementById("email-invalid-error").style.display = (email !== "" && !validarEmail(email)) ? "block" : "none";
+    if (!email || !email.includes("@")) {
+        alert("Por favor, introduza um e-mail válido primeiro.");
+        return;
+    }
 
-    // Erros de Password (individuais)
-    document.getElementById("pw-min-error").style.display = (pw !== "" && pw.length < 8) ? "block" : "none";
-    document.getElementById("pw-upper-error").style.display = (pw !== "" && !/[A-Z]/.test(pw)) ? "block" : "none";
-    document.getElementById("pw-special-error").style.display = (pw !== "" && !/[@$!%*?&]/.test(pw)) ? "block" : "none";
-}
-
-function validarEmail(email) {
-    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
-}
-
-function validarPassword(password) {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-}
-
-const form = document.getElementById('formLogin');
-form.addEventListener('submit', (e) => {
-    e.preventDefault(); // Mata o refresh da página
-    login(); // Chama a sua função de autenticação
-});
+    if (loader) loader.classList.remove("d-none");
+    try {
+        await sendPasswordResetEmail(auth, email);
+        if (loader) loader.classList.add("d-none");
+        alert("E-mail de recuperação enviado! Verifique a sua caixa de entrada.");
+    } catch (error) {
+        if (loader) loader.classList.add("d-none");
+        alert("Erro: " + error.message);
+    }
+};
