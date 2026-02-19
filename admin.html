@@ -52,14 +52,19 @@
         const db = getFirestore(app);
 
         // 3. PROTEÇÃO DE ROTA
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.body.style.display = "block";
-                carregarDados();
-            } else {
-                window.location.href = "login.html";
-            }
-        });
+         onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log("Utilizador autenticado:", user.email);
+            document.body.style.display = "block"; // Libera a visualização
+            if (typeof carregarDados === "function") carregarDados(); 
+        } else {
+            console.warn("Sessão não encontrada, redirecionando...");
+            // O setTimeout evita loops infinitos em alguns browsers
+            setTimeout(() => {
+                window.location.replace("login.html"); 
+            }, 500);
+        }
+     });
 
         // 4. LÓGICA DO PAINEL
         function carregarDados() {
