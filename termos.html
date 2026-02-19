@@ -1,85 +1,635 @@
 <!DOCTYPE html>
-<html lang="pt-AO">
+<html lang="pt-AO" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Políticas e Termos | SmartLight Angola</title>
-    <!-- Bootstrap CSS para um design limpo -->
-    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Fontes do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; color: #333; }
-        .legal-container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 50px; margin-bottom: 50px; }
-        h1, h2 { color: #0056b3; }
-        .section-title { border-bottom: 2px solid #0056b3; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; }
-        .nav-pills .nav-link.active { background-color: #0056b3; }
+        :root {
+            --primary-blue: #0d6efd;
+            --primary-dark: #0056b3;
+            --primary-light: #e3f2fd;
+            --secondary-gold: #ffc107;
+            --dark-bg: #1a1a2e;
+            --light-bg: #f8f9fa;
+            --text-dark: #212529;
+            --text-light: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        [data-bs-theme="dark"] {
+            --dark-bg: #121212;
+            --light-bg: #1e1e1e;
+            --text-dark: #f8f9fa;
+            --text-light: #adb5bd;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--light-bg) 0%, #e9ecef 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+        
+        [data-bs-theme="dark"] body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #2d2d44 100%);
+        }
+        
+        .legal-container {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin: 3rem auto;
+            max-width: 1200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-bs-theme="dark"] .legal-container {
+            background: #2a2a3e;
+            color: var(--text-dark);
+        }
+        
+        .legal-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-gold));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        /* Cabeçalho */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .page-header h1 {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        [data-bs-theme="dark"] .page-header h1 {
+            color: #4dabf7;
+        }
+        
+        .page-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Navegação */
+        .nav-tabs-container {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #dee2e6;
+            position: relative;
+        }
+        
+        .nav-pills-custom {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-pills-custom .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--text-dark);
+            background: var(--light-bg);
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .nav-pills-custom .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-blue);
+        }
+        
+        .nav-pills-custom .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+        
+        .nav-pills-custom .nav-link i {
+            font-size: 1.25rem;
+        }
+        
+        /* Conteúdo das abas */
+        .tab-content {
+            padding: 2rem 0;
+        }
+        
+        .section-title {
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--secondary-gold);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        [data-bs-theme="dark"] .section-title {
+            color: #4dabf7;
+        }
+        
+        .section-title i {
+            color: var(--secondary-gold);
+            font-size: 1.5rem;
+        }
+        
+        .content-card {
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-blue);
+            transition: var(--transition);
+        }
+        
+        .content-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-bs-theme="dark"] .content-card {
+            background: #343a40;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-list li {
+            padding: 0.75rem 0;
+            padding-left: 2.5rem;
+            position: relative;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-bs-theme="dark"] .feature-list li {
+            border-bottom-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #e3f2fd 100%);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border-left: 4px solid var(--secondary-gold);
+            margin: 1.5rem 0;
+        }
+        
+        [data-bs-theme="dark"] .highlight-box {
+            background: rgba(13, 110, 253, 0.1);
+        }
+        
+        .legal-article {
+            margin-bottom: 2.5rem;
+        }
+        
+        .legal-article h5 {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        [data-bs-theme="dark"] .legal-article h5 {
+            color: #4dabf7;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 1.5rem;
+        }
+        
+        .contact-info i {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+        }
+        
+        /* Toggle de tema */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        .theme-toggle-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+        
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .legal-container {
+                padding: 2rem 1.5rem;
+                margin: 1.5rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-pills-custom .nav-link {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .theme-toggle {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-pills-custom {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .nav-pills-custom .nav-link {
+                justify-content: center;
+            }
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-pane {
+            animation: fadeIn 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
+    <!-- Toggle de Tema -->
+    <div class="theme-toggle">
+        <button class="theme-toggle-btn" id="themeToggle">
+            <i class="bi bi-moon-stars"></i>
+        </button>
+    </div>
 
-<div class="container legal-container">
-    <h1 class="text-center mb-4">Informações Legais - SmartLight</h1>
-    
-    <!-- Navegação por Abas -->
-    <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pills-sobre-tab" data-bs-toggle="pill" data-bs-target="#pills-sobre" type="button" role="tab">Sobre o Projeto</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-termos-tab" data-bs-toggle="pill" data-bs-target="#pills-termos" type="button" role="tab">Termos de Uso</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-privacidade-tab" data-bs-toggle="pill" data-bs-target="#pills-privacidade" type="button" role="tab">Privacidade</button>
-        </li>
-    </ul>
+    <div class="container-lg py-4">
+        <div class="legal-container">
+            <!-- Cabeçalho -->
+            <div class="page-header">
+                <h1><i class="bi bi-shield-check me-2"></i>Informações Legais</h1>
+                <p class="lead">Conheça os termos, políticas e diretrizes que regem a utilização da plataforma SmartLight Angola</p>
+                <div class="mt-3">
+                    <span class="badge bg-primary me-2">Lei 22/11</span>
+                    <span class="badge bg-warning text-dark me-2">Sustentável</span>
+                    <span class="badge bg-success">Angola</span>
+                </div>
+            </div>
 
-    <div class="tab-content" id="pills-tabContent">
-        
-        <!-- SECÇÃO: SOBRE -->
-        <div class="tab-pane fade show active" id="pills-sobre" role="tabpanel">
-            <h2 class="section-title">O Futuro da Iluminação Pública</h2>
-            <p>O <strong>SmartLight</strong> é uma solução de automação concebida para transformar a gestão urbana em Angola. Combinamos hardware robusto e software intuitivo para criar sistemas que respondem às necessidades reais das cidades.</p>
-            <ul>
-                <li><strong>Eficiência Energética:</strong> Otimização via sensores LDR.</li>
-                <li><strong>Controlo Total:</strong> Gestão remota via dashboard para manutenção preditiva.</li>
-                <li><strong>Sustentabilidade:</strong> Redução drástica do desperdício elétrico nacional.</li>
-            </ul>
-        </div>
+            <!-- Navegação por Abas -->
+            <div class="nav-tabs-container">
+                <ul class="nav nav-pills nav-pills-custom mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-sobre-tab" data-bs-toggle="pill" data-bs-target="#pills-sobre" type="button" role="tab">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Sobre o Projeto</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-termos-tab" data-bs-toggle="pill" data-bs-target="#pills-termos" type="button" role="tab">
+                            <i class="bi bi-file-text"></i>
+                            <span>Termos de Uso</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-privacidade-tab" data-bs-toggle="pill" data-bs-target="#pills-privacidade" type="button" role="tab">
+                            <i class="bi bi-shield-lock"></i>
+                            <span>Privacidade</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
-        <!-- SECÇÃO: TERMOS -->
-        <div class="tab-pane fade" id="pills-termos" role="tabpanel">
-            <h2 class="section-title">Termos e Condições</h2>
-            <p>Ao utilizar a plataforma SmartLight, concorda que:</p>
-            <ul>
-                <li>O acesso é restrito a técnicos e gestores autorizados.</li>
-                <li>É proibida qualquer tentativa de engenharia reversa nos controladores de luz.</li>
-                <li>A responsabilidade pela manutenção física dos postes cabe à entidade gestora local.</li>
-            </ul>
-        </div>
+            <!-- Conteúdo das Abas -->
+            <div class="tab-content" id="pills-tabContent">
+                
+                <!-- SECÇÃO: SOBRE O PROJETO -->
+                <div class="tab-pane fade show active" id="pills-sobre" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="bi bi-lightbulb"></i>
+                        O Futuro da Iluminação Pública em Angola
+                    </h2>
+                    
+                    <div class="content-card">
+                        <p class="lead">O <strong class="text-primary">SmartLight</strong> é uma solução de automação de ponta concebida para revolucionar a gestão urbana em Angola. Combinamos hardware robusto e software intuitivo para criar sistemas inteligentes que respondem às necessidades reais das nossas cidades.</p>
+                        
+                        <div class="highlight-box">
+                            <h5><i class="bi bi-stars"></i> A Nossa Missão</h5>
+                            <p class="mb-0">Transformar a infraestrutura de iluminação pública angolana, tornando-a mais eficiente, sustentável e inteligente, contribuindo para cidades mais seguras e desenvolvidas.</p>
+                        </div>
+                        
+                        <h5 class="mt-4">Principais Vantagens</h5>
+                        <ul class="feature-list mt-3">
+                            <li><strong>Eficiência Energética:</strong> Otimização automática via sensores LDR (Light Dependent Resistor) que ajustam a intensidade conforme a luz natural disponível.</li>
+                            <li><strong>Controlo Total:</strong> Gestão remota em tempo real através de dashboard intuitivo para manutenção preditiva e intervenção rápida.</li>
+                            <li><strong>Sustentabilidade Ambiental:</strong> Redução drástica do desperdício elétrico nacional e diminuição da pegada de carbono.</li>
+                            <li><strong>Segurança Pública:</strong> Iluminação otimizada que contribui para a redução da criminalidade e aumento da sensação de segurança.</li>
+                            <li><strong>Baixo Custo de Manutenção:</strong> Sistema que identifica automaticamente falhas, reduzindo custos operacionais.</li>
+                        </ul>
+                    </div>
+                </div>
 
-        <!-- SECÇÃO: PRIVACIDADE -->
-        <div class="tab-pane fade" id="pills-privacidade" role="tabpanel">
-            <h2 class="section-title">Política de Privacidade (Lei 22/11)</h2>
-            <p>O sistema <strong>SmartLight</strong> recolhe e processa dados em conformidade com a legislação angolana.</p>
-            
-            <h5>1. Identidade do Responsável</h5>
-            <p>[NOME DA TUA ENTIDADE], Luanda, Angola.</p>
+                <!-- SECÇÃO: TERMOS DE USO -->
+                <div class="tab-pane fade" id="pills-termos" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Termos e Condições de Utilização
+                    </h2>
+                    
+                    <div class="content-card">
+                        <p>Ao aceder e utilizar a plataforma SmartLight, o utilizador declara aceitar integralmente os seguintes termos e condições:</p>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-person-check"></i> 1. Acesso e Autorização</h5>
+                            <p>O acesso à plataforma é restrito exclusivamente a técnicos, gestores e entidades autorizadas pela administração municipal competente. Cada utilizador receberá credenciais pessoais e intransferíveis.</p>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-cpu"></i> 2. Restrições Técnicas</h5>
+                            <p>É expressamente proibida qualquer tentativa de engenharia reversa, modificação ou interferência nos controladores de luz SmartLight. Qualquer violação resultará em ação legal conforme a legislação angolana sobre propriedade intelectual.</p>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-tools"></i> 3. Responsabilidades</h5>
+                            <p>A responsabilidade pela manutenção física dos postes e infraestrutura de suporte cabe à entidade gestora local. A SmartLight Angola é responsável apenas pelo funcionamento do sistema de controlo eletrónico.</p>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-shield-exclamation"></i> 4. Segurança do Sistema</h5>
+                            <p>O utilizador compromete-se a não partilhar as suas credenciais de acesso e a reportar imediatamente qualquer suspeita de uso não autorizado. A SmartLight Angola reserva-se o direito de suspender contas em caso de violação de segurança.</p>
+                        </div>
+                        
+                        <div class="highlight-box">
+                            <h5><i class="bi bi-exclamation-triangle"></i> Aviso Importante</h5>
+                            <p class="mb-0">A não observância destes termos poderá resultar na suspensão imediata do acesso e em consequências legais conforme previsto na legislação angolana em vigor.</p>
+                        </div>
+                    </div>
+                </div>
 
-            <h5>2. Dados Recolhidos</h5>
-            <p>Recolhemos dados de gestão (Nome, e-mail dos técnicos) e dados técnicos (Localização dos postes, consumo e logs de sensores) para fins exclusivos de operacionalidade da rede.</p>
-
-            <h5>3. Destinatários</h5>
-            <p>Não comunicamos dados a terceiros, salvo por obrigações legais ou segurança do Estado, conforme a <a href="https://apd.ao" target="_blank">Lei 22/11</a>.</p>
-
-            <h5>4. Direitos do Titular</h5>
-            <p>Pode solicitar acesso, retificação ou eliminação dos seus dados através do e-mail: <strong>suporte@teudominio.ao</strong>.</p>
-
-            <h5>5. Segurança</h5>
-            <p>Implementamos criptografia e monitoramento de IPs para proteger a infraestrutura crítica contra acessos não autorizados.</p>
+                <!-- SECÇÃO: POLÍTICA DE PRIVACIDADE -->
+                <div class="tab-pane fade" id="pills-privacidade" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="bi bi-shield-check"></i>
+                        Política de Privacidade (Conforme Lei 22/11)
+                    </h2>
+                    
+                    <div class="content-card">
+                        <p class="lead">O sistema <strong class="text-primary">SmartLight</strong> recolhe e processa dados em estrita conformidade com a <strong>Lei n.º 22/11 de 17 de Junho</strong> - Lei sobre a Proteção de Dados Pessoais da República de Angola.</p>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-building"></i> 1. Identidade do Responsável pelo Tratamento</h5>
+                            <p><strong>SmartLight Angola, Lda.</strong><br>
+                            Sede: Luanda, Angola<br>
+                            NIF: [Número de Identificação Fiscal]<br>
+                            Contacto Institucional: legal@smartlight.ao</p>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-database"></i> 2. Dados Recolhidos e Finalidades</h5>
+                            <ul class="feature-list mt-2">
+                                <li><strong>Dados de Gestão:</strong> Nome, e-mail, número de identificação profissional dos técnicos autorizados.</li>
+                                <li><strong>Dados Técnicos:</strong> Localização GPS dos postes, consumo energético, logs de sensores, histórico de manutenções.</li>
+                                <li><strong>Dados Operacionais:</strong> Horários de funcionamento, alertas de falhas, estatísticas de utilização.</li>
+                            </ul>
+                            <p class="mt-3"><em>Finalidade:</em> Gestão operacional da rede de iluminação pública, manutenção preditiva, otimização energética e cumprimento de obrigações legais.</p>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-people"></i> 3. Destinatários dos Dados</h5>
+                            <p>Não comunicamos dados a terceiros, exceto quando obrigatório por:</p>
+                            <ul>
+                                <li>Determinação legal ou ordem judicial</li>
+                                <li>Requisitos de segurança nacional</li>
+                                <li>Prevenção de atividades ilícitas</li>
+                            </ul>
+                            <p class="mt-2">Acesso adicional pode ser concedido à <a href="https://apd.ao" target="_blank" class="text-primary">Autoridade para a Proteção de Dados de Angola</a> para fins de fiscalização.</p>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-person-badge"></i> 4. Direitos dos Titulares</h5>
+                            <p>Conforme a Lei 22/11, tem direito a:</p>
+                            <div class="row mt-3">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-eye text-primary me-2"></i>
+                                        <div>
+                                            <strong>Acesso</strong>
+                                            <p class="small mb-0">Consultar os seus dados</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-pencil-square text-primary me-2"></i>
+                                        <div>
+                                            <strong>Retificação</strong>
+                                            <p class="small mb-0">Corrigir informações inexatas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-trash text-primary me-2"></i>
+                                        <div>
+                                            <strong>Eliminação</strong>
+                                            <p class="small mb-0">Solicitar remoção dos dados</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-slash-circle text-primary me-2"></i>
+                                        <div>
+                                            <strong>Oposição</strong>
+                                            <p class="small mb-0">Opor-se ao tratamento</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="legal-article">
+                            <h5><i class="bi bi-lock"></i> 5. Medidas de Segurança</h5>
+                            <p>Implementamos protocolos rigorosos de segurança:</p>
+                            <ul class="feature-list mt-2">
+                                <li><strong>Criptografia:</strong> Dados transmitidos com criptografia SSL/TLS 256-bit</li>
+                                <li><strong>Monitorização:</strong> Sistema de deteção de intrusão 24/7</li>
+                                <li><strong>Controlo de Acesso:</strong> Autenticação multifatorial para gestores</li>
+                                <li><strong>Backups Seguros:</strong> Cópias de segurança encriptadas</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="contact-info">
+                            <i class="bi bi-envelope"></i>
+                            <div>
+                                <h6 class="mb-1">Exercer os Seus Direitos</h6>
+                                <p class="mb-0">Para exercer qualquer um dos direitos acima, contacte: <strong>suporte@smartlight.ao</strong></p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Última atualização:</strong> Esta política foi atualizada em Janeiro de 2024 e está em conformidade com a Lei 22/11 da República de Angola.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle de Tema
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Verificar preferência salva
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-bs-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            htmlElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Animação do botão
+            themeToggle.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                themeToggle.style.transform = 'scale(1)';
+            }, 150);
+        });
+        
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            if (theme === 'dark') {
+                icon.className = 'bi bi-sun';
+                themeToggle.title = 'Alternar para modo claro';
+            } else {
+                icon.className = 'bi bi-moon-stars';
+                themeToggle.title = 'Alternar para modo escuro';
+            }
+        }
+        
+        // Ativar tooltips do Bootstrap
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        
+        // Scroll suave para âncoras
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Efeito de destaque nos cartões ao passar o mouse
+        document.querySelectorAll('.content-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
 </body>
 </html>
