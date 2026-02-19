@@ -6,6 +6,7 @@ const termsCheck = document.getElementById("terms");
 const btnRegister = document.getElementById("btnRegister");
 const loader = document.getElementById("loader-overlay");
 const errorRegisterDiv =document.getElementById("error-register");
+const tipoConta = document.getElementById('conta').value; // 'user' ou 'tecnico'
 
 // 1. Configuração do Firebase
 const firebaseConfig = {
@@ -40,10 +41,30 @@ function validarRegistro() {
 
 function register(){
     loader.classList.remove("d-none");
+     try {
+        const userCredential =  firebase.auth().createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
+        const uid = userCredential.user.uid;
+
+        // SALVAR O PERFIL NO DATABASE
+         firebase.database().ref('usuarios/' + uid).set({
+            nome: name,
+            email: email,
+            tipo: tipoConta // Aqui salvamos se é 'user' ou 'tecnico'
+        });
+        loader.classList.add("d-none");
+        alert("Conta criada com sucesso!");
+        window.location.href = "login.html";
+    } catch (error) {
+        loader.classList.add("d-none");
+        console.error(error);
+    }
+    
+    /*
+    loader.classList.remove("d-none");
     firebase.auth().createUserWithEmailAndPassword(emailInput.value,passwordInput.value).then(()=>{
         loader.classList.add("d-none");
         alert("usuário Criado com Sucesso!");
-        window.location.href="report.html";
+        window.location.href="login.html";
     }).catch(error =>{
         loader.classList.add("d-none");
        switch (error.code) {
@@ -62,6 +83,6 @@ function register(){
                 default:
                     errorRegisterDiv.innerHTML = "Erro ao criar conta: " + error.message;
             }
-    });
+    });*/
 }
 

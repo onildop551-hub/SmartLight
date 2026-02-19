@@ -63,6 +63,32 @@ function login(){
 
     loader.classList.remove("d-none");
     errorLogin.style.display = "none";
+        try {
+        const userCredential = firebase.auth().signInWithEmailAndPassword(email, password);
+        const uid = userCredential.user.uid;
+
+        // BUSCAR O TIPO DE CONTA NO DATABASE
+        const snapshot =  firebase.database().ref('usuarios/' + uid).once('value');
+        const userData = snapshot.val();
+
+        if (userData) {
+            if (userData.tipo === "tecnico") {
+                // Se for técnico, vai para o Dashboard (ver dados do LoRa)
+                window.location.href = "dashboard.html";
+            } else {
+                // Se for cidadão (user), vai para o Report (avisar falhas)
+                window.location.href = "report.html";
+            }
+        } else {
+            alert("Perfil de utilizador não encontrado.");
+        }
+
+    } catch (error) {
+        loader.classList.add('d-none');
+        document.getElementById('error-login').classList.remove('d-none');
+        console.error("Erro no login:", error.message);
+    }
+    /*
     //entrarBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Entrando...';
     //entrarBtn.disabled = true;
     //Fazer Login com email e senha
@@ -88,7 +114,7 @@ function login(){
                 default:
                     errorLogin.innerHTML = '<i class="fas fa-bug me-2"></i> Ocorreu um erro inesperado.';
             }
-    });
+    });*/
 }
 function recoverPassword(){
     const email = emailInput.value;
