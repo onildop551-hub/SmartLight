@@ -297,3 +297,16 @@ footer .container .footer-content .footer-section li a{
     background: none;
     border: none;
 }
+.desiderio, .onildo {
+    box-shadow: 0 5px 15px rgba(3, 3, 3, 0.37);
+    text-align: center;
+    background-color: var(--white);
+    padding: 40px;
+    border-radius: var(--border-radius);
+}
+
+/* Ajuste para evitar que as caixas fiquem grudadas em telas menores */
+.profile .row.g-4 > div {
+    display: flex;
+    flex-direction: column;
+}
