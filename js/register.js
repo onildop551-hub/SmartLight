@@ -49,7 +49,8 @@ function register(){
          firebase.database().ref('usuarios/' + uid).set({
             nome: name,
             email: email,
-            tipo: tipoConta // Aqui salvamos se é 'user' ou 'tecnico'
+            tipo: tipoConta , // Aqui salvamos se é 'user' ou 'tecnico'
+            criadoEm: new Date().toISOString()
         });
         loader.classList.add("d-none");
         alert("Conta criada com sucesso!");
