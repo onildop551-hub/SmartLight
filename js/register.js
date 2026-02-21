@@ -103,7 +103,7 @@ async function register() {
     }
 }
 
-// ================= LOGIN COM GOOGLE =================
+/*/ ================= LOGIN COM GOOGLE =================
 document.getElementById('googleLogin').addEventListener('click', () => {
     loader.classList.remove("d-none");
     auth.signInWithPopup(provider)
@@ -116,4 +116,4 @@ document.getElementById('googleLogin').addEventListener('click', () => {
             loader.classList.add("d-none");
             console.error("Erro no login:", error);
         });
-});
+});*/
