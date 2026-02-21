@@ -203,6 +203,28 @@
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Criar mapa centrado em Talatona (Luanda)
+    const map = L.map('mapa-postes').setView([-8.916, 13.184], 14);
+
+    // Camada do OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Marcador exemplo (Poste com alerta)
+    const marker = L.marker([-8.918, 13.186]).addTo(map);
+
+    marker.bindPopup(`
+        <div class="text-center">
+            <strong>Poste 07 - ALERTA</strong><br>
+            Falha na Corrente Detectada<br>
+            <button class="btn btn-primary btn-sm mt-2">
+                Ver Detalhes
+            </button>
+        </div>
+    `);
+</script>
 <!-- ================= SCRIPTS ================= -->
  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
