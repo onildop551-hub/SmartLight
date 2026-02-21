@@ -32,7 +32,7 @@ document.getElementById('googleLogin').addEventListener('click', () => {
         console.log("Login realizado:", user.displayName);
         alert("Logado como: " + user.displayName);
         loader.classList.add("d-none");
-        window.location.href="dashboard.html";
+        window.location.href="tecnico.html";
     }).catch((error) => {
         loader.classList.add("d-none");
         // Erro no login
