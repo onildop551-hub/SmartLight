@@ -17,6 +17,24 @@ const firebaseConfig = {
   appId: "1:953509556806:web:96ed896142e7b5433f5047"
 };
 
+const provider = new firebase.auth.GoogleAuthProvider();
+
+// 4. Ação do Botão
+document.getElementById('googleLogin').addEventListener('click', () => {
+    loader.classList.remove("d-none");
+    auth.signInWithPopup(provider)
+    .then((result) => {
+        // Usuário logado com sucesso
+        const user = result.user;
+        console.log("Login realizado:", user.displayName);
+        alert("Logado como: " + user.displayName);
+    }).catch((error) => {
+        loader.classList.add("d-none");
+        // Erro no login
+        console.error("Erro no login:", error);
+    });
+});
+
 // 2. Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
