@@ -82,7 +82,9 @@
 
     <!-- Boas Vindas -->
     <div class="mb-5">
-        <h1 class="fw-bold">Olá, Técnico!</h1>
+        <h1 class="fw-bold">
+            Olá, <span id="primeiroNome">...</span>!
+        </h1>
         <p class="text-muted">
             Área de atuação: <strong>Região de Talatona, Luanda</strong>
         </p>
@@ -246,23 +248,27 @@
     // Detectar usuário logado
     auth.onAuthStateChanged(user => {
 
-        if (user) {
-            // Nome (Google tem displayName, email login pode não ter)
-            const nome = user.displayName || user.email.split("@")[0];
-            const email = user.email;
+    if (user) {
 
-            document.getElementById("userName").innerText = nome;
-            document.getElementById("userEmail").innerText = email;
+        const nomeCompleto = user.displayName || user.email.split("@")[0];
+        const email = user.email;
 
-            document.getElementById("userNameDrop").innerText = nome;
-            document.getElementById("userEmailDrop").innerText = email;
+        // Atualizar dropdown
+        document.getElementById("userName").innerText = nomeCompleto;
+        document.getElementById("userEmail").innerText = email;
+        document.getElementById("userNameDrop").innerText = nomeCompleto;
+        document.getElementById("userEmailDrop").innerText = email;
 
-        } else {
-            // Se não estiver logado → volta para login
-            window.location.href = "login.html";
-        }
+        // 🔥 PEGAR APENAS O PRIMEIRO NOME
+        const primeiroNome = nomeCompleto.split(" ")[0];
 
-    });
+        document.getElementById("primeiroNome").innerText = primeiroNome;
+
+    } else {
+        window.location.href = "login.html";
+    }
+
+});
 
     // Função Logout
     function logout(){
