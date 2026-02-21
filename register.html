@@ -52,18 +52,21 @@
                     <div class="form-floating mb-3">
                         <input type="text" id="name" placeholder="Nome Completo" class="form-control" required>
                         <label for="name"><i class="fas fa-user me-2"></i>Nome Completo</label>
+                        <div id="name-error" class="error">O nome é obrigatório e deve ter mais de 3 caracteres.</div>
                     </div>
 
                     <!-- Email -->
                     <div class="form-floating mb-3">
                         <input type="email" id="email" placeholder="Email" class="form-control" required>
                         <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                        <div id="email-invalid-error" class="error">Introduza um e-mail válido.</div>
                     </div>
 
                     <!-- Telefone -->
                     <div class="form-floating mb-3">
                         <input type="tel" id="telefone" placeholder="Telefone" class="form-control" required>
                         <label for="telefone"><i class="fas fa-phone me-2"></i>Telefone</label>
+                        <div id="pw-confirm-error" class="error">As senhas não coincidem.</div>
                     </div>
 
                     <!-- Cidade/Província -->
