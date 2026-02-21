@@ -22,12 +22,14 @@ const provider = new firebase.auth.GoogleAuthProvider();
 // 4. Ação do Botão
 document.getElementById('googleLogin').addEventListener('click', () => {
     loader.classList.remove("d-none");
-    auth.signInWithPopup(provider)
+    auth.registerWithPopup(provider)
     .then((result) => {
         // Usuário logado com sucesso
         const user = result.user;
-        console.log("Login realizado:", user.displayName);
-        alert("Logado como: " + user.displayName);
+        console.log("Conta criada com sucesso:", user.displayName);
+        alert("Conta criada como: " + user.displayName);
+        loader.classList.add("d-none");
+        window.location.href="login.html";
     }).catch((error) => {
         loader.classList.add("d-none");
         // Erro no login

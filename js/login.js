@@ -31,6 +31,8 @@ document.getElementById('googleLogin').addEventListener('click', () => {
         const user = result.user;
         console.log("Login realizado:", user.displayName);
         alert("Logado como: " + user.displayName);
+        loader.classList.add("d-none");
+        window.location.href="dashboard.html";
     }).catch((error) => {
         loader.classList.add("d-none");
         // Erro no login
