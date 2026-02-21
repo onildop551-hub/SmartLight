@@ -11,261 +11,327 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    <!-- Teu CSS -->
-    <link rel="stylesheet" href="css/style.css">
-
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
 
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
 
 <!-- ================= HEADER ================= -->
-<header>
-    <div class="container">
+<header class="fixed-top bg-light shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center py-2">
         
-        <div class="logo">
-            <img class="logoImg" src="img/icone.PNG" alt="logotipo">
-            <a href="index.html">
-                <h1>SmartLight</h1>
+        <div class="logo d-flex align-items-center gap-2">
+            <img class="logoImg" src="img/icone.PNG" alt="logotipo" style="height:40px;">
+            <a href="#" class="text-decoration-none">
+                <h1 class="m-0">SmartLight</h1>
             </a>
         </div>
 
         <nav class="nav d-flex align-items-center gap-4">
             <a href="#mapa-section"><i class="fas fa-map-marked-alt"></i> Mapa</a>
-            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="#dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
             <a href="#manutencao-rapida"><i class="fas fa-tools"></i> Manutenção</a>
         </nav>
+
         <!-- Usuário Logado -->
-<div class="dropdown">
-
-    <button class="btn d-flex align-items-center gap-2" 
-            type="button" 
-            data-bs-toggle="dropdown">
-
-        <i class="fas fa-user-circle fa-2x text-primary"></i>
-
-        <div class="text-start d-none d-md-block">
-            <strong class="d-block" id="userName">Carregando...</strong>
-            <small class="text-muted" id="userEmail"></small>
-        </div>
-
-    </button>
-
-    <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width: 250px;">
-
-        <li class="text-center mb-2">
-            <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
-            <h6 id="userNameDrop">Carregando...</h6>
-            <small class="text-muted" id="userEmailDrop"></small>
-        </li>
-
-        <li><hr class="dropdown-divider"></li>
-
-        <li>
-            <button class="btn btn-danger w-100" onclick="logout()">
-                <i class="fas fa-sign-out-alt me-2"></i>
-                Terminar Sessão
+        <div class="dropdown">
+            <button class="btn d-flex align-items-center gap-2" 
+                    type="button" 
+                    data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle fa-2x text-primary"></i>
+                <div class="text-start d-none d-md-block">
+                    <strong class="d-block" id="userName">Carregando...</strong>
+                    <small class="text-muted" id="userEmail"></small>
+                </div>
             </button>
-        </li>
 
-    </ul>
-
-</div>
+            <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width: 250px;">
+                <li class="text-center mb-2">
+                    <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
+                    <h6 id="userNameDrop">Carregando...</h6>
+                    <small class="text-muted" id="userEmailDrop"></small>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <button class="btn btn-danger w-100" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        Terminar Sessão
+                    </button>
+                </li>
+            </ul>
+        </div>
 
     </div>
 </header>
 
-
 <!-- ================= MAIN ================= -->
-<main class="container py-5">
+<main class="container py-5" style="margin-top: 100px;">
 
     <!-- Boas Vindas -->
     <div class="mb-5">
-        <h1 class="fw-bold">
-            Olá, Técnico <span id="primeiroNome">...</span>!
-        </h1>
-        <p class="text-muted">
-            Área de atuação: <strong>Região de Talatona, Luanda</strong>
-        </p>
+        <h1 class="fw-bold">Olá, Técnico <span id="primeiroNome">...</span>!</h1>
+        <p class="text-muted">Área de atuação: <strong>Região de Talatona, Luanda</strong></p>
     </div>
 
-
-    <!-- ================= MAPA ================= -->
-    <section id="mapa-section" class="mb-5">
-
-        <div class="desiderio">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold">
-                    <i class="fas fa-map-marker-alt text-danger"></i>
-                    Estado dos Postes na Região
-                </h4>
-                <span class="badge bg-primary">Clique no marcador</span>
+    <!-- ================= DASHBOARD ================= -->
+    <section class="medicoes px-3" id="dashboard">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-bold">DashBoard</h1>
+                <span class="badge bg-success">Poste 03 - Online</span>
             </div>
 
+            <div class="row g-4">
+                <!-- Luminosidade -->
+                <div class="col-12 col-md-4">
+                    <div class="card-valor shadow-sm rounded p-3 text-center">
+                        <i class="fas fa-sun fa-2x mb-2"></i>
+                        <h1>Luminosidade</h1>
+                        <h2 id="valor-luminosidade">--%</h2>
+                        <a href="#dashboard" class="estado text-decoration-none fw-semibold d-block mt-2">
+                            Mais Detalhes
+                        </a>
+                    </div>
+                </div>
+                <!-- Corrente -->
+                <div class="col-12 col-md-4">
+                    <div class="card-valor shadow-sm rounded p-3 text-center">
+                        <i class="fas fa-bolt fa-2x mb-2"></i>
+                        <h1>Corrente</h1>
+                        <h2 id="valor-corrente">-- A</h2>
+                        <a href="#dashboard" class="estado text-decoration-none fw-semibold d-block mt-2">
+                            Mais Detalhes
+                        </a>
+                    </div>
+                </div>
+                <!-- Potência -->
+                <div class="col-12 col-md-4">
+                    <div class="card-valor shadow-sm rounded p-3 text-center">
+                        <i class="fas fa-plug fa-2x mb-2"></i>
+                        <h1>Potência</h1>
+                        <h2 id="valor-potencia">-- W</h2>
+                        <a href="#dashboard" class="estado text-decoration-none fw-semibold d-block mt-2">
+                            Mais Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Última atualização -->
+            <div class="text-center mt-4 text-muted">
+                <p><i class="fas fa-clock me-2"></i>Última atualização: <span id="ultima-atualiacao">A carregar...</span></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mapa -->
+    <section id="mapa-section" class="mb-5">
+        <div class="desiderio">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Estado dos Postes na Região</h4>
+                <span class="badge bg-primary">Clique no marcador</span>
+            </div>
             <div class="map-wrapper">
                 <div id="mapa-postes" style="height:400px;"></div>
             </div>
-
         </div>
-
     </section>
 
-
-    <!-- ================= MANUTENÇÃO ================= -->
-    <section id="manutencao-rapida">
-
+    <!-- Manutenção Rápida -->
+    <section id="manutencao-rapida" class="mb-5">
         <h2 class="fw-bold text-center mb-4">Ações de Manutenção Rápida</h2>
 
-        <div class="row g-4">
+        <div class="container">
 
-            <!-- Reset -->
-            <div class="col-md-4">
-                <div class="onildo">
-                    <i class="fas fa-sync-alt fa-2x mb-3 text-primary"></i>
-                    <h5>Reset de Sistema</h5>
-                    <p class="text-muted small">
-                        Reiniciar o módulo LoRa do poste remotamente.
-                    </p>
-                    <button class="btn btn-primary w-100">
-                        Executar Reset
-                    </button>
+            <!-- Linha dos três cards -->
+            <div class="row g-4 justify-content-center">
+
+                <!-- Reset -->
+                <div class="col-12 col-md-4">
+                    <div class="onildo text-center p-3 shadow rounded">
+                        <i class="fas fa-sync-alt fa-2x mb-3 text-primary"></i>
+                        <h5>Reset de Sistema</h5>
+                        <p class="text-muted small">
+                            Reiniciar o módulo LoRa do poste remotamente.
+                        </p>
+                        <button class="btn btn-primary w-100">
+                            Executar Reset
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Calibrar -->
+                <div class="col-12 col-md-4">
+                    <div class="onildo text-center p-3 shadow rounded">
+                        <i class="fas fa-sliders-h fa-2x mb-3 text-success"></i>
+                        <h5>Calibrar LDR</h5>
+                        <p class="text-muted small">
+                            Ajustar sensibilidade de luminosidade.
+                        </p>
+                        <button class="btn btn-success w-100">
+                            Calibrar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Relatório -->
+                <div class="col-12 col-md-4">
+                    <div class="onildo text-center p-3 shadow rounded">
+                        <i class="fas fa-clipboard-check fa-2x mb-3 text-warning"></i>
+                        <h5>Fechar Ordem</h5>
+                        <p class="text-muted small">
+                            Confirmar manutenção concluída.
+                        </p>
+                        <button class="btn btn-warning w-100 text-white">
+                            Enviar Relatório
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Calibrar -->
-            <div class="col-md-4">
-                <div class="onildo">
-                    <i class="fas fa-sliders-h fa-2x mb-3 text-success"></i>
-                    <h5>Calibrar LDR</h5>
-                    <p class="text-muted small">
-                        Ajustar sensibilidade de luminosidade.
-                    </p>
-                    <button class="btn btn-success w-100">
-                        Calibrar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Relatório -->
-            <div class="col-md-4">
-                <div class="onildo">
-                    <i class="fas fa-clipboard-check fa-2x mb-3 text-warning"></i>
-                    <h5>Fechar Ordem</h5>
-                    <p class="text-muted small">
-                        Confirmar manutenção concluída.
-                    </p>
-                    <button class="btn btn-warning w-100 text-white">
-                        Enviar Relatório
-                    </button>
+            <!-- Linha Baixar/Subir Poste -->
+            <div class="row mt-4 justify-content-center">
+                <div class="col-12">
+                    <div class="onildo text-center p-4 shadow rounded w-100" style="background-color:#f8f9fa;">
+                        <img id="posteImg" src="img/poste_em_pe.png" alt="Poste" style="width:450px; transition: transform 0.5s;">
+                        <h5 class="mt-2">Controle do Poste</h5>
+                        <p class="text-muted small">
+                            Baixar ou subir o poste remotamente.
+                        </p>
+                        <button id="togglePosteBtn" class="btn btn-secondary w-100">
+                            Baixar Poste
+                        </button>
+                    </div>
                 </div>
             </div>
 
         </div>
-
     </section>
 
 </main>
 
-
-
-<!--Footer Section-->
-    <footer class="mt-auto">
-        <div class="container">
-            <div class="row gy-4 text-center text-md-start">
-                <div class="col-md-8">
-                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p class="small text-white-50">Monitoramento em Tempo Real via LoRa & Firebase.</p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <h4 class="h6">Links</h4>
-                    <ul class="list-unstyled small">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Políticas</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Contactos</a></li>
-                    </ul>
-                </div>
+<!-- ================= FOOTER ================= -->
+<footer class="mt-auto">
+    <div class="container">
+        <div class="row gy-4 text-center text-md-start">
+            <div class="col-md-8">
+                <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
+                <p class="small text-white-50">Monitoramento em Tempo Real via LoRa & Firebase.</p>
             </div>
-            <div class="border-top border-secondary mt-4 pt-3 text-center">
-                <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            <div class="col-md-4 text-md-end">
+                <h4 class="h6">Links</h4>
+                <ul class="list-unstyled small">
+                    <li><a href="#" class="text-white-50 text-decoration-none">Políticas</a></li>
+                    <li><a href="#" class="text-white-50 text-decoration-none">Contactos</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <div class="border-top border-secondary mt-4 pt-3 text-center">
+            <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</footer>
 
-
-<!-- Leaflet JS -->
+<!-- ================= SCRIPTS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-    // Criar mapa centrado em Talatona (Luanda)
+    // Inicializar mapa
     const map = L.map('mapa-postes').setView([-8.916, 13.184], 14);
-
-    // Camada do OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        attribution:'© OpenStreetMap'
     }).addTo(map);
-
-    // Marcador exemplo (Poste com alerta)
-    const marker = L.marker([-8.918, 13.186]).addTo(map);
-
-    marker.bindPopup(`
+    L.marker([-8.918, 13.186]).addTo(map).bindPopup(`
         <div class="text-center">
             <strong>Poste 07 - ALERTA</strong><br>
             Falha na Corrente Detectada<br>
-            <a class="btn btn-primary btn-sm mt-2" href="dashboard.html">
-                Ver Detalhes
-            </a>
+            <a class="btn btn-primary btn-sm mt-2" href="dashboard.html">Ver Detalhes</a>
         </div>
     `);
 </script>
-<!-- ================= SCRIPTS ================= -->
- <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // Config Firebase (mesmo do login)
+    const toggleBtn = document.getElementById('togglePosteBtn');
+    const posteImg = document.getElementById('posteImg');
+
+    let posteBaixado = false; // false = de pé, true = inclinado
+
+    toggleBtn.addEventListener('click', () => {
+
+        // Simular operação de baixar/subir poste
+        posteBaixado = !posteBaixado;
+
+        if (posteBaixado) {
+            // Poste inclinado → Subir poste
+            posteImg.src = 'img/poste_inclinado.png';
+            toggleBtn.innerText = 'Subir Poste';
+        } else {
+            // Poste em pé → Baixar poste
+            posteImg.src = 'img/poste_em_pe.png';
+            toggleBtn.innerText = 'Baixar Poste';
+        }
+
+        // Aqui você pode adicionar chamada real para API ou Firebase
+        // ex: chamar função que envia comando ao módulo LoRa
+        console.log('Comando enviado: ' + toggleBtn.innerText);
+    });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
     const firebaseConfig = {
-      apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-      authDomain: "smartlight-pap-2026.firebaseapp.com",
-      projectId: "smartlight-pap-2026",
-      storageBucket: "smartlight-pap-2026.firebasestorage.app",
-      messagingSenderId: "953509556806",
-      appId: "1:953509556806:web:96ed896142e7b5433f5047"
+        apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+        authDomain: "smartlight-pap-2026.firebaseapp.com",
+        projectId: "smartlight-pap-2026",
+        storageBucket: "smartlight-pap-2026.firebasestorage.app",
+        messagingSenderId: "953509556806",
+        appId: "1:953509556806:web:96ed896142e7b5433f5047"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
 
-    // Detectar usuário logado
-    auth.onAuthStateChanged(user => {
-
-    if (user) {
+    onAuthStateChanged(auth, (user) => {
+        if (!user) return window.location.href = "login.html";
 
         const nomeCompleto = user.displayName || user.email.split("@")[0];
         const email = user.email;
+        const primeiroNome = nomeCompleto.split(" ")[0];
 
-        // Atualizar dropdown
         document.getElementById("userName").innerText = nomeCompleto;
         document.getElementById("userEmail").innerText = email;
         document.getElementById("userNameDrop").innerText = nomeCompleto;
         document.getElementById("userEmailDrop").innerText = email;
-
-        // 🔥 PEGAR APENAS O PRIMEIRO NOME
-        const primeiroNome = nomeCompleto.split(" ")[0];
-
         document.getElementById("primeiroNome").innerText = primeiroNome;
 
-    } else {
-        window.location.href = "login.html";
-    }
-
-});
-
-    // Função Logout
-    function logout(){
-        auth.signOut().then(() => {
-            window.location.href = "index.html";
+        const posteRef = ref(db, 'postes/poste_principal');
+        onValue(posteRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
+                document.getElementById('valor-corrente').innerText = data.corrente + " A";
+                document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
+                document.getElementById('ultima-atualiacao').innerText = data.hora;
+            }
         });
-    }
+    });
+
+    window.logout = () => {
+        signOut(auth).then(() => window.location.href="login.html");
+    };
 </script>
 </body>
 </html>
