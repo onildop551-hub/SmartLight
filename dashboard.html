@@ -83,7 +83,7 @@
 
             <!-- Data e Hora (Opcional, centralizado abaixo) -->
             <div class="text-center mt-4 text-muted">
-                <small><i class="fas fa-clock me-2"></i>Última atualização: <span id="val-datetime">A carregar...</span></small>
+                <small id="ultima-atualiacao"><i class="fas fa-clock me-2"></i>Última atualização: <span id="val-datetime">A carregar...</span></small>
             </div>
         </div>
     </section>
@@ -136,6 +136,8 @@
                 document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
                 document.getElementById('valor-corrente').innerText = data.corrente + " A";
                 document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
+                document.getElementById('ultima-atualiacao').innerText = data.hora;
+                
                 // Mostra qual foi o último pacote recebido (opcional)
                 console.log("Pacote recebido nº: " + data.pacote_n);
             }
