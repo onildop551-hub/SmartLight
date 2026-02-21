@@ -4,18 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta | SmartLight</title>
+    <title>Registrar Técnico | SmartLight</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Consistência com as páginas anteriores */
         .registerSection { padding: 50px 0; background: #fdfdfd; min-height: 80vh; }
-        .form-container { max-width: 550px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .error { color: #dc3545; font-size: 0.85rem; margin-top: 5px; display: none; }
         .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        header { border-bottom: 1px solid #eee; }
-        footer { background: #212529; color: white; padding: 40px 0 20px; }
     </style>
 </head>
 
@@ -44,8 +41,8 @@
     <section class="registerSection px-3">
         <div class="container">
             <div class="form-container">
-                <h1 class="text-center mb-4 fw-bold">Criar Conta</h1>
-                
+                <h1 class="text-center mb-4 fw-bold">Registrar Técnico</h1>
+
                 <form id="formRegister" onsubmit="event.preventDefault(); register();">
                     <div id="error-register" class="alert alert-danger text-center d-none">
                         Erro ao realizar registro. Verifique os dados.
@@ -53,61 +50,92 @@
 
                     <!-- Nome -->
                     <div class="form-floating mb-3">
-                        <input type="text" id="name" placeholder="Nome Completo" class="form-control" oninput="validarRegistro()">
+                        <input type="text" id="name" placeholder="Nome Completo" class="form-control" required>
                         <label for="name"><i class="fas fa-user me-2"></i>Nome Completo</label>
-                        <div class="error" id="name-error">O nome é obrigatório.</div>
                     </div>
 
                     <!-- Email -->
                     <div class="form-floating mb-3">
-                        <input type="email" id="email" placeholder="Email" class="form-control" oninput="validarRegistro()">
+                        <input type="email" id="email" placeholder="Email" class="form-control" required>
                         <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
-                        <div class="error" id="email-invalid-error">Introduza um e-mail válido.</div>
                     </div>
 
-                    <!-- Tipo de Conta -->
+                    <!-- Telefone -->
                     <div class="form-floating mb-3">
-                        <select id="conta" class="form-select">
-                            <option value="tecnico">Técnico</option>
-                        </select>
-                        <label for="conta"><i class="fas fa-user-tag me-2"></i>Tipo de Conta</label>
+                        <input type="tel" id="telefone" placeholder="Telefone" class="form-control" required>
+                        <label for="telefone"><i class="fas fa-phone me-2"></i>Telefone</label>
                     </div>
 
+                    <!-- Cidade/Província -->
+                    <div class="form-floating mb-3">
+                        <select id="provincia" class="form-select" required>
+                            <option value="" selected disabled>Selecione a Província</option>
+                            <option value="Bengo">Bengo</option>
+                            <option value="Benguela">Benguela</option>
+                            <option value="Bié">Bié</option>
+                            <option value="Cabinda">Cabinda</option>
+                            <option value="Cuando-Cubango">Cuando</option>
+                            <option value="Niassa">Cubango</option>
+                            <option value="Cuanza-Norte">Cuanza Norte</option>
+                            <option value="Cuanza-Sul">Cuanza Sul</option>
+                            <option value="Cunene">Cunene</option>
+                            <option value="Huambo">Huambo</option>
+                            <option value="Huíla">Huíla</option>
+                            <option value="Cabo-Delgado">Icolo e Bengo</option>
+                            <option value="Luanda">Luanda</option>
+                            <option value="Lunda-Norte">Lunda Norte</option>
+                            <option value="Lunda-Sul">Lunda Sul</option>
+                            <option value="Malanje">Malanje</option>
+                            <option value="Moxico">Moxico</option>
+                            <option value="Maputo">Moxico-Leste</option>
+                            <option value="Namibe">Namibe</option>
+                            <option value="Uíge">Uíge</option>
+                            <option value="Zaire">Zaire</option>
+                        </select>
+                        <label for="provincia"><i class="fas fa-city me-2"></i>Província</label>
+                    </div>
+
+                    <!-- Upload do CV -->
+                    <div class="mb-3">
+                        <label for="cv" class="form-label"><i class="fas fa-file-upload me-2"></i>Curriculum Vitae (PDF)</label>
+                        <input class="form-control" type="file" id="cv" accept=".pdf" required>
+                    </div>
+
+                    <!-- Upload do ID do técnico -->
+                    <div class="form-floating mb-3">
+                        <input type="tel" id="telefone" placeholder="Telefone" class="form-control" required>
+                        <label for="id"><i class="fa-solid fa-fingerprint"></i>  ID do Técnico Reconhecido pela ENDE</label>
+                    </div>
+
+                    <!-- Senha -->
                     <div class="row">
-                        <!-- Senha -->
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
-                                <input type="password" id="password" placeholder="Senha" class="form-control" oninput="validarRegistro()">
+                                <input type="password" id="password" placeholder="Senha" class="form-control" required>
                                 <label for="password"><i class="fas fa-lock me-2"></i>Senha</label>
                             </div>
                         </div>
-                        <!-- Confirmar Senha -->
                         <div class="col-md-6 mb-3">
                             <div class="form-floating">
-                                <input type="password" id="confirmPassword" placeholder="Confirmar" class="form-control" oninput="validarRegistro()">
-                                <label for="confirmPassword">Confirmar</label>
+                                <input type="password" id="confirmPassword" placeholder="Confirmar" class="form-control" required>
+                                <label for="confirmPassword">Confirmar Senha</label>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="error mb-3" id="pw-error">A senha deve ter 8+ caracteres, maiúscula e símbolo.</div>
                     <div class="error mb-3" id="pw-confirm-error">As senhas não coincidem.</div>
 
                     <!-- Termos -->
                     <div class="form-check mb-4">
-                        <input type="checkbox" id="terms" class="form-check-input" onchange="validarRegistro()">
+                        <input type="checkbox" id="terms" class="form-check-input" required>
                         <label for="terms" class="form-check-label small text-muted">
                             Concordo com os <a href="termos.html" class="text-decoration-none">Termos de Uso</a> e Políticas de Privacidade.
                         </label>
                     </div>
 
-                    <button type="submit" id="btnRegister" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" disabled>
+                    <button type="submit" id="btnRegister" class="btn btn-primary w-100 py-3 fw-bold shadow-sm">
                         <i class="fas fa-user-plus me-2"></i>Finalizar Registro
-                    </button>
-
-                    <button type="button" id="googleLogin" class="btn-google mb-4">
-                        <i class="fas fab-google"></i>
-                        Entrar com Google
                     </button>
 
                     <p class="text-center mt-4 small text-muted">
@@ -118,24 +146,9 @@
         </div>
     </section>
 
-    <footer class="mt-auto py-5">
-        <div class="container">
-            <div class="row gy-4 text-center text-md-start">
-                <div class="col-md-8">
-                    <h3 class="h5 fw-bold"><i class="fas fa-lightbulb me-2 text-warning"></i>SmartLight</h3>
-                    <p class="small text-white-50">Sistema Inteligente de Monitoramento de Iluminação Pública.</p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <h4 class="h6">Suporte</h4>
-                    <ul class="list-unstyled small text-white-50">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Políticas de Privacidade</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Contactar Técnicos</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-top border-secondary mt-4 pt-3 text-center">
-                <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
-            </div>
+    <footer class="mt-auto py-5 bg-dark text-white">
+        <div class="container text-center">
+            <p class="small">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
         </div>
     </footer>
 
