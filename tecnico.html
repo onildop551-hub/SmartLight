@@ -1,52 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Técnico | SmartLight</title>
-    <style>
-    .tech-bg { background: linear-gradient(135deg, #232526 0%, #414345 100%); color: white; min-height: 100vh; }
-    .task-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
-</style>
+    <title>Painel do Técnico | SmartLight</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Teu CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-<div class="tech-bg p-4">
+
+<!-- ================= HEADER ================= -->
+<header>
     <div class="container">
-        <h3><i class="fas fa-tools"></i> Minhas Manutenções</h3>
-        <div id="minhasTarefas" class="mt-4"></div>
-    </div>
+        
+        <div class="logo">
+            <img class="logoImg" src="img/icone.PNG" alt="logotipo">
+            <a href="index.html">
+                <h1>SmartLight</h1>
+            </a>
+        </div>
+
+        <nav class="nav d-flex align-items-center gap-4">
+            <a href="#mapa-section"><i class="fas fa-map-marked-alt"></i> Mapa</a>
+            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="#manutencao-rapida"><i class="fas fa-tools"></i> Manutenção</a>
+        </nav>
+        <!-- Usuário Logado -->
+<div class="dropdown">
+
+    <button class="btn d-flex align-items-center gap-2" 
+            type="button" 
+            data-bs-toggle="dropdown">
+
+        <i class="fas fa-user-circle fa-2x text-primary"></i>
+
+        <div class="text-start d-none d-md-block">
+            <strong class="d-block" id="userName">Carregando...</strong>
+            <small class="text-muted" id="userEmail"></small>
+        </div>
+
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width: 250px;">
+
+        <li class="text-center mb-2">
+            <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
+            <h6 id="userNameDrop">Carregando...</h6>
+            <small class="text-muted" id="userEmailDrop"></small>
+        </li>
+
+        <li><hr class="dropdown-divider"></li>
+
+        <li>
+            <button class="btn btn-danger w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Terminar Sessão
+            </button>
+        </li>
+
+    </ul>
+
 </div>
 
-<script src="js/firebase_config.js"></script>
-<script type="module">
-    import { db, collection, query, where, onSnapshot, doc, updateDoc } from "./firebase-config.js";
+    </div>
+</header>
 
-    // Simulando login do técnico João
-    const tecnicoLogado = "Tecnico_Joao"; 
 
-    const q = query(collection(db, "reportes"), where("tecnicoAtribuido", "==", tecnicoLogado), where("status", "==", "em_manutencao"));
+<!-- ================= MAIN ================= -->
+<main class="container py-5">
 
-    onSnapshot(q, (snapshot) => {
-        const container = document.getElementById('minhasTarefas');
-        container.innerHTML = "";
-        snapshot.forEach(t => {
-            const d = t.data();
-            container.innerHTML += `
-                <div class="card task-card p-3 mb-3">
-                    <h4>${d.tipo}</h4>
-                    <p><i class="fas fa-map-marker-alt"></i> ${d.localizacao.endereco}</p>
-                    <a href="https://maps.google.com{d.localizacao.lat},${d.localizacao.lng}" target="_blank" class="btn btn-sm btn-outline-info mb-2">Ver Rota</a>
-                    <button onclick="finalizar('${t.id}')" class="btn btn-success w-100">Marcar como Concluído</button>
+    <!-- Boas Vindas -->
+    <div class="mb-5">
+        <h1 class="fw-bold">Olá, Técnico!</h1>
+        <p class="text-muted">
+            Área de atuação: <strong>Região de Talatona, Luanda</strong>
+        </p>
+    </div>
+
+
+    <!-- ================= MAPA ================= -->
+    <section id="mapa-section" class="mb-5">
+
+        <div class="desiderio">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold">
+                    <i class="fas fa-map-marker-alt text-danger"></i>
+                    Estado dos Postes na Região
+                </h4>
+                <span class="badge bg-primary">Clique no marcador</span>
+            </div>
+
+            <div class="map-wrapper">
+                <div id="mapa-postes" style="height:400px;"></div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= MANUTENÇÃO ================= -->
+    <section id="manutencao-rapida">
+
+        <h2 class="fw-bold text-center mb-4">Ações de Manutenção Rápida</h2>
+
+        <div class="row g-4">
+
+            <!-- Reset -->
+            <div class="col-md-4">
+                <div class="onildo">
+                    <i class="fas fa-sync-alt fa-2x mb-3 text-primary"></i>
+                    <h5>Reset de Sistema</h5>
+                    <p class="text-muted small">
+                        Reiniciar o módulo LoRa do poste remotamente.
+                    </p>
+                    <button class="btn btn-primary w-100">
+                        Executar Reset
+                    </button>
                 </div>
-            `;
-        });
+            </div>
+
+            <!-- Calibrar -->
+            <div class="col-md-4">
+                <div class="onildo">
+                    <i class="fas fa-sliders-h fa-2x mb-3 text-success"></i>
+                    <h5>Calibrar LDR</h5>
+                    <p class="text-muted small">
+                        Ajustar sensibilidade de luminosidade.
+                    </p>
+                    <button class="btn btn-success w-100">
+                        Calibrar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Relatório -->
+            <div class="col-md-4">
+                <div class="onildo">
+                    <i class="fas fa-clipboard-check fa-2x mb-3 text-warning"></i>
+                    <h5>Fechar Ordem</h5>
+                    <p class="text-muted small">
+                        Confirmar manutenção concluída.
+                    </p>
+                    <button class="btn btn-warning w-100 text-white">
+                        Enviar Relatório
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<!-- ================= FOOTER ================= -->
+<footer>
+
+    <div class="container">
+
+        <div class="footer-content">
+
+            <div class="footer-section">
+                <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
+                <p>
+                    Monitoramento em Tempo Real via LoRa & Firebase.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Links</h4>
+                <ul>
+                    <li><a href="#">Políticas</a></li>
+                    <li><a href="#">Contactos</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<!-- ================= SCRIPTS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Config Firebase (mesmo do login)
+    const firebaseConfig = {
+      apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+      authDomain: "smartlight-pap-2026.firebaseapp.com",
+      projectId: "smartlight-pap-2026",
+      storageBucket: "smartlight-pap-2026.firebasestorage.app",
+      messagingSenderId: "953509556806",
+      appId: "1:953509556806:web:96ed896142e7b5433f5047"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Detectar usuário logado
+    auth.onAuthStateChanged(user => {
+
+        if (user) {
+            // Nome (Google tem displayName, email login pode não ter)
+            const nome = user.displayName || user.email.split("@")[0];
+            const email = user.email;
+
+            document.getElementById("userName").innerText = nome;
+            document.getElementById("userEmail").innerText = email;
+
+            document.getElementById("userNameDrop").innerText = nome;
+            document.getElementById("userEmailDrop").innerText = email;
+
+        } else {
+            // Se não estiver logado → volta para login
+            window.location.href = "index.html";
+        }
+
     });
 
-    window.finalizar = async (id) => {
-        await updateDoc(doc(db, "reportes", id), { status: "concluido" });
-        alert("Trabalho finalizado com sucesso!");
-    };
+    // Função Logout
+    function logout(){
+        auth.signOut().then(() => {
+            window.location.href = "index.html";
+        });
+    }
 </script>
-
 </body>
 </html>
