@@ -310,3 +310,19 @@ footer .container .footer-content .footer-section li a{
     display: flex;
     flex-direction: column;
 }
+/* ================= Imagem do poste responsiva ================= */
+#posteImg {
+    transition: transform 0.5s;
+    width: 100%;         /* Por padrão, ocupa 100% do container em mobile */
+    max-width: 450px;    /* Limite máximo em telas maiores */
+    height: auto;
+    display: block;
+    margin: 0 auto;      /* Centraliza horizontalmente */
+}
+
+/* Se quiser forçar width de 450px apenas em laptops/desktops */
+@media (min-width: 992px) {  /* Bootstrap: lg e acima */
+    #posteImg {
+        width: 450px;
+    }
+}
