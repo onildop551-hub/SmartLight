@@ -9,36 +9,37 @@ const loader = document.getElementById("loader-overlay");
 const errorRegisterDiv = document.getElementById("error-register");
 const provinciaInput = document.getElementById("provincia");
 const cvInput = document.getElementById("cvFile");
-const telefoneInput = document.getElementById("telefone"); // Novo campo ID Técnico
+const telefoneInput = document.getElementById("telefone");
+const idInput = document.getElementById("id_tecnico"); // ID Técnico
 
 // ================= FIREBASE CONFIG =================
 const firebaseConfig = {
-  apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-  authDomain: "smartlight-pap-2026.firebaseapp.com",
-  projectId: "smartlight-pap-2026",
-  storageBucket: "smartlight-pap-2026.firebasestorage.app",
-  messagingSenderId: "953509556806",
-  appId: "1:953509556806:web:96ed896142e7b5433f5047"
+    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+    authDomain: "smartlight-pap-2026.firebaseapp.com",
+    projectId: "smartlight-pap-2026",
+    storageBucket: "smartlight-pap-2026.appspot.com",
+    messagingSenderId: "953509556806",
+    appId: "1:953509556806:web:96ed896142e7b5433f5047"
 };
 
+// Inicializar Firebase compat
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
-const provider = new firebase.auth.GoogleAuthProvider();
 
 // ================= FUNÇÃO VALIDAR REGISTRO =================
 function validarRegistro() {
-    const isNameOk = nameInput.value.trim().length > 3;
+    const isNameOk = nameInput.value.trim().length >= 3;
     const isEmailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
     const isPwOk = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(passwordInput.value);
     const isConfirmOk = passwordInput.value === confirmPwInput.value && confirmPwInput.value !== "";
     const isTermsOk = termsCheck.checked;
     const isProvinciaOk = provinciaInput.value !== "";
     const isCVOk = cvInput.files.length > 0;
-    const isTelefoneOk = telefoneInput.value.trim() !== "";
+    const isTelefoneOk = telefoneInput.value.trim().length >= 3;
 
-    // Mostrar/Esconder Erros
+    // Mostrar/Esconder erros
     document.getElementById("name-error").style.display = (nameInput.value !== "" && !isNameOk) ? "block" : "none";
     document.getElementById("email-invalid-error").style.display = (emailInput.value !== "" && !isEmailOk) ? "block" : "none";
     document.getElementById("pw-error").style.display = (passwordInput.value !== "" && !isPwOk) ? "block" : "none";
@@ -61,7 +62,7 @@ async function register() {
         const cvFile = cvInput.files[0];
         let cvURL = "";
         if (cvFile) {
-            const storageRef = storage.ref().child(`curriculos/${user.uid}_${cvFile.name}`);
+            const storageRef = storage.ref(`curriculos/${user.uid}_${cvFile.name}`);
             await storageRef.put(cvFile);
             cvURL = await storageRef.getDownloadURL();
         }
@@ -72,7 +73,8 @@ async function register() {
             email: emailInput.value,
             provincia: provinciaInput.value,
             cv: cvURL,
-            idTecnico: telefoneInput.value, // Novo campo ID Técnico
+            telefone:telefoneInput.value,
+            idTecnico: idInput.value,
             tipoConta: "tecnico",
             createdAt: new Date().toISOString()
         };
@@ -95,7 +97,7 @@ async function register() {
                 errorRegisterDiv.innerHTML = "O endereço de e-mail não é válido.";
                 break;
             case 'auth/weak-password':
-                errorRegisterDiv.innerHTML = "A senha deve ter pelo menos 8 caracteres, incluindo maiúscula e símbolo.";
+                errorRegisterDiv.innerHTML = "A senha deve ter pelo menos 8 caracteres, incluindo maiúscula, número e símbolo.";
                 break;
             default:
                 errorRegisterDiv.innerHTML = "Erro ao criar conta: " + error.message;
@@ -103,17 +105,13 @@ async function register() {
     }
 }
 
-/*/ ================= LOGIN COM GOOGLE =================
-document.getElementById('googleLogin').addEventListener('click', () => {
-    loader.classList.remove("d-none");
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            loader.classList.add("d-none");
-            alert("Conta criada como: " + result.user.displayName);
-            window.location.href = "login.html";
-        })
-        .catch((error) => {
-            loader.classList.add("d-none");
-            console.error("Erro no login:", error);
-        });
-});*/
+// ================= EVENT LISTENERS =================
+nameInput.addEventListener('input', validarRegistro);
+emailInput.addEventListener('input', validarRegistro);
+passwordInput.addEventListener('input', validarRegistro);
+confirmPwInput.addEventListener('input', validarRegistro);
+termsCheck.addEventListener('change', validarRegistro);
+provinciaInput.addEventListener('change', validarRegistro);
+cvInput.addEventListener('change', validarRegistro);
+telefoneInput.addEventListener('input', validarRegistro);
+btnRegister.addEventListener('click', register);
