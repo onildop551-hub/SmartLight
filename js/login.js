@@ -70,7 +70,7 @@ function login(){
     //Fazer Login com email e senha
     auth.signInWithEmailAndPassword(email,password).then(Response =>{
         alert("Login Realiado com sucesso!");
-        window.location.href = "dashboard.html";
+        window.location.href = "tecnico.html";
     }).catch(error=>{
         console.error("Erro no login:", error.code);
         loader.classList.add("d-none");
