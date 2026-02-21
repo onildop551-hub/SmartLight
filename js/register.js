@@ -22,7 +22,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
 // 4. Ação do Botão
 document.getElementById('googleLogin').addEventListener('click', () => {
     loader.classList.remove("d-none");
-    auth.registerWithPopup(provider)
+    auth.signInWithPopup(provider)
     .then((result) => {
         // Usuário logado com sucesso
         const user = result.user;
