@@ -144,6 +144,56 @@
     <!-- IMPORTS FIREBASE MODULAR -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+    authDomain: "smartlight-pap-2026.firebaseapp.com",
+   databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com/",
+    projectId: "smartlight-pap-2026",
+    storageBucket: "smartlight-pap-2026.appspot.com",
+    messagingSenderId: "953509556806",
+    appId: "1:953509556806:web:96ed896142e7b5433f5047"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const adminEmail = "adminsmartlight@gmail.com";
+
+    // 🔐 LOGIN
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        const snapshot = await get(ref(db, "usuarios/" + user.uid));
+
+        if (snapshot.exists()) {
+        const dados = snapshot.val();
+
+        if (email === adminEmail) {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "tecnico.html";
+        }
+        } else {
+        alert("Conta não reconhecida.");
+        }
+
+    } catch (error) {
+        alert("Erro: " + error.message);
+    }
+    });
+    /*
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -304,7 +354,7 @@
     form.addEventListener('submit', e => {
         e.preventDefault();
         login();
-    });
+    });*/
     </script>
     <!--<script src="js/login.js"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
