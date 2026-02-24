@@ -48,7 +48,7 @@
             <div class="form-container">
                 <h1 class="text-center mb-4 fw-bold">Login</h1>
                 
-                <form id="formLogin">
+                <form id="loginForm">
                     <div id="error-login" class="alert alert-danger text-center d-none" role="alert">
                         Email ou Senha Incorrecta!
                     </div>
@@ -168,7 +168,7 @@
     e.preventDefault();
 
     const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
+    const senha = document.getElementById("password").value;
 
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, senha);
