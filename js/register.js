@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("pw-error").style.display = (passwordInput.value && !isPwOk) ? "block" : "none";
         document.getElementById("pw-confirm-error").style.display = (confirmPwInput.value && !isConfirmOk) ? "block" : "none";
 
-        btnRegister.disabled = !(isNameOk && isEmailOk && isPwOk && isConfirmOk && isTermsOk && isProvinciaOk && isCVOk && isTelefoneOk && isIdOk);
+        btnRegister.disabled = !(isNameOk && isEmailOk && isPwOk && isConfirmOk && isTermsOk && isProvinciaOk && isTelefoneOk && isIdOk);
     }
 
     // ================= REGISTRAR =================
