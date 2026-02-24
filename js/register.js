@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById("loader-overlay");
     const errorRegisterDiv = document.getElementById("error-register");
     const provinciaInput = document.getElementById("provincia");
-    const cvInput = document.getElementById("cvFile");
     const telefoneInput = document.getElementById("telefone");
     const idInput = document.getElementById("id_tecnico");
 
@@ -57,13 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const userCredential = await auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
             const user = userCredential.user;
 
-            // Upload CV
-            let cvURL = "";
-            if (cvInput.files[0]) {
-                const storageRef = storage.ref(`curriculos/${user.uid}_${cvInput.files[0].name}`);
-                await storageRef.put(cvInput.files[0]);
-                cvURL = await storageRef.getDownloadURL();
-            }
+        
 
             // Salvar dados no Realtime Database
             await db.ref(`usuarios/${user.uid}`).set({
@@ -71,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 email: emailInput.value,
                 telefone: telefoneInput.value,
                 provincia: provinciaInput.value,
-                cv: cvURL,
                 idTecnico: idInput.value,
                 tipoConta: "tecnico",
                 createdAt: new Date().toISOString()
