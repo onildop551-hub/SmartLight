@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ================= EVENT LISTENERS =================
-    [nameInput, emailInput, passwordInput, confirmPwInput, telefoneInput, provinciaInput, cvInput, idInput].forEach(el => {
+    [nameInput, emailInput, passwordInput, confirmPwInput, telefoneInput, provinciaInput, idInput].forEach(el => {
         el.addEventListener("input", validarRegistro);
     });
     termsCheck.addEventListener("change", validarRegistro);
