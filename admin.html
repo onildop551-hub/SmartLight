@@ -14,6 +14,7 @@
     <style>
         body {
             background-color: #f4f6f9;
+            display: none; /* Escondido até a autenticação */
         }
 
         .navbar {
@@ -31,18 +32,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
-        .status-pendente {
-            background-color: #ffc107;
-        }
-
-        .status-resolvido {
-            background-color: #28a745;
-        }
-
-        .status-andamento {
-            background-color: #17a2b8;
-        }
-
         .table img {
             width: 60px;
             border-radius: 6px;
@@ -54,7 +43,7 @@
         }
     </style>
 </head>
-<body style="display:none;">
+<body>
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -113,70 +102,68 @@
                 <tbody id="listaReportes"></tbody>
             </table>
         </div>
-        
     </div>
 
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore-compat.js"></script>
-
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import {
-    getFirestore, collection, doc, getDoc, updateDoc, setDoc, onSnapshot, query, orderBy, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    // ================= FIREBASE MODULAR =================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, get, child, update, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// ================= CONFIGURAÇÃO FIREBASE =================
-const firebaseConfig = {
-    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-    authDomain: "smartlight-pap-2026.firebaseapp.com",
-    projectId: "smartlight-pap-2026",
-    storageBucket: "smartlight-pap-2026.appspot.com",
-    messagingSenderId: "953509556806",
-    appId: "1:953509556806:web:96ed896142e7b5433f5047"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+        authDomain: "smartlight-pap-2026.firebaseapp.com",
+        databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com/", // URL do Realtime Database
+        projectId: "smartlight-pap-2026",
+        storageBucket: "smartlight-pap-2026.appspot.com",
+        messagingSenderId: "953509556806",
+        appId: "1:953509556806:web:96ed896142e7b5433f5047"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-// ================= PROTEÇÃO ADMIN =================
-onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+    // 🔐 PROTEÇÃO DO ADMIN
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = "login.html";
+            return;
+        }
 
-    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-    if (!userDoc.exists() || userDoc.data().role !== "admin") {
-        window.location.href = "login.html";
-        return;
-    }
+        // Buscar dados do usuário no Realtime Database
+        const userSnap = await get(child(ref(db), `usuarios/${user.uid}`));
+        if (!userSnap.exists()) {
+            window.location.href = "login.html";
+            return;
+        }
 
-    console.log("Admin autenticado:", userDoc.data().nome);
-    document.body.style.display = "block";
+        const dados = userSnap.val();
+        if (dados.role !== "admin") {
+            window.location.href = "login.html";
+            return;
+        }
 
-    carregarReportes(); // chama a função para listar reportes
-});
+        console.log("Admin autenticado:", dados.nome);
+        document.body.style.display = "block"; // mostra o body
+    });
 
-// ================= FUNÇÃO LISTAR REPORTES =================
-function carregarReportes() {
-    const reportesCol = collection(db, "reportes");
-    const q = query(reportesCol, orderBy("data", "desc"));
-
-    onSnapshot(q, snapshot => {
+    // 🔥 LISTAR REPORTES EM TEMPO REAL
+    const reportesRef = ref(db, "reportes");
+    onValue(reportesRef, (snapshot) => {
         const tabela = document.getElementById("listaReportes");
         tabela.innerHTML = "";
 
-        let total = 0, pendentes = 0, resolvidos = 0;
+        let total = 0;
+        let pendentes = 0;
+        let resolvidos = 0;
 
-        snapshot.forEach(docItem => {
+        snapshot.forEach((childSnap) => {
             total++;
-            const data = docItem.data();
-            const id = docItem.id;
+            const data = childSnap.val();
+            const id = childSnap.key;
 
             if (data.status === "pendente") pendentes++;
             if (data.status === "resolvido") resolvidos++;
@@ -194,19 +181,14 @@ function carregarReportes() {
                         </span>
                     </td>
                     <td>${data.foto ? `<img src="${data.foto}" />` : "Sem foto"}</td>
-                    <td>${data.data ? new Date(data.data.seconds * 1000).toLocaleString() : ""}</td>
+                    <td>${data.data ? new Date(data.data).toLocaleString() : ""}</td>
                     <td>
                         <select class="form-select form-select-sm mb-2" id="tecnico-${id}">
                             <option value="">Selecionar Técnico</option>
                             <option value="tecnico1">Técnico Talatona</option>
                             <option value="tecnico2">Técnico Benfica</option>
                         </select>
-                        <button class="btn btn-sm btn-primary" onclick="encaminharReporte('${id}')">
-                            Encaminhar
-                        </button>
-                        <button class="btn btn-sm btn-success" onclick="marcarResolvido('${id}')">
-                            Resolvido
-                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="encaminharReporte('${id}')">Encaminhar</button>
                     </td>
                 </tr>
             `;
@@ -216,51 +198,43 @@ function carregarReportes() {
         document.getElementById("totalPendentes").innerText = pendentes;
         document.getElementById("totalResolvidos").innerText = resolvidos;
     });
-}
 
-// ================= FUNÇÃO MARCAR RESOLVIDO =================
-async function marcarResolvido(id) {
-    const docRef = doc(db, "reportes", id);
-    await updateDoc(docRef, { status: "resolvido" });
-    alert("Reporte marcado como resolvido!");
-}
-
-// ================= FUNÇÃO ENCAMINHAR =================
-async function encaminharReporte(id) {
-    const select = document.getElementById("tecnico-" + id);
-    const tecnicoId = select.value;
-
-    if (!tecnicoId) {
-        alert("Selecione um técnico.");
-        return;
+    // 🔥 FUNÇÕES DE AÇÃO
+    async function marcarResolvido(id) {
+        await update(ref(db, `reportes/${id}`), { status: "resolvido" });
     }
 
-    const docRef = doc(db, "reportes", id);
-    const reporte = await getDoc(docRef);
+    async function encaminharReporte(id) {
+        const select = document.getElementById("tecnico-" + id);
+        const tecnicoId = select.value;
 
-    if (!reporte.exists()) {
-        alert("Reporte não encontrado!");
-        return;
+        if (!tecnicoId) {
+            alert("Selecione um técnico.");
+            return;
+        }
+
+        const reporteSnap = await get(child(ref(db), `reportes/${id}`));
+        if (!reporteSnap.exists()) return;
+
+        const dados = reporteSnap.val();
+
+        // Atualizar status
+        await update(ref(db, `reportes/${id}`), { status: "encaminhado", tecnico: tecnicoId });
+
+        // Criar notificação para técnico
+        const notifRef = ref(db, `tecnicos/${tecnicoId}/notificacoes/${id}`);
+        await update(notifRef, {
+            ...dados,
+            reporteId: id,
+            status: "pendente",
+            dataEnvio: serverTimestamp()
+        });
+
+        alert("Reporte encaminhado com sucesso!");
     }
 
-    const dados = reporte.data();
+    window.encaminharReporte = encaminharReporte; // necessário para botão onclick
 
-    await updateDoc(docRef, {
-        status: "encaminhado",
-        tecnico: tecnicoId
-    });
-
-    // Criar notificação
-    const notifRef = doc(db, "tecnicos", tecnicoId, "notificacoes", id);
-    await setDoc(notifRef, {
-        ...dados,
-        reporteId: id,
-        status: "pendente",
-        dataEnvio: serverTimestamp()
-    });
-
-    alert("Reporte encaminhado com sucesso!");
-}
 </script>
 
 </body>
