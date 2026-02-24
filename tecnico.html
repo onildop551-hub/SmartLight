@@ -17,7 +17,7 @@
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body style="display:none;">
 
 <!-- ================= HEADER ================= -->
 <header class="fixed-top bg-light shadow-sm">
@@ -47,6 +47,12 @@
                     </li>
                     <li class="nav-item">
                     <a class="nav-link text-primary" href="#manutencao-rapida"><i class="fas fa-tools"></i> Manutenção</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="#notificacoes">
+                            <i class="fas fa-bell"></i> Notificações
+                            <span class="badge bg-danger" id="contadorNotif">0</span>
+                        </a>
                     </li>
                 </ul>
                 </div>
@@ -229,6 +235,14 @@
 
         </div>
     </section>
+    <!-- Notificações -->
+    <section id="notificacoes" class="mb-5">
+        <h2 class="fw-bold mb-4">
+            <i class="fas fa-bell text-danger"></i> Notificações
+        </h2>
+
+        <div id="listaNotificacoes"></div>
+    </section>
 
 </main>
 
@@ -304,7 +318,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+    import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    
     const firebaseConfig = {
         apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
         authDomain: "smartlight-pap-2026.firebaseapp.com",
@@ -317,10 +332,54 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
+    const firestore = getFirestore(app);
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) return;
+
+        const tecnicoId = user.uid;
+
+        const notifRef = collection(firestore, "tecnicos", tecnicoId, "notificacoes");
+
+        onSnapshot(notifRef, (snapshot) => {
+
+            const container = document.getElementById("listaNotificacoes");
+            const contador = document.getElementById("contadorNotif");
+
+            container.innerHTML = "";
+            contador.innerText = snapshot.size;
+
+            snapshot.forEach(docSnap => {
+
+                const data = docSnap.data();
+
+                container.innerHTML += `
+                    <div class="card shadow-sm p-3 mb-3">
+                        <h5>${data.tipo}</h5>
+                        <p><strong>Bairro:</strong> ${data.bairro}</p>
+                        <p><strong>Rua:</strong> ${data.rua}</p>
+                        <p><strong>Descrição:</strong> ${data.descricao}</p>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success btn-sm"
+                                onclick="aceitar('${docSnap.id}')">
+                                Aceitar
+                            </button>
+
+                            <button class="btn btn-danger btn-sm"
+                                onclick="recusar('${docSnap.id}')">
+                                Recusar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    });
 
     onAuthStateChanged(auth, (user) => {
         if (!user) return window.location.href = "login.html";
-
+        document.body.style.display = "block";
         const nomeCompleto = user.displayName || user.email.split("@")[0];
         const email = user.email;
         const primeiroNome = nomeCompleto.split(" ")[0];
@@ -342,6 +401,49 @@
             }
         });
     });
+
+    window.aceitar = async (id) => {
+
+        const tecnicoId = auth.currentUser.uid;
+
+        const notifRef = doc(firestore, "tecnicos", tecnicoId, "notificacoes", id);
+        const reporteRef = doc(firestore, "reportes", id);
+
+        await updateDoc(notifRef, {
+            status: "aceite"
+        });
+
+        await updateDoc(reporteRef, {
+            status: "em andamento"
+        });
+
+        alert("Reporte aceite! Dados do reportista enviados.");
+
+    };
+
+    window.recusar = async (id) => {
+
+        const motivo = prompt("Digite a razão da recusa:");
+
+        if (!motivo) return;
+
+        const tecnicoId = auth.currentUser.uid;
+
+        const notifRef = doc(firestore, "tecnicos", tecnicoId, "notificacoes", id);
+        const reporteRef = doc(firestore, "reportes", id);
+
+        await updateDoc(notifRef, {
+            status: "recusado",
+            motivo: motivo
+        });
+
+        await updateDoc(reporteRef, {
+            status: "pendente",
+            tecnico: null
+        });
+
+        alert("Reporte recusado.");
+    };
 
     window.logout = () => {
         signOut(auth).then(() => window.location.href="index.html");

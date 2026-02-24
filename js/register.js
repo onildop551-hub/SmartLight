@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     // ================= ELEMENTOS =================
+    const formRegister = document.getElementById("formRegister");
     const nameInput = document.getElementById("name");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
@@ -11,9 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const provinciaInput = document.getElementById("provincia");
     const cvInput = document.getElementById("cvFile");
     const telefoneInput = document.getElementById("telefone");
-    const idInput = document.getElementById("id_tecnico"); // ID Técnico
+    const idInput = document.getElementById("id_tecnico");
 
-    // ================= FIREBASE CONFIG =================
+    // ================= FIREBASE =================
     const firebaseConfig = {
         apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
         authDomain: "smartlight-pap-2026.firebaseapp.com",
@@ -22,14 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
         messagingSenderId: "953509556806",
         appId: "1:953509556806:web:96ed896142e7b5433f5047"
     };
-
-    // Inicializar Firebase compat
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
     const storage = firebase.storage();
 
-    // ================= FUNÇÃO VALIDAR REGISTRO =================
+    // ================= VALIDAÇÃO =================
     function validarRegistro() {
         const isNameOk = nameInput.value.trim().length >= 3;
         const isEmailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
@@ -39,51 +38,47 @@ document.addEventListener("DOMContentLoaded", () => {
         const isProvinciaOk = provinciaInput.value !== "";
         const isCVOk = cvInput.files.length > 0;
         const isTelefoneOk = telefoneInput.value.trim().length >= 3;
+        const isIdOk = idInput.value.trim().length > 0;
 
-        // Mostrar/Esconder erros
-        document.getElementById("name-error").style.display = (nameInput.value !== "" && !isNameOk) ? "block" : "none";
-        document.getElementById("email-invalid-error").style.display = (emailInput.value !== "" && !isEmailOk) ? "block" : "none";
-        document.getElementById("pw-error").style.display = (passwordInput.value !== "" && !isPwOk) ? "block" : "none";
-        document.getElementById("pw-confirm-error").style.display = (confirmPwInput.value !== "" && !isConfirmOk) ? "block" : "none";
+        document.getElementById("name-error").style.display = (nameInput.value && !isNameOk) ? "block" : "none";
+        document.getElementById("email-invalid-error").style.display = (emailInput.value && !isEmailOk) ? "block" : "none";
+        document.getElementById("pw-error").style.display = (passwordInput.value && !isPwOk) ? "block" : "none";
+        document.getElementById("pw-confirm-error").style.display = (confirmPwInput.value && !isConfirmOk) ? "block" : "none";
 
-        btnRegister.disabled = !(isNameOk && isEmailOk && isPwOk && isConfirmOk && isTermsOk && isProvinciaOk && isCVOk && isTelefoneOk);
+        btnRegister.disabled = !(isNameOk && isEmailOk && isPwOk && isConfirmOk && isTermsOk && isProvinciaOk && isCVOk && isTelefoneOk && isIdOk);
     }
 
-    // ================= FUNÇÃO REGISTRAR =================
+    // ================= REGISTRAR =================
     async function register() {
         loader.classList.remove("d-none");
         errorRegisterDiv.classList.add("d-none");
 
         try {
-            // Criar usuário no Auth
             const userCredential = await auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
             const user = userCredential.user;
 
-            // Upload do CV para Storage
-            const cvFile = cvInput.files[0];
+            // Upload CV
             let cvURL = "";
-            if (cvFile) {
-                const storageRef = storage.ref(`curriculos/${user.uid}_${cvFile.name}`);
-                await storageRef.put(cvFile);
+            if (cvInput.files[0]) {
+                const storageRef = storage.ref(`curriculos/${user.uid}_${cvInput.files[0].name}`);
+                await storageRef.put(cvInput.files[0]);
                 cvURL = await storageRef.getDownloadURL();
             }
 
-            // Salvar dados adicionais no Realtime Database
-            const tecnicoData = {
+            // Salvar dados no Realtime Database
+            await db.ref(`usuarios/${user.uid}`).set({
                 nome: nameInput.value,
                 email: emailInput.value,
+                telefone: telefoneInput.value,
                 provincia: provinciaInput.value,
                 cv: cvURL,
-                telefone:telefoneInput.value,
                 idTecnico: idInput.value,
                 tipoConta: "tecnico",
                 createdAt: new Date().toISOString()
-            };
-
-            await db.ref(`usuarios/${user.uid}`).set(tecnicoData);
+            });
 
             loader.classList.add("d-none");
-            alert("Usuário Técnico criado com sucesso!");
+            alert("Conta Técnico criada com sucesso!");
             window.location.href = "login.html";
 
         } catch (error) {
@@ -91,29 +86,30 @@ document.addEventListener("DOMContentLoaded", () => {
             errorRegisterDiv.classList.remove("d-none");
 
             switch (error.code) {
-                case 'auth/email-already-in-use':
-                    errorRegisterDiv.innerHTML = "Este e-mail já está a ser utilizado por outra conta.";
+                case "auth/email-already-in-use":
+                    errorRegisterDiv.innerHTML = "Este e-mail já está a ser utilizado.";
                     break;
-                case 'auth/invalid-email':
-                    errorRegisterDiv.innerHTML = "O endereço de e-mail não é válido.";
+                case "auth/invalid-email":
+                    errorRegisterDiv.innerHTML = "E-mail inválido.";
                     break;
-                case 'auth/weak-password':
-                    errorRegisterDiv.innerHTML = "A senha deve ter pelo menos 8 caracteres, incluindo maiúscula, número e símbolo.";
+                case "auth/weak-password":
+                    errorRegisterDiv.innerHTML = "Senha fraca. Deve ter 8+ caracteres, maiúscula, número e símbolo.";
                     break;
                 default:
-                    errorRegisterDiv.innerHTML = "Erro ao criar conta: " + error.message;
+                    errorRegisterDiv.innerHTML = "Erro: " + error.message;
             }
         }
     }
 
     // ================= EVENT LISTENERS =================
-    nameInput.addEventListener('input', validarRegistro);
-    emailInput.addEventListener('input', validarRegistro);
-    passwordInput.addEventListener('input', validarRegistro);
-    confirmPwInput.addEventListener('input', validarRegistro);
-    termsCheck.addEventListener('change', validarRegistro);
-    provinciaInput.addEventListener('change', validarRegistro);
-    cvInput.addEventListener('change', validarRegistro);
-    telefoneInput.addEventListener('input', validarRegistro);
-    btnRegister.addEventListener('click', register);
+    [nameInput, emailInput, passwordInput, confirmPwInput, telefoneInput, provinciaInput, cvInput, idInput].forEach(el => {
+        el.addEventListener("input", validarRegistro);
+    });
+    termsCheck.addEventListener("change", validarRegistro);
+
+    formRegister.addEventListener("submit", (e) => {
+        e.preventDefault();
+        register();
+    });
+
 });

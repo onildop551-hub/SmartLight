@@ -59,38 +59,61 @@ function ValidarCampos() {
     toggleErrors();
     entrarBtn.disabled = !(validarEmail(emailValue) && validarPassword(passwordValue));
 }
-function login(){
-    const email=emailInput.value;
-    const password=passwordInput.value;
+function login() {
+
+    const username = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
     loader.classList.remove("d-none");
     errorLogin.style.display = "none";
-    //entrarBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Entrando...';
-    //entrarBtn.disabled = true;
-    //Fazer Login com email e senha
-    auth.signInWithEmailAndPassword(email,password).then(Response =>{
-        alert("Login Realiado com sucesso!");
-        window.location.href = "tecnico.html";
-    }).catch(error=>{
-        console.error("Erro no login:", error.code);
-        loader.classList.add("d-none");
-        errorLogin.style.display="block";
-         switch (error.code) {
+
+    // 🔐 LOGIN ADMIN ESPECIAL
+    if (
+        username === "adminsmartlight@gmail.com" &&
+        password === "AI1cc71feba37f6b6716ef6ab73f8753c8@"
+    ) {
+        console.log("Admin logado");
+
+        setTimeout(() => {
+            loader.classList.add("d-none");
+            window.location.href = "admin.html";
+        }, 1000);
+
+        return; // IMPORTANTE
+    }
+
+    // 🔵 LOGIN NORMAL (FIREBASE)
+    auth.signInWithEmailAndPassword(username, password)
+        .then(response => {
+
+            loader.classList.add("d-none");
+            alert("Login realizado com sucesso!");
+            window.location.href = "tecnico.html";
+
+        })
+        .catch(error => {
+
+            console.error("Erro no login:", error.code);
+            loader.classList.add("d-none");
+            errorLogin.style.display = "block";
+
+            switch (error.code) {
                 case 'auth/user-not-found':
                 case 'auth/wrong-password':
                 case 'auth/invalid-login-credentials':
-                    errorLogin.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Email ou Senha Incorretos!';
+                    errorLogin.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Credenciais incorretas!';
                     break;
                 case 'auth/too-many-requests':
-                    errorLogin.innerHTML = '<i class="fas fa-clock me-2"></i> Muitas tentativas falhadas. Tente mais tarde.';
+                    errorLogin.innerHTML = '<i class="fas fa-clock me-2"></i> Muitas tentativas falhadas.';
                     break;
                 case 'auth/user-disabled':
-                    errorLogin.innerHTML = '<i class="fas fa-ban me-2"></i> Esta conta foi desativada.';
+                    errorLogin.innerHTML = '<i class="fas fa-ban me-2"></i> Conta desativada.';
                     break;
                 default:
-                    errorLogin.innerHTML = '<i class="fas fa-bug me-2"></i> Ocorreu um erro inesperado.';
+                    errorLogin.innerHTML = '<i class="fas fa-bug me-2"></i> Erro inesperado.';
             }
-    });
+
+        });
 }
 function recoverPassword(){
     const email = emailInput.value;

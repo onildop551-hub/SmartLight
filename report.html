@@ -225,7 +225,7 @@
 <body>
     <div class="container">
         <div class="logo-container">
-            <a href="index.html"><h1><i class="fas fa-lightbulb"></i> SmartLight</h1></a>
+            <a href="index.html" class="text-decoration-none" style="color: white;"><h1><i class="fas fa-lightbulb"></i> SmartLight</h1></a>
             <p>Avisar Falha de Iluminação - Ajude-nos a identificar o problema na sua rua</p>
         </div>
         
@@ -667,48 +667,51 @@
             
             // Simular envio (substituir por chamada real à API)
             setTimeout(() => {
-                document.getElementById('loader-overlay').style.display = 'none';
-                document.getElementById('section4').style.display = 'none';
-                document.getElementById('sectionSuccess').style.display = 'block';
-                
-                // Aqui você pode adicionar a lógica real de envio para Firebase:
-                // 1. Upload da foto para Firebase Storage
-                // 2. Salvar dados no Realtime Database
-                // 3. Tratar erros
-                
-                // Exemplo de código para Firebase:
-                /*
-                const tipoProblema = document.querySelector('input[name="tipoProblema"]:checked').value;
-                const descricao = document.getElementById('descricao').value;
-                const coords = document.getElementById('coords').value;
-                const bairro = document.getElementById('bairro').value;
-                const rua = document.getElementById('rua').value;
-                
-                // Preparar dados para o Firebase
-                const reportData = {
-                    tipo: tipoProblema,
-                    descricao: descricao,
-                    localizacao: coords,
-                    bairro: bairro,
-                    rua: rua,
-                    data: new Date().toISOString(),
-                    status: 'pendente'
-                };
-                
-                // Salvar no Realtime Database
-                firebase.database().ref('reports').push(reportData)
-                    .then(() => {
-                        document.getElementById('loader-overlay').style.display = 'none';
-                        document.getElementById('section4').style.display = 'none';
-                        document.getElementById('sectionSuccess').style.display = 'block';
-                    })
-                    .catch((error) => {
-                        document.getElementById('loader-overlay').style.display = 'none';
-                        document.getElementById('erroMensagem').textContent = error.message;
-                        document.getElementById('section4').style.display = 'none';
-                        document.getElementById('sectionError').style.display = 'block';
+                document.getElementById('formReporte').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                document.getElementById('loader-overlay').style.display = 'flex';
+
+                try {
+                    const tipoProblema = document.querySelector('input[name="tipoProblema"]:checked').value;
+                    const descricao = document.getElementById('descricao').value;
+                    const bairro = document.getElementById('bairro').value;
+                    const rua = document.getElementById('rua').value;
+
+                    let fotoURL = null;
+
+                    // 🔥 Upload da foto se existir
+                    if (document.getElementById('foto').files[0]) {
+                        const file = document.getElementById('foto').files[0];
+                        const storageRef = storage.ref('reportes/' + Date.now() + "_" + file.name);
+                        await storageRef.put(file);
+                        fotoURL = await storageRef.getDownloadURL();
+                    }
+
+                    // 🔥 Salvar no Firestore
+                    await db.collection("reportes").add({
+                        tipo: tipoProblema,
+                        descricao: descricao,
+                        bairro: bairro,
+                        rua: rua,
+                        latitude: userLocation ? userLocation.latitude : null,
+                        longitude: userLocation ? userLocation.longitude : null,
+                        foto: fotoURL,
+                        status: "pendente",
+                        data: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                */
+
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    document.getElementById('section4').style.display = 'none';
+                    document.getElementById('sectionSuccess').style.display = 'block';
+
+                } catch (error) {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    document.getElementById('erroMensagem').textContent = error.message;
+                    document.getElementById('section4').style.display = 'none';
+                    document.getElementById('sectionError').style.display = 'block';
+                }
+            });
             }, 2000);
         });
         
@@ -717,7 +720,25 @@
             Notification.requestPermission();
         }
     </script>
-    
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-storage-compat.js"></script>
+
+    <script>
+    const firebaseConfig = {
+    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+    authDomain: "smartlight-pap-2026.firebaseapp.com",
+    projectId: "smartlight-pap-2026",
+    storageBucket: "smartlight-pap-2026.appspot.com",
+    messagingSenderId: "953509556806",
+    appId: "1:953509556806:web:96ed896142e7b5433f5047"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+</script>
     <!-- Scripts do Firebase (descomente e configure com suas credenciais) -->
     <!--
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
