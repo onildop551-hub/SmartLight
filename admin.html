@@ -126,17 +126,24 @@
             return;
         }
 
-        const userSnap = await get(child(ref(db), `usuarios/${user.uid}`));
-        if (!userSnap.exists() || userSnap.val().role !== "admin") {
-            alert("Conta não autorizada!");
+        try {
+            const userSnap = await get(child(ref(db), `usuarios/${user.uid}`));
+            const dados = userSnap.exists() ? userSnap.val() : null;
+
+            if (!dados || dados.role !== "admin") {
+                alert("Conta não autorizada!");
+                return signOut(auth).then(() => window.location.href = "login.html");
+            }
+
+            // Usuário admin autenticado
+            document.getElementById("userName").textContent = `Olá, ${dados.nome || "Admin"}`;
+            document.body.style.display = "block";
+        } catch (err) {
+            console.error("Erro ao buscar dados do usuário:", err);
+            alert("Erro de autenticação!");
             await signOut(auth);
             window.location.href = "login.html";
-            return;
         }
-
-        const dados = userSnap.val();
-        document.getElementById("userName").textContent = `Olá, ${dados.nome || "Admin"}`;
-        document.body.style.display = "block";
     });
 
     // Logout
