@@ -51,6 +51,12 @@
         <a class="navbar-brand" href="#">
             <i class="bi bi-lightbulb"></i> SmartLight - Admin
         </a>
+
+        <!-- Sessão do Usuário -->
+        <div class="d-flex ms-auto align-items-center">
+            <span id="userName" class="text-white me-3"></span>
+            <button id="logoutBtn" class="btn btn-outline-light btn-sm">Sair</button>
+        </div>
     </div>
 </nav>
 
@@ -133,21 +139,39 @@
             return;
         }
 
-        // Buscar dados do usuário no Realtime Database
-        const userSnap = await get(child(ref(db), `usuarios/${user.uid}`));
-        if (!userSnap.exists()) {
-            window.location.href = "login.html";
-            return;
-        }
+        try {
+            const userSnap = await get(child(ref(db), `usuarios/${user.uid}`));
+            if (!userSnap.exists()) {
+                auth.signOut();
+                window.location.href = "login.html";
+                return;
+            }
 
-        const dados = userSnap.val();
-        if (dados.role !== "admin") {
-            window.location.href = "login.html";
-            return;
-        }
+            const dados = userSnap.val();
+            if (dados.role !== "admin") {
+                auth.signOut();
+                window.location.href = "login.html";
+                return;
+            }
 
-        console.log("Admin autenticado:", dados.nome);
-        document.body.style.display = "block"; // mostra o body
+            // Mostrar body e nome do admin
+            document.body.style.display = "block";
+            const userNameEl = document.getElementById("userName");
+            userNameEl.textContent = `Olá, ${dados.nome || "Admin"}`;
+
+            // Botão de logout
+            document.getElementById("logoutBtn").addEventListener("click", async () => {
+                await auth.signOut();
+                window.location.href = "index.html";
+            });
+
+            console.log("Admin autenticado:", dados.nome);
+
+        } catch (err) {
+            console.error("Erro ao checar role:", err);
+            auth.signOut();
+            window.location.href = "login.html";
+        }
     });
 
     // 🔥 LISTAR REPORTES EM TEMPO REAL
