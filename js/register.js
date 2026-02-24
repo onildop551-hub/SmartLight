@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const isConfirmOk = passwordInput.value === confirmPwInput.value && confirmPwInput.value !== "";
         const isTermsOk = termsCheck.checked;
         const isProvinciaOk = provinciaInput.value !== "";
-        const isCVOk = cvInput.files.length > 0;
         const isTelefoneOk = telefoneInput.value.trim().length >= 3;
         const isIdOk = idInput.value.trim().length > 0;
 
