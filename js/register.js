@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             loader.classList.add("d-none");
             alert("Conta Técnico criada com sucesso!");
-            window.location.href = "login.html";
+            window.location.href = "tecnico.html";
 
         } catch (error) {
             loader.classList.add("d-none");
