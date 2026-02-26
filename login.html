@@ -158,6 +158,31 @@
     const db = getDatabase(app);
 
     const adminEmail = "adminsmartlight@gmail.com";
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("login");
+
+    function validarEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function validarPassword(password) {
+        return password.length >= 6;
+    }
+
+    function validarCampos() {
+        const email = emailInput.value.trim();
+        const senha = passwordInput.value.trim();
+
+        if (validarEmail(email) && validarPassword(senha)) {
+            loginBtn.disabled = false;
+        } else {
+            loginBtn.disabled = true;
+        }
+    }
+
+    emailInput.addEventListener("input", validarCampos);
+    passwordInput.addEventListener("input", validarCampos);
 
     // 🔐 LOGIN
     document.addEventListener("DOMContentLoaded", () => {
