@@ -164,86 +164,6 @@
         </div>
     </section>
 
-    <!-- Manutenção Rápida -->
-    <section id="manutencao-rapida" class="mb-5">
-        <h2 class="fw-bold text-center mb-4">Ações de Manutenção Rápida</h2>
-
-        <div class="container">
-
-            <!-- Linha dos três cards -->
-            <div class="row g-4 justify-content-center">
-
-                <!-- Reset -->
-                <div class="col-12 col-md-4">
-                    <div class="onildo text-center p-3 shadow rounded">
-                        <i class="fas fa-sync-alt fa-2x mb-3 text-primary"></i>
-                        <h5>Reset de Sistema</h5>
-                        <p class="text-muted small">
-                            Reiniciar o módulo LoRa do poste remotamente.
-                        </p>
-                        <button class="btn btn-primary w-100">
-                            Executar Reset
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Calibrar -->
-                <div class="col-12 col-md-4">
-                    <div class="onildo text-center p-3 shadow rounded">
-                        <i class="fas fa-sliders-h fa-2x mb-3 text-success"></i>
-                        <h5>Calibrar LDR</h5>
-                        <p class="text-muted small">
-                            Ajustar sensibilidade de luminosidade.
-                        </p>
-                        <button class="btn btn-success w-100">
-                            Calibrar
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Relatório -->
-                <div class="col-12 col-md-4">
-                    <div class="onildo text-center p-3 shadow rounded">
-                        <i class="fas fa-clipboard-check fa-2x mb-3 text-warning"></i>
-                        <h5>Fechar Ordem</h5>
-                        <p class="text-muted small">
-                            Confirmar manutenção concluída.
-                        </p>
-                        <button class="btn btn-warning w-100 text-white">
-                            Enviar Relatório
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Linha Baixar/Subir Poste -->
-            <div class="row mt-4 justify-content-center">
-                <div class="col-12">
-                    <div class="onildo text-center p-4 shadow rounded w-100" style="background-color:#f8f9fa;">
-                        <img id="posteImg" src="img/poste_em_pe.png" alt="Poste" class="img-fluid" style="transition: transform 0.5s;">
-                        <h5 class="mt-2">Controle do Poste</h5>
-                        <p class="text-muted small">
-                            Baixar ou subir o poste remotamente.
-                        </p>
-                        <button id="togglePosteBtn" class="btn btn-secondary w-100">
-                            Baixar Poste
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-    <!-- Notificações -->
-    <section id="notificacoes" class="mb-5">
-        <h2 class="fw-bold mb-4">
-            <i class="fas fa-bell text-danger"></i> Notificações
-        </h2>
-
-        <div id="listaNotificacoes"></div>
-    </section>
-
 </main>
 
 <!-- ================= FOOTER ================= -->
@@ -285,33 +205,6 @@
             <a class="btn btn-primary btn-sm mt-2" href="dashboard.html">Ver Detalhes</a>
         </div>
     `);
-</script>
-
-<script>
-    const toggleBtn = document.getElementById('togglePosteBtn');
-    const posteImg = document.getElementById('posteImg');
-
-    let posteBaixado = false; // false = de pé, true = inclinado
-
-    toggleBtn.addEventListener('click', () => {
-
-        // Simular operação de baixar/subir poste
-        posteBaixado = !posteBaixado;
-
-        if (posteBaixado) {
-            // Poste inclinado → Subir poste
-            posteImg.src = 'img/poste_inclinado.png';
-            toggleBtn.innerText = 'Baixar Poste';
-        } else {
-            // Poste em pé → Baixar poste
-            posteImg.src = 'img/poste_em_pe.png';
-            toggleBtn.innerText = 'Subir Poste';
-        }
-
-        // Aqui você pode adicionar chamada real para API ou Firebase
-        // ex: chamar função que envia comando ao módulo LoRa
-        console.log('Comando enviado: ' + toggleBtn.innerText);
-    });
 </script>
 
 <script type="module">
@@ -378,7 +271,7 @@
     });
 
     onAuthStateChanged(auth, (user) => {
-        if (!user) return window.location.href = "login.html";
+        if (!user) return window.location.href = "index.html";
         document.body.style.display = "block";
         const nomeCompleto = user.displayName || user.email.split("@")[0];
         const email = user.email;

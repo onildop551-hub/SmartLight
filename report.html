@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,43 +9,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4a90e2 0%, #1e3c72 100%);
             min-height: 100vh;
             padding-top: 20px;
             padding-bottom: 50px;
         }
-        
+
+        /* Mantendo toda a UI existente */
         .logo-container {
             text-align: center;
             margin-bottom: 30px;
             color: white;
         }
-        
+
         .logo-container h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
         }
-        
+
         .logo-container p {
             font-size: 1.2rem;
             opacity: 0.9;
         }
-        
+
         .report-card {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 30px;
             margin-bottom: 30px;
         }
-        
+
         .step-indicator {
             display: flex;
             justify-content: space-between;
             margin-bottom: 30px;
             position: relative;
         }
-        
+
         .step-indicator:before {
             content: '';
             position: absolute;
@@ -55,14 +57,14 @@
             background: #e9ecef;
             z-index: 1;
         }
-        
+
         .step {
             text-align: center;
             position: relative;
             z-index: 2;
             flex: 1;
         }
-        
+
         .step-number {
             width: 40px;
             height: 40px;
@@ -76,41 +78,48 @@
             font-weight: bold;
             border: 3px solid white;
         }
-        
+
         .step.active .step-number {
             background: #0d6efd;
             color: white;
         }
-        
+
         .step.completed .step-number {
             background: #28a745;
             color: white;
         }
-        
+
         .step-label {
             font-size: 0.9rem;
             color: #6c757d;
         }
-        
+
         .step.active .step-label {
             color: #0d6efd;
             font-weight: bold;
         }
-        
+
         .form-section {
             display: none;
         }
-        
+
         .form-section.active {
             display: block;
             animation: fadeIn 0.5s;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         .photo-preview {
             width: 100%;
             height: 200px;
@@ -123,13 +132,13 @@
             margin-top: 10px;
             background: #f8f9fa;
         }
-        
+
         .photo-preview img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
-        
+
         .btn-camera {
             width: 60px;
             height: 60px;
@@ -140,35 +149,34 @@
             font-size: 1.5rem;
             margin: 0 auto;
         }
-        
+
         .location-btn {
             width: 100%;
             padding: 15px;
             font-size: 1.1rem;
         }
-        
+
         .success-message {
             text-align: center;
             padding: 50px 20px;
         }
-        
+
         .success-icon {
             font-size: 4rem;
             color: #28a745;
             margin-bottom: 20px;
         }
-        
+
         .progress {
             height: 10px;
             margin: 20px 0;
         }
-        
+
         .required:after {
             content: " *";
             color: #dc3545;
         }
-        
-        /* Estilos específicos do primeiro código */
+
         .btn-location {
             background-color: #e9ecef;
             border: 2px dashed #adb5bd;
@@ -178,13 +186,13 @@
             border-radius: 10px;
             transition: 0.3s;
         }
-        
+
         .btn-location:hover {
             background-color: #dee2e6;
             border-color: #0d6efd;
             color: #0d6efd;
         }
-        
+
         .photo-upload {
             border: 2px dashed #0d6efd;
             border-radius: 15px;
@@ -193,21 +201,21 @@
             cursor: pointer;
             background: #f0f7ff;
         }
-        
+
         .loader-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             z-index: 10000;
             display: none;
             justify-content: center;
             align-items: center;
             color: white;
         }
-        
+
         .problem-type-btn {
             height: 100px;
             display: flex;
@@ -215,24 +223,26 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .problem-type-btn i {
             font-size: 1.5rem;
             margin-bottom: 10px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="logo-container">
-            <a href="index.html" class="text-decoration-none" style="color: white;"><h1><i class="fas fa-lightbulb"></i> SmartLight</h1></a>
+            <a href="index.html" class="text-decoration-none" style="color:white;">
+                <h1><i class="fas fa-lightbulb"></i> SmartLight</h1>
+            </a>
             <p>Avisar Falha de Iluminação - Ajude-nos a identificar o problema na sua rua</p>
         </div>
-        
+
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="report-card">
-                    <!-- Indicador de Passos -->
                     <div class="step-indicator">
                         <div class="step active" id="step1">
                             <div class="step-number">1</div>
@@ -251,18 +261,15 @@
                             <div class="step-label">Detalhes</div>
                         </div>
                     </div>
-                    
-                    <!-- Progresso -->
                     <div class="progress">
-                        <div class="progress-bar" id="progressBar" style="width: 25%"></div>
+                        <div class="progress-bar" id="progressBar" style="width:25%"></div>
                     </div>
-                    
                     <!-- Formulário -->
                     <form id="formReporte">
                         <!-- Passo 1: Localização -->
                         <div class="form-section active" id="section1">
                             <h3 class="mb-4">Onde está o poste?</h3>
-                            
+
                             <div class="mb-4">
                                 <button type="button" id="getLocation" class="btn-location">
                                     <i class="fas fa-map-marker-alt fa-2x mb-2"></i><br>
@@ -270,21 +277,24 @@
                                 </button>
                                 <input type="hidden" id="coords">
                             </div>
-                            
+
                             <div class="row mt-4">
                                 <div class="col-md-6 mb-3">
                                     <label for="bairro" class="form-label required">Bairro</label>
-                                    <input type="text" class="form-control" id="bairro" placeholder="Ex: Maianga, Kilamba Kiaxi" required>
+                                    <input type="text" class="form-control" id="bairro"
+                                        placeholder="Ex: Maianga, Kilamba Kiaxi" required>
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <label for="rua" class="form-label">Rua/Avenida</label>
-                                    <input type="text" class="form-control" id="rua" placeholder="Ex: Av. 21 de Janeiro">
+                                    <input type="text" class="form-control" id="rua"
+                                        placeholder="Ex: Av. 21 de Janeiro">
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="window.location.href='dashboard.html'">
+                                <button type="button" class="btn btn-secondary"
+                                    onclick="window.location.href='dashboard.html'">
                                     <i class="fas fa-arrow-left me-2"></i> Cancelar
                                 </button>
                                 <button type="button" class="btn btn-primary" onclick="proximoPasso(2)">
@@ -292,28 +302,31 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Passo 2: Tipo de Problema -->
                         <div class="form-section" id="section2">
                             <h3 class="mb-4">Qual é o problema?</h3>
-                            
+
                             <div class="row g-2">
                                 <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p1" value="Lâmpada Fundida" checked>
+                                    <input type="radio" class="btn-check" name="tipoProblema" id="p1"
+                                        value="Lâmpada Fundida" checked>
                                     <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p1">
                                         <i class="fas fa-lightbulb d-block mb-1"></i>
                                         <strong>Lâmpada Fundida</strong>
                                     </label>
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p2" value="Poste Partido">
+                                    <input type="radio" class="btn-check" name="tipoProblema" id="p2"
+                                        value="Poste Partido">
                                     <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p2">
                                         <i class="fas fa-hammer d-block mb-1"></i>
                                         <strong>Poste Partido</strong>
                                     </label>
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p3" value="Fios Soltos">
+                                    <input type="radio" class="btn-check" name="tipoProblema" id="p3"
+                                        value="Fios Soltos">
                                     <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p3">
                                         <i class="fas fa-bolt d-block mb-1"></i>
                                         <strong>Fios Soltos</strong>
@@ -327,7 +340,7 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" onclick="proximoPasso(1)">
                                     <i class="fas fa-arrow-left me-2"></i> Voltar
@@ -337,33 +350,35 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Passo 3: Foto -->
                         <div class="form-section" id="section3">
                             <h3 class="mb-4">Foto da Ocorrência</h3>
-                            
+
                             <div class="photo-upload" onclick="document.getElementById('foto').click()">
                                 <i class="fas fa-camera fa-3x mb-2 text-primary"></i>
                                 <p class="m-0">Tirar foto ou escolher da galeria</p>
                                 <input type="file" id="foto" accept="image/*" class="d-none">
                             </div>
-                            
+
                             <div class="photo-preview mt-3" id="photoPreview">
                                 <div class="text-center">
                                     <i class="fas fa-camera fa-3x text-muted mb-3"></i><br>
                                     <span class="text-muted">Nenhuma foto selecionada</span>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-3 text-center">
-                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('foto').click()">
+                                <button type="button" class="btn btn-outline-primary"
+                                    onclick="document.getElementById('foto').click()">
                                     <i class="fas fa-upload me-2"></i> Escolher Foto
                                 </button>
-                                <button type="button" class="btn btn-outline-danger" onclick="removerFoto()" id="btnRemoverFoto" style="display: none;">
+                                <button type="button" class="btn btn-outline-danger" onclick="removerFoto()"
+                                    id="btnRemoverFoto" style="display: none;">
                                     <i class="fas fa-trash me-2"></i> Remover
                                 </button>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" onclick="proximoPasso(2)">
                                     <i class="fas fa-arrow-left me-2"></i> Voltar
@@ -373,17 +388,19 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Passo 4: Descrição -->
                         <div class="form-section" id="section4">
                             <h3 class="mb-4">Detalhes Adicionais</h3>
-                            
+
                             <div class="mb-4">
                                 <label for="descricao" class="form-label">Descrição do Problema (Opcional)</label>
-                                <textarea class="form-control" id="descricao" rows="4" placeholder="Ex: O poste está em frente à padaria do Sr. João..."></textarea>
-                                <div class="form-text">Detalhes adicionais nos ajudam a identificar e resolver o problema mais rapidamente.</div>
+                                <textarea class="form-control" id="descricao" rows="4"
+                                    placeholder="Ex: O poste está em frente à padaria do Sr. João..."></textarea>
+                                <div class="form-text">Detalhes adicionais nos ajudam a identificar e resolver o
+                                    problema mais rapidamente.</div>
                             </div>
-                            
+
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5>Resumo do Reporte</h5>
@@ -407,7 +424,7 @@
                                     </table>
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" onclick="proximoPasso(3)">
                                     <i class="fas fa-arrow-left me-2"></i> Voltar
@@ -417,7 +434,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Sucesso -->
                         <div class="form-section" id="sectionSuccess" style="display: none;">
                             <div class="success-message">
@@ -426,18 +443,21 @@
                                 </div>
                                 <h3>Aviso Enviado com Sucesso!</h3>
                                 <p class="lead">Obrigado pelo seu reporte!</p>
-                                <p>Nossa equipe já foi notificada e trabalhará para resolver o problema o mais rápido possível.</p>
+                                <p>Nossa equipe já foi notificada e trabalhará para resolver o problema o mais rápido
+                                    possível.</p>
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-primary me-2" onclick="window.location.href='reportar.html'">
+                                    <button type="button" class="btn btn-primary me-2"
+                                        onclick="window.location.href='reportar.html'">
                                         <i class="fas fa-plus me-2"></i> Reportar Outro Problema
                                     </button>
-                                    <button type="button" class="btn btn-outline-primary" onclick="window.location.href='dashboard.html'">
+                                    <button type="button" class="btn btn-outline-primary"
+                                        onclick="window.location.href='dashboard.html'">
                                         <i class="fas fa-tachometer-alt me-2"></i> Voltar ao Dashboard
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Erro -->
                         <div class="form-section" id="sectionError" style="display: none;">
                             <div class="text-center text-danger py-4">
@@ -451,13 +471,6 @@
                         </div>
                     </form>
                 </div>
-                
-                <div class="text-center text-white mt-3">
-                    <small>
-                        <i class="fas fa-info-circle me-1"></i>
-                        Ajude-nos a melhorar a iluminação da sua cidade. Os dados serão usados apenas para fins de manutenção.
-                    </small>
-                </div>
             </div>
         </div>
     </div>
@@ -469,296 +482,182 @@
             <p class="mt-3">A enviar o seu reporte, por favor aguarde...</p>
         </div>
     </div>
+    <!-- Código do formulário permanece idêntico -->
+    </form>
+    </div>
+    <div class="text-center text-white mt-3"><small><i class="fas fa-info-circle me-1"></i> Ajude-nos a melhorar a
+            iluminação da sua cidade. Os dados serão usados apenas para fins de manutenção.</small></div>
+    </div>
+    </div>
+    </div>
+
+    <div id="loader-overlay" class="loader-overlay">
+        <div class="text-center">
+            <div class="spinner-border text-warning" role="status"></div>
+            <p class="mt-3">A enviar o seu reporte, por favor aguarde...</p>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <!-- TensorFlow.js e COCO-SSD -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
     <script>
-        // Variáveis globais
-        let currentStep = 1;
-        let fotoData = null;
-        let userLocation = null;
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar evento da foto
-            document.getElementById('foto').addEventListener('change', function(e) {
-                if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    
-                    // Verificar tamanho (max 5MB)
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('A foto é muito grande. Por favor, selecione uma foto menor que 5MB.');
-                        return;
-                    }
-                    
-                    // Ler a imagem
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        fotoData = event.target.result;
-                        
-                        // Mostrar preview
-                        const preview = document.getElementById('photoPreview');
-                        preview.innerHTML = `<img src="${fotoData}" alt="Preview da foto">`;
-                        
-                        // Mostrar botão de remover
-                        document.getElementById('btnRemoverFoto').style.display = 'inline-block';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // Configurar captura de GPS
-            document.getElementById('getLocation').addEventListener('click', capturarLocalizacao);
-        });
-        
-        // Funções de navegação
-        function proximoPasso(passo) {
-            // Validar passo atual
-            if (!validarPasso(currentStep)) {
-                return;
+        function proximoPasso(step) {
+            const totalSteps = 4; // total de seções
+            // esconder todas as seções
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`section${i}`).classList.remove('active');
+                document.getElementById(`step${i}`).classList.remove('active');
+                document.getElementById(`step${i}`).classList.remove('completed');
             }
-            
-            // Atualizar passo
-            currentStep = passo;
-            atualizarInterface();
-            
-            // Atualizar resumo no passo 4
-            if (passo === 4) {
-                atualizarResumo();
+
+            // mostrar a seção atual
+            document.getElementById(`section${step}`).classList.add('active');
+
+            // atualizar indicador de passo
+            for (let i = 1; i < step; i++) {
+                document.getElementById(`step${i}`).classList.add('completed');
             }
+            document.getElementById(`step${step}`).classList.add('active');
+
+            // atualizar barra de progresso
+            const progress = document.getElementById('progressBar');
+            progress.style.width = `${(step / totalSteps) * 100}%`;
+
+            // atualizar resumo (opcional)
+            const tipo = document.querySelector('input[name="tipoProblema"]:checked');
+            if(tipo) document.getElementById('resumoTipo').textContent = tipo.value;
+            const coords = document.getElementById('coords').value;
+            if(coords) document.getElementById('resumoLocalizacao').textContent = coords;
+            const foto = document.getElementById('foto').files[0];
+            document.getElementById('resumoFoto').textContent = foto ? foto.name : 'Nenhuma';
+            const descricao = document.getElementById('descricao').value;
+            document.getElementById('resumoDescricao').textContent = descricao || 'Nenhuma';
         }
-        
-        function validarPasso(passo) {
-            switch (passo) {
-                case 1:
-                    // Validar localização
-                    if (!userLocation) {
-                        alert('Por favor, capture a localização do poste.');
-                        return false;
-                    }
-                    return true;
-                    
-                case 2:
-                    // Tipo de problema já tem valor padrão
-                    return true;
-                    
-                case 3:
-                    // Foto é opcional
-                    return true;
-                    
-                case 4:
-                    // Descrição é opcional
-                    return true;
-                    
-                default:
-                    return true;
-            }
-        }
-        
-        function atualizarInterface() {
-            // Atualizar indicadores de passo
-            for (let i = 1; i <= 4; i++) {
-                const stepElement = document.getElementById('step' + i);
-                const sectionElement = document.getElementById('section' + i);
-                
-                if (i < currentStep) {
-                    stepElement.className = 'step completed';
-                    sectionElement.className = 'form-section';
-                } else if (i === currentStep) {
-                    stepElement.className = 'step active';
-                    sectionElement.className = 'form-section active';
-                } else {
-                    stepElement.className = 'step';
-                    sectionElement.className = 'form-section';
-                }
-            }
-            
-            // Atualizar barra de progresso
-            const progress = (currentStep - 1) * 25;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
-        
-        // Localização
-        function capturarLocalizacao() {
-            const status = document.getElementById('locationStatus');
-            
-            if (navigator.geolocation) {
-                status.innerText = "A localizar... (Ative o GPS)";
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        userLocation = {
-                            latitude: pos.coords.latitude,
-                            longitude: pos.coords.longitude
-                        };
-                        document.getElementById('coords').value = `${userLocation.latitude}, ${userLocation.longitude}`;
-                        status.innerHTML = `<span class="text-success"><i class="fas fa-check"></i> Localização capturada com sucesso!</span>`;
-                    }, 
-                    (err) => {
-                        let mensagem = "Erro ao capturar GPS. ";
-                        switch(err.code) {
-                            case err.PERMISSION_DENIED:
-                                mensagem += "Você negou a permissão de localização.";
-                                break;
-                            case err.POSITION_UNAVAILABLE:
-                                mensagem += "Localização indisponível.";
-                                break;
-                            case err.TIMEOUT:
-                                mensagem += "Tempo esgotado.";
-                                break;
-                            default:
-                                mensagem += "Erro desconhecido.";
-                        }
-                        status.innerText = mensagem;
-                        userLocation = null;
-                    }
-                );
-            } else {
-                status.innerText = "Seu navegador não suporta geolocalização.";
-                userLocation = null;
-            }
-        }
-        
-        // Foto
+    </script>
+
+    <script>
         function removerFoto() {
-            fotoData = null;
-            document.getElementById('foto').value = '';
-            document.getElementById('photoPreview').innerHTML = `
+            // limpar input
+            const fotoInput = document.getElementById('foto');
+            fotoInput.value = "";
+
+            // limpar preview
+            const preview = document.getElementById('photoPreview');
+            preview.innerHTML = `
                 <div class="text-center">
                     <i class="fas fa-camera fa-3x text-muted mb-3"></i><br>
                     <span class="text-muted">Nenhuma foto selecionada</span>
                 </div>
             `;
+
+            // esconder botão de remover
             document.getElementById('btnRemoverFoto').style.display = 'none';
         }
-        
-        // Resumo
-        function atualizarResumo() {
-            // Tipo
-            const tipoSelecionado = document.querySelector('input[name="tipoProblema"]:checked');
-            document.getElementById('resumoTipo').textContent = tipoSelecionado ? tipoSelecionado.value : '-';
-            
-            // Localização
-            const bairro = document.getElementById('bairro').value;
-            const rua = document.getElementById('rua').value;
-            
-            let localizacao = '';
-            if (bairro) localizacao += `Bairro: ${bairro}`;
-            if (rua) localizacao += (localizacao ? ', ' : '') + `Rua: ${rua}`;
-            if (userLocation) {
-                localizacao += (localizacao ? ' - ' : '') + `GPS: ${userLocation.latitude.toFixed(6)}, ${userLocation.longitude.toFixed(6)}`;
+    </script>
+
+    <script>
+        const btnLocation = document.getElementById('getLocation');
+        const locationStatus = document.getElementById('locationStatus');
+        const coordsInput = document.getElementById('coords');
+
+        btnLocation.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert('Geolocalização não é suportada pelo seu navegador.');
+                return;
             }
-            
-            document.getElementById('resumoLocalizacao').textContent = localizacao || '-';
-            
-            // Foto
-            document.getElementById('resumoFoto').textContent = fotoData ? 'Sim' : 'Nenhuma';
-            
-            // Descrição
-            document.getElementById('resumoDescricao').textContent = 
-                document.getElementById('descricao').value || 'Nenhuma';
-        }
-        
-        // Envio do formulário
-        document.getElementById('formReporte').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Mostrar loading
-            document.getElementById('loader-overlay').style.display = 'flex';
-            
-            // Simular envio (substituir por chamada real à API)
-            setTimeout(() => {
-                document.getElementById('formReporte').addEventListener('submit', async function(e) {
-                e.preventDefault();
 
-                document.getElementById('loader-overlay').style.display = 'flex';
+            locationStatus.textContent = 'Obtendo localização...';
 
-                try {
-                    const tipoProblema = document.querySelector('input[name="tipoProblema"]:checked').value;
-                    const descricao = document.getElementById('descricao').value;
-                    const bairro = document.getElementById('bairro').value;
-                    const rua = document.getElementById('rua').value;
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lon = position.coords.longitude.toFixed(6);
 
-                    let fotoURL = null;
-
-                    // 🔥 Upload da foto se existir
-                    if (document.getElementById('foto').files[0]) {
-                        const file = document.getElementById('foto').files[0];
-                        const storageRef = storage.ref('reportes/' + Date.now() + "_" + file.name);
-                        await storageRef.put(file);
-                        fotoURL = await storageRef.getDownloadURL();
+                    coordsInput.value = `${lat},${lon}`;
+                    locationStatus.textContent = `Localização capturada: ${lat}, ${lon}`;
+                    btnLocation.style.backgroundColor = '#d1e7dd'; // mudar cor para indicar sucesso
+                    btnLocation.style.borderColor = '#0d6efd';
+                    btnLocation.style.color = '#0d6efd';
+                },
+                (error) => {
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("Permissão negada. Ative a localização no navegador.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("Localização indisponível.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("Tempo esgotado para obter localização.");
+                            break;
+                        default:
+                            alert("Erro desconhecido ao capturar localização.");
                     }
-
-                    // 🔥 Salvar no Firestore
-                    await db.collection("reportes").add({
-                        tipo: tipoProblema,
-                        descricao: descricao,
-                        bairro: bairro,
-                        rua: rua,
-                        latitude: userLocation ? userLocation.latitude : null,
-                        longitude: userLocation ? userLocation.longitude : null,
-                        foto: fotoURL,
-                        status: "pendente",
-                        data: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    document.getElementById('loader-overlay').style.display = 'none';
-                    document.getElementById('section4').style.display = 'none';
-                    document.getElementById('sectionSuccess').style.display = 'block';
-
-                } catch (error) {
-                    document.getElementById('loader-overlay').style.display = 'none';
-                    document.getElementById('erroMensagem').textContent = error.message;
-                    document.getElementById('section4').style.display = 'none';
-                    document.getElementById('sectionError').style.display = 'block';
+                    locationStatus.textContent = 'Clique para capturar a localização atual';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
                 }
-            });
-            }, 2000);
+            );
         });
-        
-        // Pedir permissão para notificações
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-storage-compat.js"></script>
+        </script>
 
     <script>
-    const firebaseConfig = {
-    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-    authDomain: "smartlight-pap-2026.firebaseapp.com",
-    projectId: "smartlight-pap-2026",
-    storageBucket: "smartlight-pap-2026.appspot.com",
-    messagingSenderId: "953509556806",
-    appId: "1:953509556806:web:96ed896142e7b5433f5047"
-    };
+        let modeloCoco = null;
 
-    firebase.initializeApp(firebaseConfig);
+        // Carregar modelo assim que a página abre
+        window.addEventListener('load', async () => {
+            modeloCoco = await cocoSsd.load();
+            console.log("Modelo COCO-SSD carregado!");
+        });
 
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-</script>
-    <!-- Scripts do Firebase (descomente e configure com suas credenciais) -->
-    <!--
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
-    <script>
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            databaseURL: "https://SEU_PROJETO.firebaseio.com",
-            projectId: "SEU_PROJETO",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
-        
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-    </script>
-    -->
+        document.getElementById('foto').addEventListener('change', async function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('A foto é muito grande. Máximo 5MB.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    fotoData = event.target.result;
+
+                    const img = new Image();
+                    img.src = fotoData;
+                    img.onload = async () => {
+                        // Mostrar preview
+                        document.getElementById('photoPreview').innerHTML = `<img src="${fotoData}" alt="Preview da foto">`;
+                        document.getElementById('btnRemoverFoto').style.display = 'inline-block';
+
+                        // Validar com COCO-SSD
+                        if (modeloCoco) {
+                            const predictions = await modeloCoco.detect(img);
+                            console.log(predictions);
+
+                            const achouPoste = predictions.some(p => 
+                                p.class.includes("light") || 
+                                p.class.includes("streetlight") ||
+                                p.class.includes("lamp")
+                            );
+
+                            if (!achouPoste) {
+                                alert("A foto não parece conter um poste ou lâmpada. Por favor, envie uma foto válida.");
+                                removerFoto();
+                            }
+                        }
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        </script>
 </body>
+
 </html>
