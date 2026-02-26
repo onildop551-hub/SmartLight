@@ -140,6 +140,75 @@
     <!-- IMPORTS FIREBASE MODULAR -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+    authDomain: "smartlight-pap-2026.firebaseapp.com",
+    databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com/",
+    projectId: "smartlight-pap-2026",
+    storageBucket: "smartlight-pap-2026.appspot.com",
+    messagingSenderId: "953509556806",
+    appId: "1:953509556806:web:96ed896142e7b5433f5047"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const adminEmail = "adminsmartlight@gmail.com";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const form = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const loginBtn = document.getElementById("login");
+
+        // 🔓 Ativar botão quando campos preenchidos
+        function validarCampos() {
+            if (emailInput.value.trim() !== "" && passwordInput.value.trim() !== "") {
+                loginBtn.disabled = false;
+            } else {
+                loginBtn.disabled = true;
+            }
+        }
+
+        emailInput.addEventListener("input", validarCampos);
+        passwordInput.addEventListener("input", validarCampos);
+
+        // 🔐 LOGIN
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const senha = passwordInput.value.trim();
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                const snapshot = await get(ref(db, "usuarios/" + user.uid));
+
+                if (!snapshot.exists()) {
+                    alert("Conta não reconhecida.");
+                    return;
+                }
+
+                if (email === adminEmail) {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "tecnico.html";
+                }
+
+            } catch (error) {
+                alert("Erro no login: " + error.message);
+            }
+        });
+
+    });
+     /*import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -224,7 +293,7 @@
         });
 
     });
-    /*
+   
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
