@@ -137,10 +137,6 @@
         </div>
     </footer>
 
-    <!-- Scripts do Firebase e Lógica -->
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <!-- IMPORTS FIREBASE MODULAR -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -164,33 +160,44 @@
     const adminEmail = "adminsmartlight@gmail.com";
 
     // 🔐 LOGIN
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    document.addEventListener("DOMContentLoaded", () => {
 
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("password").value;
+        const form = document.getElementById("loginForm");
 
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-        const user = userCredential.user;
-
-        const snapshot = await get(ref(db, "usuarios/" + user.uid));
-
-        if (snapshot.exists()) {
-        const dados = snapshot.val();
-
-        if (email === adminEmail) {
-            window.location.href = "admin.html";
-        } else {
-            window.location.href = "tecnico.html";
-        }
-        } else {
-        alert("Conta não reconhecida.");
+        if (!form) {
+            console.error("Formulário não encontrado!");
+            return;
         }
 
-    } catch (error) {
-        alert("Erro: " + error.message);
-    }
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("password").value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                const snapshot = await get(ref(db, "usuarios/" + user.uid));
+
+                if (snapshot.exists()) {
+
+                    if (email === adminEmail) {
+                        window.location.href = "admin.html";
+                    } else {
+                        window.location.href = "tecnico.html";
+                    }
+
+                } else {
+                    alert("Conta não reconhecida.");
+                }
+
+            } catch (error) {
+                alert("Erro: " + error.message);
+            }
+        });
+
     });
     /*
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
