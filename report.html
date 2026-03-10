@@ -2,662 +2,347 @@
 <html lang="pt">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportar Problema - SmartLight</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #4a90e2 0%, #1e3c72 100%);
-            min-height: 100vh;
-            padding-top: 20px;
-            padding-bottom: 50px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        /* Mantendo toda a UI existente */
-        .logo-container {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-        }
+<title>Reportar Problema - SmartLight</title>
 
-        .logo-container h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        .logo-container p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-        .report-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            margin-bottom: 30px;
-        }
+<style>
 
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            position: relative;
-        }
+body{
+background:linear-gradient(135deg,#4a90e2 0%,#1e3c72 100%);
+min-height:100vh;
+padding-top:20px;
+}
 
-        .step-indicator:before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #e9ecef;
-            z-index: 1;
-        }
+.report-card{
+background:white;
+border-radius:15px;
+padding:30px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
 
-        .step {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-        }
+.step{display:inline-block;margin-right:10px}
 
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: #e9ecef;
-            color: #6c757d;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-weight: bold;
-            border: 3px solid white;
-        }
+.photo-preview{
+height:200px;
+border:2px dashed #ccc;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:10px;
+margin-top:10px;
+}
 
-        .step.active .step-number {
-            background: #0d6efd;
-            color: white;
-        }
+</style>
 
-        .step.completed .step-number {
-            background: #28a745;
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-        .step.active .step-label {
-            color: #0d6efd;
-            font-weight: bold;
-        }
-
-        .form-section {
-            display: none;
-        }
-
-        .form-section.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .photo-preview {
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #dee2e6;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-top: 10px;
-            background: #f8f9fa;
-        }
-
-        .photo-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .btn-camera {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin: 0 auto;
-        }
-
-        .location-btn {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-        }
-
-        .success-message {
-            text-align: center;
-            padding: 50px 20px;
-        }
-
-        .success-icon {
-            font-size: 4rem;
-            color: #28a745;
-            margin-bottom: 20px;
-        }
-
-        .progress {
-            height: 10px;
-            margin: 20px 0;
-        }
-
-        .required:after {
-            content: " *";
-            color: #dc3545;
-        }
-
-        .btn-location {
-            background-color: #e9ecef;
-            border: 2px dashed #adb5bd;
-            color: #495057;
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .btn-location:hover {
-            background-color: #dee2e6;
-            border-color: #0d6efd;
-            color: #0d6efd;
-        }
-
-        .photo-upload {
-            border: 2px dashed #0d6efd;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            background: #f0f7ff;
-        }
-
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            color: white;
-        }
-
-        .problem-type-btn {
-            height: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .problem-type-btn i {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="logo-container">
-            <a href="index.html" class="text-decoration-none" style="color:white;">
-                <h1><i class="fas fa-lightbulb"></i> SmartLight</h1>
-            </a>
-            <p>Avisar Falha de Iluminação - Ajude-nos a identificar o problema na sua rua</p>
-        </div>
 
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="report-card">
-                    <div class="step-indicator">
-                        <div class="step active" id="step1">
-                            <div class="step-number">1</div>
-                            <div class="step-label">Localização</div>
-                        </div>
-                        <div class="step" id="step2">
-                            <div class="step-number">2</div>
-                            <div class="step-label">Tipo de Problema</div>
-                        </div>
-                        <div class="step" id="step3">
-                            <div class="step-number">3</div>
-                            <div class="step-label">Foto</div>
-                        </div>
-                        <div class="step" id="step4">
-                            <div class="step-number">4</div>
-                            <div class="step-label">Detalhes</div>
-                        </div>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar" id="progressBar" style="width:25%"></div>
-                    </div>
-                    <!-- Formulário -->
-                    <form id="formReporte">
-                        <!-- Passo 1: Localização -->
-                        <div class="form-section active" id="section1">
-                            <h3 class="mb-4">Onde está o poste?</h3>
+<div class="container">
 
-                            <div class="mb-4">
-                                <button type="button" id="getLocation" class="btn-location">
-                                    <i class="fas fa-map-marker-alt fa-2x mb-2"></i><br>
-                                    <span id="locationStatus">Clique para capturar a localização atual</span>
-                                </button>
-                                <input type="hidden" id="coords">
-                            </div>
+<div class="text-center text-white mb-4">
+<h1><a href="index.html" class="text-white text-decoration-none"><i class="fas fa-lightbulb"></i> SmartLight</a></h1>
+<p>Reporte problemas de iluminação pública</p>
+</div>
 
-                            <div class="row mt-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="bairro" class="form-label required">Bairro</label>
-                                    <input type="text" class="form-control" id="bairro"
-                                        placeholder="Ex: Maianga, Kilamba Kiaxi" required>
-                                </div>
+<div class="row justify-content-center">
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="rua" class="form-label">Rua/Avenida</label>
-                                    <input type="text" class="form-control" id="rua"
-                                        placeholder="Ex: Av. 21 de Janeiro">
-                                </div>
-                            </div>
+<div class="col-lg-8">
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary"
-                                    onclick="window.location.href='dashboard.html'">
-                                    <i class="fas fa-arrow-left me-2"></i> Cancelar
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="proximoPasso(2)">
-                                    Próximo <i class="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
+<div class="report-card">
 
-                        <!-- Passo 2: Tipo de Problema -->
-                        <div class="form-section" id="section2">
-                            <h3 class="mb-4">Qual é o problema?</h3>
+<form id="formReporte">
 
-                            <div class="row g-2">
-                                <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p1"
-                                        value="Lâmpada Fundida" checked>
-                                    <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p1">
-                                        <i class="fas fa-lightbulb d-block mb-1"></i>
-                                        <strong>Lâmpada Fundida</strong>
-                                    </label>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p2"
-                                        value="Poste Partido">
-                                    <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p2">
-                                        <i class="fas fa-hammer d-block mb-1"></i>
-                                        <strong>Poste Partido</strong>
-                                    </label>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p3"
-                                        value="Fios Soltos">
-                                    <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p3">
-                                        <i class="fas fa-bolt d-block mb-1"></i>
-                                        <strong>Fios Soltos</strong>
-                                    </label>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <input type="radio" class="btn-check" name="tipoProblema" id="p4" value="Outro">
-                                    <label class="btn btn-outline-primary w-100 py-4 problem-type-btn" for="p4">
-                                        <i class="fas fa-ellipsis-h d-block mb-1"></i>
-                                        <strong>Outro</strong>
-                                    </label>
-                                </div>
-                            </div>
+<h4>1️⃣ Localização</h4>
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="proximoPasso(1)">
-                                    <i class="fas fa-arrow-left me-2"></i> Voltar
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="proximoPasso(3)">
-                                    Próximo <i class="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
+<button type="button" id="getLocation" class="btn btn-outline-primary w-100 mb-3">
+Capturar localização
+</button>
 
-                        <!-- Passo 3: Foto -->
-                        <div class="form-section" id="section3">
-                            <h3 class="mb-4">Foto da Ocorrência</h3>
+<input type="hidden" id="coords">
 
-                            <div class="photo-upload" onclick="document.getElementById('foto').click()">
-                                <i class="fas fa-camera fa-3x mb-2 text-primary"></i>
-                                <p class="m-0">Tirar foto ou escolher da galeria</p>
-                                <input type="file" id="foto" accept="image/*" class="d-none">
-                            </div>
+<hr>
 
-                            <div class="photo-preview mt-3" id="photoPreview">
-                                <div class="text-center">
-                                    <i class="fas fa-camera fa-3x text-muted mb-3"></i><br>
-                                    <span class="text-muted">Nenhuma foto selecionada</span>
-                                </div>
-                            </div>
+<h4>ID do Poste</h4>
 
-                            <div class="mt-3 text-center">
-                                <button type="button" class="btn btn-outline-primary"
-                                    onclick="document.getElementById('foto').click()">
-                                    <i class="fas fa-upload me-2"></i> Escolher Foto
-                                </button>
-                                <button type="button" class="btn btn-outline-danger" onclick="removerFoto()"
-                                    id="btnRemoverFoto" style="display: none;">
-                                    <i class="fas fa-trash me-2"></i> Remover
-                                </button>
-                            </div>
+<div class="input-group mb-2">
+<input type="text" id="posteId" class="form-control" placeholder="Ex: SL-1002">
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="proximoPasso(2)">
-                                    <i class="fas fa-arrow-left me-2"></i> Voltar
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="proximoPasso(4)">
-                                    Próximo <i class="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
+<button type="button" class="btn btn-outline-dark" onclick="abrirScanner()">
+<i class="fas fa-qrcode"></i>
+</button>
+</div>
 
-                        <!-- Passo 4: Descrição -->
-                        <div class="form-section" id="section4">
-                            <h3 class="mb-4">Detalhes Adicionais</h3>
+<div id="reader" style="width:100%;display:none"></div>
 
-                            <div class="mb-4">
-                                <label for="descricao" class="form-label">Descrição do Problema (Opcional)</label>
-                                <textarea class="form-control" id="descricao" rows="4"
-                                    placeholder="Ex: O poste está em frente à padaria do Sr. João..."></textarea>
-                                <div class="form-text">Detalhes adicionais nos ajudam a identificar e resolver o
-                                    problema mais rapidamente.</div>
-                            </div>
+<hr>
 
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                    <h5>Resumo do Reporte</h5>
-                                    <table class="table table-sm">
-                                        <tr>
-                                            <th width="30%">Tipo de Problema:</th>
-                                            <td id="resumoTipo">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Localização:</th>
-                                            <td id="resumoLocalizacao">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Foto:</th>
-                                            <td id="resumoFoto">Nenhuma</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Descrição:</th>
-                                            <td id="resumoDescricao">Nenhuma</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
+<h4>Problema</h4>
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="proximoPasso(3)">
-                                    <i class="fas fa-arrow-left me-2"></i> Voltar
-                                </button>
-                                <button type="submit" class="btn btn-warning text-dark fw-bold">
-                                    <i class="fas fa-paper-plane me-2"></i> Enviar Aviso de Falha
-                                </button>
-                            </div>
-                        </div>
+<select id="tipoProblema" class="form-control mb-3">
 
-                        <!-- Sucesso -->
-                        <div class="form-section" id="sectionSuccess" style="display: none;">
-                            <div class="success-message">
-                                <div class="success-icon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                                <h3>Aviso Enviado com Sucesso!</h3>
-                                <p class="lead">Obrigado pelo seu reporte!</p>
-                                <p>Nossa equipe já foi notificada e trabalhará para resolver o problema o mais rápido
-                                    possível.</p>
-                                <div class="mt-4">
-                                    <button type="button" class="btn btn-primary me-2"
-                                        onclick="window.location.href='reportar.html'">
-                                        <i class="fas fa-plus me-2"></i> Reportar Outro Problema
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary"
-                                        onclick="window.location.href='dashboard.html'">
-                                        <i class="fas fa-tachometer-alt me-2"></i> Voltar ao Dashboard
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+<option>Lâmpada Fundida</option>
+<option>Poste Partido</option>
+<option>Fios Soltos</option>
+<option>Outro</option>
 
-                        <!-- Erro -->
-                        <div class="form-section" id="sectionError" style="display: none;">
-                            <div class="text-center text-danger py-4">
-                                <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
-                                <h3>Erro ao Enviar Reporte</h3>
-                                <p id="erroMensagem"></p>
-                                <button type="button" class="btn btn-primary mt-3" onclick="proximoPasso(4)">
-                                    <i class="fas fa-redo me-2"></i> Tentar Novamente
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+</select>
 
-    <!-- Overlay de Envio -->
-    <div id="loader-overlay" class="loader-overlay">
-        <div class="text-center">
-            <div class="spinner-border text-warning" role="status"></div>
-            <p class="mt-3">A enviar o seu reporte, por favor aguarde...</p>
-        </div>
-    </div>
-    <!-- Código do formulário permanece idêntico -->
-    </form>
-    </div>
-    <div class="text-center text-white mt-3"><small><i class="fas fa-info-circle me-1"></i> Ajude-nos a melhorar a
-            iluminação da sua cidade. Os dados serão usados apenas para fins de manutenção.</small></div>
-    </div>
-    </div>
-    </div>
+<hr>
 
-    <div id="loader-overlay" class="loader-overlay">
-        <div class="text-center">
-            <div class="spinner-border text-warning" role="status"></div>
-            <p class="mt-3">A enviar o seu reporte, por favor aguarde...</p>
-        </div>
-    </div>
+<h4>Foto (Opcional)</h4>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- TensorFlow.js e COCO-SSD -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<input type="file" id="foto" class="form-control">
 
-    <script>
-        function proximoPasso(step) {
-            const totalSteps = 4; // total de seções
-            // esconder todas as seções
-            for (let i = 1; i <= totalSteps; i++) {
-                document.getElementById(`section${i}`).classList.remove('active');
-                document.getElementById(`step${i}`).classList.remove('active');
-                document.getElementById(`step${i}`).classList.remove('completed');
-            }
+<div class="photo-preview" id="preview">
+Nenhuma foto
+</div>
 
-            // mostrar a seção atual
-            document.getElementById(`section${step}`).classList.add('active');
+<hr>
 
-            // atualizar indicador de passo
-            for (let i = 1; i < step; i++) {
-                document.getElementById(`step${i}`).classList.add('completed');
-            }
-            document.getElementById(`step${step}`).classList.add('active');
+<h4>Descrição</h4>
 
-            // atualizar barra de progresso
-            const progress = document.getElementById('progressBar');
-            progress.style.width = `${(step / totalSteps) * 100}%`;
+<textarea id="descricao" class="form-control"></textarea>
 
-            // atualizar resumo (opcional)
-            const tipo = document.querySelector('input[name="tipoProblema"]:checked');
-            if(tipo) document.getElementById('resumoTipo').textContent = tipo.value;
-            const coords = document.getElementById('coords').value;
-            if(coords) document.getElementById('resumoLocalizacao').textContent = coords;
-            const foto = document.getElementById('foto').files[0];
-            document.getElementById('resumoFoto').textContent = foto ? foto.name : 'Nenhuma';
-            const descricao = document.getElementById('descricao').value;
-            document.getElementById('resumoDescricao').textContent = descricao || 'Nenhuma';
-        }
-    </script>
+<br>
 
-    <script>
-        function removerFoto() {
-            // limpar input
-            const fotoInput = document.getElementById('foto');
-            fotoInput.value = "";
+<button class="btn btn-warning w-100">
 
-            // limpar preview
-            const preview = document.getElementById('photoPreview');
-            preview.innerHTML = `
-                <div class="text-center">
-                    <i class="fas fa-camera fa-3x text-muted mb-3"></i><br>
-                    <span class="text-muted">Nenhuma foto selecionada</span>
-                </div>
-            `;
+Enviar Reporte
 
-            // esconder botão de remover
-            document.getElementById('btnRemoverFoto').style.display = 'none';
-        }
-    </script>
+</button>
 
-    <script>
-        const btnLocation = document.getElementById('getLocation');
-        const locationStatus = document.getElementById('locationStatus');
-        const coordsInput = document.getElementById('coords');
+</form>
 
-        btnLocation.addEventListener('click', () => {
-            if (!navigator.geolocation) {
-                alert('Geolocalização não é suportada pelo seu navegador.');
-                return;
-            }
+<div id="success" class="text-center mt-4" style="display:none">
 
-            locationStatus.textContent = 'Obtendo localização...';
+<h3 class="text-success">
 
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude.toFixed(6);
-                    const lon = position.coords.longitude.toFixed(6);
+<i class="fas fa-check-circle"></i>
 
-                    coordsInput.value = `${lat},${lon}`;
-                    locationStatus.textContent = `Localização capturada: ${lat}, ${lon}`;
-                    btnLocation.style.backgroundColor = '#d1e7dd'; // mudar cor para indicar sucesso
-                    btnLocation.style.borderColor = '#0d6efd';
-                    btnLocation.style.color = '#0d6efd';
-                },
-                (error) => {
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            alert("Permissão negada. Ative a localização no navegador.");
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            alert("Localização indisponível.");
-                            break;
-                        case error.TIMEOUT:
-                            alert("Tempo esgotado para obter localização.");
-                            break;
-                        default:
-                            alert("Erro desconhecido ao capturar localização.");
-                    }
-                    locationStatus.textContent = 'Clique para capturar a localização atual';
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        });
-        </script>
+Reporte enviado
 
-    <script>
-        let modeloCoco = null;
+<small><a href="index.html">Voltar ao Home</a></small>
 
-        // Carregar modelo assim que a página abre
-        window.addEventListener('load', async () => {
-            modeloCoco = await cocoSsd.load();
-            console.log("Modelo COCO-SSD carregado!");
-        });
+</h3>
 
-        document.getElementById('foto').addEventListener('change', async function(e) {
-            if (e.target.files && e.target.files[0]) {
-                const file = e.target.files[0];
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('A foto é muito grande. Máximo 5MB.');
-                    return;
-                }
+</div>
 
-                const reader = new FileReader();
-                reader.onload = async function(event) {
-                    fotoData = event.target.result;
+</div>
 
-                    const img = new Image();
-                    img.src = fotoData;
-                    img.onload = async () => {
-                        // Mostrar preview
-                        document.getElementById('photoPreview').innerHTML = `<img src="${fotoData}" alt="Preview da foto">`;
-                        document.getElementById('btnRemoverFoto').style.display = 'inline-block';
+</div>
 
-                        // Validar com COCO-SSD
-                        if (modeloCoco) {
-                            const predictions = await modeloCoco.detect(img);
-                            console.log(predictions);
+</div>
 
-                            const achouPoste = predictions.some(p => 
-                                p.class.includes("light") || 
-                                p.class.includes("streetlight") ||
-                                p.class.includes("lamp")
-                            );
+</div>
 
-                            if (!achouPoste) {
-                                alert("A foto não parece conter um poste ou lâmpada. Por favor, envie uma foto válida.");
-                                removerFoto();
-                            }
-                        }
-                    };
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        </script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+/* FIREBASE CONFIG */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+authDomain: "smartlight-pap-2026.firebaseapp.com",
+projectId: "smartlight-pap-2026",
+storageBucket: "smartlight-pap-2026.appspot.com",
+messagingSenderId: "953509556806",
+appId: "1:953509556806:web:96ed896142e7b5433f5047"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+</script>
+
+<script>
+
+/* IDENTIFICADOR ANONIMO */
+
+let userId = localStorage.getItem("smartlightUser");
+
+if(!userId){
+
+userId="user_"+Math.random().toString(36).substr(2,9);
+
+localStorage.setItem("smartlightUser",userId);
+
+}
+
+</script>
+
+<script>
+
+/* GEOLOCALIZAÇÃO */
+
+document.getElementById("getLocation").onclick=()=>{
+
+navigator.geolocation.getCurrentPosition(pos=>{
+
+let lat=pos.coords.latitude;
+
+let lon=pos.coords.longitude;
+
+document.getElementById("coords").value=lat+","+lon;
+
+alert("Localização capturada");
+
+});
+
+}
+
+</script>
+
+<script>
+
+/* SCANNER QR */
+
+let qrScanner;
+
+function abrirScanner(){
+
+document.getElementById("reader").style.display="block";
+
+qrScanner=new Html5Qrcode("reader");
+
+qrScanner.start(
+
+{ facingMode:"environment" },
+
+{ fps:10, qrbox:250 },
+
+qrCodeMessage =>{
+
+document.getElementById("posteId").value=qrCodeMessage;
+
+qrScanner.stop();
+
+document.getElementById("reader").style.display="none";
+
+}
+
+);
+
+}
+
+</script>
+
+<script>
+
+/* PREVIEW FOTO */
+
+document.getElementById("foto").addEventListener("change",e=>{
+
+let file=e.target.files[0];
+
+if(!file)return;
+
+let reader=new FileReader();
+
+reader.onload=function(ev){
+
+document.getElementById("preview").innerHTML="<img src='"+ev.target.result+"' style='max-height:200px'>";
+
+}
+
+reader.readAsDataURL(file);
+
+});
+
+</script>
+
+<script>
+
+/* ENVIAR REPORTE */
+
+document.getElementById("formReporte").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+let posteId=document.getElementById("posteId").value;
+
+let coords=document.getElementById("coords").value;
+
+let tipo=document.getElementById("tipoProblema").value;
+
+let descricao=document.getElementById("descricao").value;
+
+if(posteId===""){
+
+alert("Informe o ID do poste");
+
+return;
+
+}
+
+/* SALVAR REPORTE */
+
+await db.collection("reports").add({
+
+posteId,
+
+coords,
+
+tipo,
+
+descricao,
+
+userId,
+
+status:"normal",
+
+data:firebase.firestore.FieldValue.serverTimestamp()
+
+});
+
+/* CONTAR REPORTS DO POSTE */
+
+let snapshot=await db.collection("reports")
+
+.where("posteId","==",posteId)
+
+.get();
+
+let total=snapshot.size;
+
+/* SE 3 REPORTS → ALERTA URGENTE */
+
+if(total>=3){
+
+await db.collection("alertas").doc(posteId).set({
+
+posteId,
+
+status:"urgente",
+
+totalReports:total,
+
+data:firebase.firestore.FieldValue.serverTimestamp()
+
+});
+
+}
+
+document.getElementById("formReporte").style.display="none";
+
+document.getElementById("success").style.display="block";
+
+});
+
+</script>
+
 </body>
-
 </html>

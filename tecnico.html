@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,330 +18,417 @@
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body style="display:none;">
 
-<!-- ================= HEADER ================= -->
-<header class="fixed-top bg-light shadow-sm">
-    <div class="container d-flex justify-content-between align-items-center py-2">
-        
-        <div class="logo d-flex align-items-center gap-2">
-            <img class="logoImg" src="img/icone.PNG" alt="logotipo" style="height:40px;">
-            <a href="#" class="text-decoration-none">
-                <h1 class="m-0">SmartLight</h1>
-            </a>
-        </div>
+<body style="display:none;"> <!-- Body escondido inicialmente -->
 
-        <nav class="navbar navbar-expand-lg p-0">
-            <div class="container-fluid p-0">
-                <!-- Botão hamburger -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarMenu">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-3">
-                    <li class="nav-item">
-                    <a class="nav-link text-primary" href="#mapa-section"><i class="fas fa-map-marked-alt"></i> Mapa</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link text-primary" href="#dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link text-primary" href="#manutencao-rapida"><i class="fas fa-tools"></i> Manutenção</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="#notificacoes">
-                            <i class="fas fa-bell"></i> Notificações
-                            <span class="badge bg-danger" id="contadorNotif">0</span>
-                        </a>
-                    </li>
-                </ul>
-                </div>
+    <!-- ================= HEADER ================= -->
+    <header class="fixed-top bg-light shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center py-2">
+            <div class="logo d-flex align-items-center gap-2">
+                <img class="logoImg" src="img/icone.PNG" alt="logotipo" style="height:40px;">
+                <a href="#" class="text-decoration-none">
+                    <h1 class="m-0">SmartLight</h1>
+                </a>
             </div>
-        </nav>
 
-        <!-- Usuário Logado -->
-        <div class="dropdown">
-            <button class="btn d-flex align-items-center gap-2" 
-                    type="button" 
-                    data-bs-toggle="dropdown"
-                    data-bs-auto-close="outside">
-                <i class="fas fa-user-circle fa-2x text-primary"></i>
-                <div class="text-start d-none d-md-block">
-                    <strong class="d-block" id="userName">Carregando...</strong>
-                    <small class="text-muted" id="userEmail"></small>
-                </div>
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width: 250px;">
-                <li class="text-center mb-2">
-                    <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
-                    <h6 id="userNameDrop">Carregando...</h6>
-                    <small class="text-muted" id="userEmailDrop"></small>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <button class="btn btn-danger w-100" onclick="logout()">
-                        <i class="fas fa-sign-out-alt me-2"></i>
-                        Terminar Sessão
+            <nav class="navbar navbar-expand-lg p-0">
+                <div class="container-fluid p-0">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+                        aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
                     </button>
-                </li>
-            </ul>
-        </div>
-
-    </div>
-</header>
-
-<!-- ================= MAIN ================= -->
-<main class="container py-5" style="margin-top: 100px;">
-
-    <!-- Boas Vindas -->
-    <div class="mb-5">
-        <h1 class="fw-bold">Olá, Técnico <span id="primeiroNome">...</span>!</h1>
-        <p class="text-muted">Área de atuação: <strong>Região de Talatona, Luanda</strong></p>
-    </div>
-
-    <!-- ================= DASHBOARD ================= -->
-    <section class="medicoes px-3" id="dashboard">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="fw-bold">DashBoard</h1>
-                <span class="badge bg-success">Poste 03 - Online</span>
-            </div>
-
-            <div class="row g-4">
-                <!-- Luminosidade -->
-                <div class="col-12 col-md-4">
-                    <div class="card-valor shadow-sm rounded p-3 text-center">
-                        <i class="fas fa-sun fa-2x mb-2"></i>
-                        <h1>Luminosidade</h1>
-                        <h2 id="valor-luminosidade">--%</h2>
-                        <a href="#dashboard" class="estado text-decoration-none fw-semibold d-block mt-2">
-                            Mais Detalhes
-                        </a>
+                    <div class="collapse navbar-collapse" id="navbarMenu">
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-3">
+                            <li class="nav-item">
+                                <a class="nav-link text-primary" href="#mapa-section"><i
+                                        class="fas fa-map-marked-alt"></i> Mapa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary" href="#dashboard"><i class="fas fa-chart-line"></i>
+                                    Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary" href="#manutencao-rapida"><i class="fas fa-tools"></i>
+                                    Manutenção</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <!-- Corrente -->
-                <div class="col-12 col-md-4">
-                    <div class="card-valor shadow-sm rounded p-3 text-center">
-                        <i class="fas fa-bolt fa-2x mb-2"></i>
-                        <h1>Corrente</h1>
-                        <h2 id="valor-corrente">-- A</h2>
-                        <a href="#dashboard" class="estado text-decoration-none fw-semibold d-block mt-2">
-                            Mais Detalhes
-                        </a>
+            </nav>
+
+            <div class="dropdown">
+                <button class="btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside">
+                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                    <div class="text-start d-none d-md-block">
+                        <strong class="d-block" id="userName">Carregando...</strong>
+                        <small class="text-muted" id="userEmail"></small>
                     </div>
-                </div>
-                <!-- Potência -->
-                <div class="col-12 col-md-4">
-                    <div class="card-valor shadow-sm rounded p-3 text-center">
-                        <i class="fas fa-plug fa-2x mb-2"></i>
-                        <h1>Potência</h1>
-                        <h2 id="valor-potencia">-- W</h2>
-                        <a href="#dashboard" class="estado text-decoration-none fw-semibold d-block mt-2">
-                            Mais Detalhes
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Última atualização -->
-            <div class="text-center mt-4 text-muted">
-                <p><i class="fas fa-clock me-2"></i>Última atualização: <span id="ultima-atualiacao">A carregar...</span></p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mapa -->
-    <section id="mapa-section" class="mb-5">
-        <div class="desiderio">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Estado dos Postes na Região</h4>
-                <span class="badge bg-primary">Clique no marcador</span>
-            </div>
-            <div class="map-wrapper">
-                <div id="mapa-postes" style="height:400px;"></div>
-            </div>
-        </div>
-    </section>
-
-</main>
-
-<!-- ================= FOOTER ================= -->
-<footer class="mt-auto">
-    <div class="container">
-        <div class="row gy-4 text-center text-md-start">
-            <div class="col-md-8">
-                <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                <p class="small text-white-50">Monitoramento em Tempo Real via LoRa & Firebase.</p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <h4 class="h6">Links</h4>
-                <ul class="list-unstyled small">
-                    <li><a href="#" class="text-white-50 text-decoration-none">Políticas</a></li>
-                    <li><a href="#" class="text-white-50 text-decoration-none">Contactos</a></li>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width: 250px;">
+                    <li class="text-center mb-2">
+                        <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
+                        <h6 id="userNameDrop">Carregando...</h6>
+                        <small class="text-muted" id="userEmailDrop"></small>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <button class="btn btn-danger w-100" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i> Terminar Sessão
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
-        <div class="border-top border-secondary mt-4 pt-3 text-center">
-            <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+    <main class="container py-5" style="margin-top: 100px;">
+        <div class="mb-5">
+            <h1 class="fw-bold">Olá, Técnico <span id="primeiroNome">...</span>!</h1>
+            <p class="text-muted">Área de atuação: <strong>Região de Talatona, Luanda</strong></p>
         </div>
-    </div>
-</footer>
 
-<!-- ================= SCRIPTS ================= -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <!-- Dashboard -->
+        <section class="medicoes px-3"  id="dashboard">
+            <div class="container py-5">
+                <h1 class="mb-4">Dashboard - SmartLight</h1>
 
-<script>
-    // Inicializar mapa
-    const map = L.map('mapa-postes').setView([-8.916, 13.184], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        attribution:'© OpenStreetMap'
-    }).addTo(map);
-    L.marker([-8.918, 13.186]).addTo(map).bindPopup(`
+                <div class="mb-4 d-flex gap-2 align-items-center">
+                    <label class="fw-bold">Pesquisar Poste:</label>
+                    <input type="text" id="searchPoste" class="form-control w-auto" placeholder="Digite: e:2 ou 2">
+                    <button id="btnReset" class="btn btn-secondary">Mostrar Todos</button>
+                </div>
+
+                <!-- CONTAINER POSTES -->
+                <div id="container-postes" class="row g-4"></div>
+
+            </div>
+        </section>
+
+        <!-- Mapa -->
+        <section id="mapa-section" class="mb-5">
+            <div class="desiderio">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Estado dos Postes na Região
+                    </h4>
+                    <span class="badge bg-primary">Clique no marcador</span>
+                </div>
+                <div class="map-wrapper">
+                    <div id="mapa-postes" style="height:400px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manutenção Rápida -->
+        <section id="manutencao-rapida" class="mb-5">
+            <h2 class="fw-bold text-center mb-4">Ações de Manutenção Rápida</h2>
+            <div class="container">
+                <!-- Controle do Poste -->
+                <div class="row mt-4 justify-content-center">
+                    <div class="col-12">
+                        <div class="onildo text-center p-4 shadow rounded w-100" style="background-color:#f8f9fa;">
+                            <img id="posteImg" src="img/poste_em_pe.png" alt="Poste" class="img-fluid"
+                                style="transition: transform 0.5s;">
+                            <h5 class="mt-2">Controle do Poste</h5>
+                            <p class="text-muted small">Baixar ou subir o poste remotamente.</p>
+                            <button id="togglePosteBtn" class="btn btn-secondary w-100">Baixar Poste</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto">
+        <div class="container">
+            <div class="row gy-4 text-center text-md-start">
+                <div class="col-md-8">
+                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
+                    <p class="small text-white-50">Monitoramento em Tempo Real via LoRa & Firebase.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <h4 class="h6">Links</h4>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white-50 text-decoration-none">Políticas</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Contactos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top border-secondary mt-4 pt-3 text-center">
+                <p class="small text-white-50">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Inicializar mapa
+        const map = L.map('mapa-postes').setView([-8.916, 13.184], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([-8.918, 13.186]).addTo(map).bindPopup(`
         <div class="text-center">
             <strong>Poste 07 - ALERTA</strong><br>
             Falha na Corrente Detectada<br>
-            <a class="btn btn-primary btn-sm mt-2" href="dashboard.html">Ver Detalhes</a>
+            <a class="btn btn-primary btn-sm mt-2" href="#dashboard">Ver Detalhes</a>
         </div>
     `);
-</script>
+    </script>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    
-    const firebaseConfig = {
-        apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-        authDomain: "smartlight-pap-2026.firebaseapp.com",
-        projectId: "smartlight-pap-2026",
-        storageBucket: "smartlight-pap-2026.firebasestorage.app",
-        messagingSenderId: "953509556806",
-        appId: "1:953509556806:web:96ed896142e7b5433f5047"
-    };
+    <script>
+        // Controle do poste
+        const toggleBtn = document.getElementById('togglePosteBtn');
+        const posteImg = document.getElementById('posteImg');
+        let posteBaixado = false;
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-    const firestore = getFirestore(app);
-
-    onAuthStateChanged(auth, (user) => {
-        if (!user) return;
-
-        const tecnicoId = user.uid;
-
-        const notifRef = collection(firestore, "tecnicos", tecnicoId, "notificacoes");
-
-        onSnapshot(notifRef, (snapshot) => {
-
-            const container = document.getElementById("listaNotificacoes");
-            const contador = document.getElementById("contadorNotif");
-
-            container.innerHTML = "";
-            contador.innerText = snapshot.size;
-
-            snapshot.forEach(docSnap => {
-
-                const data = docSnap.data();
-
-                container.innerHTML += `
-                    <div class="card shadow-sm p-3 mb-3">
-                        <h5>${data.tipo}</h5>
-                        <p><strong>Bairro:</strong> ${data.bairro}</p>
-                        <p><strong>Rua:</strong> ${data.rua}</p>
-                        <p><strong>Descrição:</strong> ${data.descricao}</p>
-
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-success btn-sm"
-                                onclick="aceitar('${docSnap.id}')">
-                                Aceitar
-                            </button>
-
-                            <button class="btn btn-danger btn-sm"
-                                onclick="recusar('${docSnap.id}')">
-                                Recusar
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+        toggleBtn.addEventListener('click', () => {
+            posteBaixado = !posteBaixado;
+            if (posteBaixado) {
+                posteImg.src = 'img/poste_inclinado.png';
+                toggleBtn.innerText = 'Subir Poste';
+            } else {
+                posteImg.src = 'img/poste_em_pe.png';
+                toggleBtn.innerText = 'Baixar Poste';
+            }
+            console.log('Comando enviado: ' + toggleBtn.innerText);
         });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+            authDomain: "smartlight-pap-2026.firebaseapp.com",
+            projectId: "smartlight-pap-2026",
+            storageBucket: "smartlight-pap-2026.firebasestorage.app",
+            messagingSenderId: "953509556806",
+            appId: "1:953509556806:web:96ed896142e7b5433f5047"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        const container = document.getElementById('container-postes');
+        const searchPoste = document.getElementById('searchPoste');
+        const btnReset = document.getElementById('btnReset');
+
+        let postesData = {};  // Armazena todos os postes
+        let filtroAtual = '';
+        const tecnicoUid = auth.currentUser?.uid || null;
+const notifContainer = document.querySelector(".notificacoes-container");
+
+function criarCardNotificacao(notifId, dados) {
+    const div = document.createElement("div");
+    div.className = "card shadow-sm mb-2 p-2";
+    div.innerHTML = `
+        <strong>${dados.mensagem}</strong>
+        <div class="mt-2 d-flex justify-content-between">
+            <button class="btn btn-success btn-sm">Aceitar</button>
+            <button class="btn btn-danger btn-sm">Recusar</button>
+        </div>
+        <div class="mt-2 d-none">
+            <input type="text" class="form-control form-control-sm" placeholder="Justificativa">
+            <button class="btn btn-primary btn-sm mt-1">Enviar</button>
+        </div>
+    `;
+
+    // Aceitar
+    div.querySelector(".btn-success").addEventListener("click", async () => {
+        await update(ref(db, `notificacoes/${tecnicoUid}/${notifId}`), { status: "aceito" });
+        div.remove();
+        alert("Reporte aceito!");
     });
 
-    onAuthStateChanged(auth, (user) => {
-        if (!user) return window.location.href = "index.html";
-        document.body.style.display = "block";
-        const nomeCompleto = user.displayName || user.email.split("@")[0];
-        const email = user.email;
-        const primeiroNome = nomeCompleto.split(" ")[0];
+    // Recusar
+    const recusarBtn = div.querySelector(".btn-danger");
+    const justificativaDiv = div.querySelector("div.d-none");
+    const enviarJustBtn = justificativaDiv.querySelector("button");
+    const inputJust = justificativaDiv.querySelector("input");
 
-        document.getElementById("userName").innerText = nomeCompleto;
-        document.getElementById("userEmail").innerText = email;
-        document.getElementById("userNameDrop").innerText = nomeCompleto;
-        document.getElementById("userEmailDrop").innerText = email;
-        document.getElementById("primeiroNome").innerText = primeiroNome;
+    recusarBtn.addEventListener("click", () => {
+        recusarBtn.style.display = "none";
+        div.querySelector(".btn-success").style.display = "none";
+        justificativaDiv.classList.remove("d-none");
+    });
 
-        const posteRef = ref(db, 'postes/poste_principal');
-        onValue(posteRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
-                document.getElementById('valor-corrente').innerText = data.corrente + " A";
-                document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
-                document.getElementById('ultima-atualiacao').innerText = data.hora;
+    enviarJustBtn.addEventListener("click", async () => {
+        const just = inputJust.value.trim();
+        if (!just) return alert("Digite a justificativa");
+        await update(ref(db, `notificacoes/${tecnicoUid}/${notifId}`), { status: "recusado", justificativa: just });
+        div.remove();
+        alert("Reporte recusado com justificativa!");
+    });
+
+    notifContainer.appendChild(div);
+}
+
+if (tecnicoUid) {
+    const notifRefDB = ref(db, `notificacoes/${tecnicoUid}`);
+    onValue(notifRefDB, snapshot => {
+        notifContainer.innerHTML = ""; // limpa antes
+        snapshot.forEach(childSnap => {
+            const notifId = childSnap.key;
+            const dados = childSnap.val();
+            if (dados.status === "pendente") {
+                criarCardNotificacao(notifId, dados);
             }
         });
     });
+}
+        // Função para atualizar a tela
+        /*function atualizarDashboard() {
+            container.innerHTML = ''; // Limpa container
+    
+            // Filtrar postes
+            const ids = Object.keys(postesData).filter(id => id.includes(filtroAtual));
+            ids.forEach(id => {
+                const data = postesData[id];
+                const div = document.createElement('div');
+                div.className = 'col-12 col-md-4';
+    
+                div.innerHTML = `
+                    <div class="card-poste">
+                        <h1>POSTE ${id.replace('e:', '').padStart(3,'0')}</h1>
+                        <p><i class="fas fa-sun"></i> Luminosidade: ${data.luminosidade}%</p>
+                        <p><i class="fas fa-bolt"></i> Corrente: ${data.corrente} A</p>
+                        <p><i class="fas fa-plug"></i> Potência: ${parseFloat(data.potencia).toFixed(2)} W</p>
+                        <p><i class="fas fa-clock"></i> Última atualização: ${data.hora}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }*/
+        /* ========================
+       FUNÇÃO RENDER DASHBOARD
+    ======================== */
+        function renderPostes() {
 
-    window.aceitar = async (id) => {
+            container.innerHTML = "";
 
-        const tecnicoId = auth.currentUser.uid;
+            Object.keys(postesData).forEach(id => {
 
-        const notifRef = doc(firestore, "tecnicos", tecnicoId, "notificacoes", id);
-        const reporteRef = doc(firestore, "reportes", id);
+                // Se houver filtro, verifica se corresponde
+                if (filtroAtual !== "") {
 
-        await updateDoc(notifRef, {
-            status: "aceite"
+                    const filtroFormatado = filtroAtual.startsWith("e:")
+                        ? filtroAtual
+                        : "e:" + filtroAtual;
+
+                    if (id !== filtroFormatado) return;
+                }
+
+                const data = postesData[id];
+
+                const numeroPoste = id.replace("e:", "");
+
+                const col = document.createElement("div");
+                col.className = "col-12 col-md-4";
+
+                col.innerHTML = `
+            <div class="card-poste">
+                <h1>POSTE ${numeroPoste}</h1>
+                <p><i class="fas fa-sun text-warning"></i> Luminosidade: ${data.luminosidade}%</p>
+                <p><i class="fas fa-bolt text-primary"></i> Corrente: ${data.corrente} A</p>
+                <p><i class="fas fa-plug text-success"></i> Potência: ${parseFloat(data.potencia).toFixed(2)} W</p>
+                <p class="text-muted small">
+                    <i class="fas fa-clock"></i> ${data.hora}
+                </p>
+            </div>
+        `;
+
+                container.appendChild(col);
+            });
+        }
+        /* ========================
+           FIREBASE LISTENER
+        ======================== */
+        const posteRef = ref(db, "postes/");
+        onValue(posteRef, snapshot => {
+            postesData = snapshot.val() || {};
+            renderPostes();
         });
 
-        await updateDoc(reporteRef, {
-            status: "em andamento"
+        /* ========================
+           FILTRO EM TEMPO REAL
+        ======================== */
+        searchPoste.addEventListener("input", () => {
+            filtroAtual = searchPoste.value.trim();
+            renderPostes();
         });
 
-        alert("Reporte aceite! Dados do reportista enviados.");
-
-    };
-
-    window.recusar = async (id) => {
-
-        const motivo = prompt("Digite a razão da recusa:");
-
-        if (!motivo) return;
-
-        const tecnicoId = auth.currentUser.uid;
-
-        const notifRef = doc(firestore, "tecnicos", tecnicoId, "notificacoes", id);
-        const reporteRef = doc(firestore, "reportes", id);
-
-        await updateDoc(notifRef, {
-            status: "recusado",
-            motivo: motivo
+        /* ========================
+           RESET FILTRO
+        ======================== */
+        btnReset.addEventListener("click", () => {
+            filtroAtual = "";
+            searchPoste.value = "";
+            renderPostes();
         });
 
-        await updateDoc(reporteRef, {
-            status: "pendente",
-            tecnico: null
+
+        /*/ Firebase: pega dados de todos os postes
+        const posteRef = ref(db, 'postes/');
+        onValue(posteRef, (snapshot) => {
+            postesData = snapshot.val() || {};
+            atualizarDashboard();
+            document.body.style.display = 'block'; // mostra body após carregar
+        });
+    
+        // Pesquisa em tempo real
+        searchPoste.addEventListener('input', () => {
+            filtroAtual = searchPoste.value.trim() ? 'poste_' + searchPoste.value.trim() : '';
+            atualizarDashboard();
+        });
+    
+        // Reset
+        btnReset.addEventListener('click', () => {
+            filtroAtual = '';
+            searchPoste.value = '';
+            atualizarDashboard();
+        });
+    */
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return window.location.href = "login.html";
+
+            const nomeCompleto = user.displayName || user.email.split("@")[0];
+            const email = user.email;
+            const primeiroNome = nomeCompleto.split(" ")[0];
+
+            document.getElementById("userName").innerText = nomeCompleto;
+            document.getElementById("userEmail").innerText = email;
+            document.getElementById("userNameDrop").innerText = nomeCompleto;
+            document.getElementById("userEmailDrop").innerText = email;
+            document.getElementById("primeiroNome").innerText = primeiroNome;
+
+            /*const posteRef = ref(db, 'postes/poste_principal');
+            onValue(posteRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
+                    document.getElementById('valor-corrente').innerText = data.corrente + " A";
+                    document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
+                    document.getElementById('ultima-atualiacao').innerText = data.hora;
+                }
+            });*/
+
+            // Mostrar body após carregar dados
+            document.body.style.display = 'block';
         });
 
-        alert("Reporte recusado.");
-    };
-
-    window.logout = () => {
-        signOut(auth).then(() => window.location.href="index.html");
-    };
-</script>
+        window.logout = () => signOut(auth).then(() => window.location.href = "index.html");
+    </script>
 </body>
+
 </html>

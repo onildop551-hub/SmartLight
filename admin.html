@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <title>Admin - SmartLight</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Ícones -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         body {
-            background-color: #f4f6f9;
-            display: none; /* Esconde até a autenticação */
+            background: linear-gradient(135deg, #4a90e2 0%, #1e3c72 100%);
+            min-height: 100vh;
+            display: none;
         }
 
         .navbar {
-            background-color: #1e293b;
+            background: #1e3c72;
         }
 
         .navbar-brand {
             font-weight: bold;
-            color: #fff !important;
         }
 
         .card-dashboard {
-            border: none;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .table img {
@@ -39,238 +37,368 @@
 
         .section-title {
             font-weight: 600;
-            color: #1e293b;
-        }
-
-        .user-session {
-            color: #fff;
-            margin-right: 15px;
         }
     </style>
 </head>
+
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            SmartLight - Admin
-        </a>
+    <!-- NAVBAR -->
 
-        <div class="d-flex ms-auto align-items-center">
-            <span class="text-white me-3" id="userName"></span>
-            <button class="btn btn-outline-light btn-sm" id="btnLogout">
-                Terminar Sessão
-            </button>
-        </div>
-    </div>
-</nav>
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid">
 
-<div class="container mt-5 pt-5">
+            <a class="navbar-brand">
+                <i class="bi bi-lightbulb"></i>
+                SmartLight Admin
+            </a>
 
-    <!-- DASHBOARD CARDS -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card card-dashboard p-3 text-center">
-                <h6>Total Reportes</h6>
-                <h3 id="totalReportes">0</h3>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3" id="userName"></span>
+
+                <button class="btn btn-outline-light btn-sm" id="btnLogout">
+                    Terminar Sessão
+                </button>
             </div>
+
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card card-dashboard p-3 text-center">
-                <h6>Pendentes</h6>
-                <h3 id="totalPendentes">0</h3>
+    </nav>
+
+    <div class="container mt-5 pt-5">
+
+        <!-- DASHBOARD -->
+
+        <div class="row mb-4">
+
+            <div class="col-md-4">
+                <div class="card card-dashboard p-3 text-center">
+                    <h6>Total Reportes</h6>
+                    <h3 id="totalReportes">0</h3>
+                </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card card-dashboard p-3 text-center">
-                <h6>Resolvidos</h6>
-                <h3 id="totalResolvidos">0</h3>
+
+            <div class="col-md-4">
+                <div class="card card-dashboard p-3 text-center">
+                    <h6>Pendentes</h6>
+                    <h3 id="totalPendentes">0</h3>
+                </div>
             </div>
+
+            <div class="col-md-4">
+                <div class="card card-dashboard p-3 text-center">
+                    <h6>Resolvidos</h6>
+                    <h3 id="totalResolvidos">0</h3>
+                </div>
+            </div>
+
         </div>
+
+        <!-- TABELA -->
+
+        <div class="card card-dashboard p-4">
+
+            <h5 class="section-title mb-3">
+                <i class="bi bi-list-ul"></i>
+                Lista de Reportes
+            </h5>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+                        <tr>
+
+                            <th>Poste</th>
+                            <th>Problema</th>
+                            <th>Coordenadas</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Ação</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody id="listaReportes"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- TABELA -->
-    <div class="card card-dashboard p-4">
-        <h5 class="section-title mb-3"><i class="bi bi-list-ul"></i> Lista de Reportes</h5>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Tipo</th>
-                        <th>Bairro</th>
-                        <th>Rua</th>
-                        <th>Status</th>
-                        <th>Foto</th>
-                        <th>Data</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="listaReportes"></tbody>
-            </table>
+    <!-- MODAL TÉCNICOS -->
+
+    <div class="modal fade" id="modalTecnico">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5>Encaminhar para Técnico</h5>
+
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <select class="form-select mb-3" id="listaTecnicos"></select>
+
+                    <textarea class="form-control" id="mensagemTecnico"
+                        placeholder="Mensagem para o técnico"></textarea>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-primary" onclick="confirmarEncaminhamento()">
+                        Enviar
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-</div>
+    <script type="module">
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            onSnapshot,
+            doc,
+            updateDoc,
+            addDoc
+        }
 
-    const firebaseConfig = {
-    apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-    authDomain: "smartlight-pap-2026.firebaseapp.com",
-    databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com/",
-    projectId: "smartlight-pap-2026",
-    storageBucket: "smartlight-pap-2026.appspot.com",
-    messagingSenderId: "953509556806",
-    appId: "1:953509556806:web:96ed896142e7b5433f5047"
-    };
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    document.body.style.display = "block";
-    const adminEmail = "adminsmartlight@gmail.com";
+        const firebaseConfig = {
+            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+            authDomain: "smartlight-pap-2026.firebaseapp.com",
+            projectId: "smartlight-pap-2026",
+            storageBucket: "smartlight-pap-2026.appspot.com",
+            messagingSenderId: "953509556806",
+            appId: "1:953509556806:web:96ed896142e7b5433f5047"
+        };
 
-    // 🔐 PROTEÇÃO ADMIN
-    onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        window.location.href = "index.html";
-    } else if (user.email !== adminEmail) {
-        window.location.href = "index.html";
-    }
-    });
+        const app = initializeApp(firebaseConfig);
+        const dbRealtime = getDatabase(app);
+        const auth = getAuth(app);
 
-    // 🚪 TERMINAR SESSÃO
-    document.getElementById("btnLogout").addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-    });
-    /*
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, get, child, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        const db = getFirestore(app);
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-        authDomain: "smartlight-pap-2026.firebaseapp.com",
-        databaseURL: "https://smartlight-pap-2026-default-rtdb.firebaseio.com/",
-        projectId: "smartlight-pap-2026",
-        storageBucket: "smartlight-pap-2026.appspot.com",
-        messagingSenderId: "953509556806",
-        appId: "1:953509556806:web:96ed896142e7b5433f5047"
-    };
+        const adminEmail = "adminsmartlight@gmail.com";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+        let reporteSelecionado = null;
 
-    const userNameSpan = document.getElementById("userName");
-    const btnLogout = document.getElementById("btnLogout");
+        document.body.style.display = "block";
 
-    btnLogout.addEventListener("click", async () => {
-        await signOut(auth);
-        window.location.href = "index.html";
-    });
+        onAuthStateChanged(auth, (user) => {
 
-    // 🔐 Verificação de sessão do Admin
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) return window.location.href = "login.html";
+            if (!user || user.email !== adminEmail) {
 
-        try {
-            const userSnap = await get(child(ref(db), `usuarios/${user.uid}`));
-            const dados = userSnap.exists() ? userSnap.val() : null;
+                window.location.href = "index.html";
 
-            if (!dados || dados.tipoConta !== "admin") {
-                alert("Conta não autorizada!");
-                await signOut(auth);
-                return window.location.href = "login.html";
             }
 
-            // Exibir nome do admin
-            userNameSpan.textContent = `Olá, ${dados.nome || "Admin"}`;
-            document.body.style.display = "block";
-
-        } catch (err) {
-            console.error("Erro ao buscar dados do usuário:", err);
-            await signOut(auth);
-            window.location.href = "login.html";
-        }
-    });
-
-    // 🔥 Logout
-    btnLogout.addEventListener("click", async () => {
-        await signOut(auth);
-        window.location.href = "login.html";
-    });
-
-    // 🔥 LISTAR REPORTES EM TEMPO REAL
-    const reportesRef = ref(db, "reportes");
-    onValue(reportesRef, (snapshot) => {
-        const tabela = document.getElementById("listaReportes");
-        tabela.innerHTML = "";
-
-        let total = 0, pendentes = 0, resolvidos = 0;
-
-        snapshot.forEach(childSnap => {
-            total++;
-            const data = childSnap.val();
-            const id = childSnap.key;
-
-            if (data.status === "pendente") pendentes++;
-            if (data.status === "resolvido") resolvidos++;
-
-            tabela.innerHTML += `
-                <tr>
-                    <td>${data.tipo || ""}</td>
-                    <td>${data.bairro || ""}</td>
-                    <td>${data.rua || ""}</td>
-                    <td>
-                        <span class="badge ${data.status === 'pendente' ? 'bg-warning' :
-                                            data.status === 'resolvido' ? 'bg-success' : 'bg-info'}">
-                            ${data.status || ""}
-                        </span>
-                    </td>
-                    <td>${data.foto ? `<img src="${data.foto}" />` : "Sem foto"}</td>
-                    <td>${data.data ? new Date(data.data).toLocaleString() : ""}</td>
-                    <td>
-                        <select class="form-select form-select-sm mb-2" id="tecnico-${id}">
-                            <option value="">Selecionar Técnico</option>
-                            <option value="tecnico1">Técnico Talatona</option>
-                            <option value="tecnico2">Técnico Benfica</option>
-                        </select>
-                        <button class="btn btn-sm btn-primary" onclick="encaminharReporte('${id}')">Encaminhar</button>
-                    </td>
-                </tr>
-            `;
         });
 
-        document.getElementById("totalReportes").innerText = total;
-        document.getElementById("totalPendentes").innerText = pendentes;
-        document.getElementById("totalResolvidos").innerText = resolvidos;
-    });
+        document.getElementById("btnLogout").onclick = async () => {
 
-    // 🔥 FUNÇÕES DE AÇÃO
-    async function encaminharReporte(id) {
-        const select = document.getElementById("tecnico-" + id);
-        const tecnicoId = select.value;
-        if (!tecnicoId) return alert("Selecione um técnico.");
+            await signOut(auth);
 
-        const reporteSnap = await get(child(ref(db), `reportes/${id}`));
-        if (!reporteSnap.exists()) return;
+            window.location.href = "index.html";
 
-        const dados = reporteSnap.val();
-        await update(ref(db, `reportes/${id}`), { status: "encaminhado", tecnico: tecnicoId });
+        };
 
-        const notifRef = ref(db, `tecnicos/${tecnicoId}/notificacoes/${id}`);
-        await update(notifRef, { ...dados, reporteId: id, status: "pendente", dataEnvio: serverTimestamp() });
+        /* LISTAR REPORTES */
 
-        alert("Reporte encaminhado com sucesso!");
-    }
+        const tabela = document.getElementById("listaReportes");
 
-    window.encaminharReporte = encaminharReporte;*/
+        const reportsRef = collection(db, "reports");
 
-</script>
+        onSnapshot(reportsRef, (snapshot) => {
+
+            tabela.innerHTML = "";
+
+            let total = 0;
+
+            let pendentes = 0;
+
+            let resolvidos = 0;
+
+            snapshot.forEach(docSnap => {
+
+                const data = docSnap.data();
+
+                const id = docSnap.id;
+
+                total++;
+
+                if (data.status === "pendente") pendentes++;
+
+                if (data.status === "resolvido") resolvidos++;
+
+                tabela.innerHTML += `
+
+<tr>
+
+<td>${data.posteId}</td>
+
+<td>${data.tipo}</td>
+
+<td>${data.coords || ""}</td>
+
+<td>
+
+<span class="badge ${data.status === "resolvido"
+                        ? "bg-success"
+                        : data.status === "encaminhado"
+                            ? "bg-info"
+                            : "bg-warning"}">
+
+${data.status || "pendente"}
+
+</span>
+
+</td>
+
+<td>
+
+${data.data?.toDate().toLocaleString() || ""}
+
+</td>
+
+<td>
+
+<button class="btn btn-sm btn-primary"
+onclick="abrirModal('${id}')">
+
+Encaminhar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+            });
+
+            document.getElementById("totalReportes").innerText = total;
+            document.getElementById("totalPendentes").innerText = pendentes;
+            document.getElementById("totalResolvidos").innerText = resolvidos;
+
+        });
+
+        /* ABRIR MODAL */
+
+        window.abrirModal = async (id) => {
+
+reporteSelecionado = id;
+
+const select = document.getElementById("listaTecnicos");
+
+select.innerHTML = "<option>Carregando técnicos...</option>";
+
+try{
+
+const snapshot = await get(ref(dbRealtime,"usuarios"));
+
+select.innerHTML = "";
+
+if(!snapshot.exists()){
+
+select.innerHTML = "<option>Nenhum técnico encontrado</option>";
+
+return;
+
+}
+
+const usuarios = snapshot.val();
+
+Object.keys(usuarios).forEach(uid => {
+
+const user = usuarios[uid];
+
+if(user.tipoConta === "tecnico"){
+
+const option = document.createElement("option");
+
+option.value = uid;
+
+option.textContent = `${user.nome || "Técnico"} - ${user.bairro || ""}`;
+
+select.appendChild(option);
+
+}
+
+});
+
+}catch(err){
+
+console.error(err);
+
+select.innerHTML = "<option>Erro ao carregar técnicos</option>";
+
+}
+
+new bootstrap.Modal(document.getElementById("modalTecnico")).show();
+
+};
+
+        /* CONFIRMAR ENCAMINHAMENTO */
+
+        window.confirmarEncaminhamento = async () => {
+
+            const tecnicoId = document.getElementById("listaTecnicos").value;
+
+            const mensagem = document.getElementById("mensagemTecnico").value;
+
+            if (!tecnicoId) return alert("Selecione um técnico");
+
+            await updateDoc(doc(db, "reports", reporteSelecionado), {
+
+                status: "encaminhado",
+                tecnico: tecnicoId
+
+            });
+
+            /* CRIAR NOTIFICAÇÃO PARA TÉCNICO */
+
+            await addDoc(collection(db, "tecnicos", tecnicoId, "notificacoes"), {
+
+                reporteId: reporteSelecionado,
+                mensagem: mensagem,
+                status: "pendente",
+                data: new Date()
+
+            });
+
+            alert("Reporte encaminhado!");
+
+            location.reload();
+
+        };
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
