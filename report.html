@@ -2,347 +2,351 @@
 <html lang="pt">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Reportar Problema - SmartLight</title>
+    <title>Reportar Problema - SmartLight</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
-<style>
+    <style>
+        body {
+            background: linear-gradient(135deg, #4a90e2 0%, #1e3c72 100%);
+            min-height: 100vh;
+            padding-top: 20px;
+        }
 
-body{
-background:linear-gradient(135deg,#4a90e2 0%,#1e3c72 100%);
-min-height:100vh;
-padding-top:20px;
-}
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
 
-.report-card{
-background:white;
-border-radius:15px;
-padding:30px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
-}
+        .step {
+            display: inline-block;
+            margin-right: 10px
+        }
 
-.step{display:inline-block;margin-right:10px}
-
-.photo-preview{
-height:200px;
-border:2px dashed #ccc;
-display:flex;
-align-items:center;
-justify-content:center;
-border-radius:10px;
-margin-top:10px;
-}
-
-</style>
+        .photo-preview {
+            height: 200px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-<div class="text-center text-white mb-4">
-<h1><a href="index.html" class="text-white text-decoration-none"><i class="fas fa-lightbulb"></i> SmartLight</a></h1>
-<p>Reporte problemas de iluminação pública</p>
-</div>
+        <div class="text-center text-white mb-4">
+            <h1><a href="index.html" class="text-white text-decoration-none"><i class="fas fa-lightbulb"></i>
+                    SmartLight</a></h1>
+            <p>Reporte problemas de iluminação pública</p>
+        </div>
 
-<div class="row justify-content-center">
+        <div class="row justify-content-center">
 
-<div class="col-lg-8">
+            <div class="col-lg-8">
 
-<div class="report-card">
+                <div class="report-card">
 
-<form id="formReporte">
+                    <form id="formReporte">
 
-<h4>1️⃣ Localização</h4>
+                        <h4>1️⃣ Localização</h4>
 
-<button type="button" id="getLocation" class="btn btn-outline-primary w-100 mb-3">
-Capturar localização
-</button>
+                        <button type="button" id="getLocation" class="btn btn-outline-primary w-100 mb-3">
+                            Capturar localização
+                        </button>
 
-<input type="hidden" id="coords">
+                        <input type="hidden" id="coords">
 
-<hr>
+                        <hr>
 
-<h4>ID do Poste</h4>
+                        <h4>ID do Poste</h4>
 
-<div class="input-group mb-2">
-<input type="text" id="posteId" class="form-control" placeholder="Ex: SL-1002">
+                        <div class="input-group mb-2">
+                            <input type="text" id="posteId" class="form-control" placeholder="Ex: SL-1002">
 
-<button type="button" class="btn btn-outline-dark" onclick="abrirScanner()">
-<i class="fas fa-qrcode"></i>
-</button>
-</div>
+                            <button type="button" class="btn btn-outline-dark" onclick="abrirScanner()">
+                                <i class="fas fa-qrcode"></i>
+                            </button>
+                        </div>
 
-<div id="reader" style="width:100%;display:none"></div>
+                        <div id="reader" style="width:100%;display:none"></div>
 
-<hr>
+                        <hr>
 
-<h4>Problema</h4>
+                        <h4>Problema</h4>
 
-<select id="tipoProblema" class="form-control mb-3">
+                        <select id="tipoProblema" class="form-control mb-3">
 
-<option>Lâmpada Fundida</option>
-<option>Poste Partido</option>
-<option>Fios Soltos</option>
-<option>Outro</option>
+                            <option>Lâmpada Fundida</option>
+                            <option>Poste Partido</option>
+                            <option>Fios Soltos</option>
+                            <option>Outro</option>
 
-</select>
+                        </select>
 
-<hr>
+                        <hr>
 
-<h4>Foto (Opcional)</h4>
+                        <h4>Foto (Opcional)</h4>
 
-<input type="file" id="foto" class="form-control">
+                        <input type="file" id="foto" class="form-control">
 
-<div class="photo-preview" id="preview">
-Nenhuma foto
-</div>
+                        <div class="photo-preview" id="preview">
+                            Nenhuma foto
+                        </div>
 
-<hr>
+                        <hr>
 
-<h4>Descrição</h4>
+                        <h4>Descrição</h4>
 
-<textarea id="descricao" class="form-control"></textarea>
+                        <textarea id="descricao" class="form-control"></textarea>
 
-<br>
+                        <br>
 
-<button class="btn btn-warning w-100">
+                        <button class="btn btn-warning w-100">
 
-Enviar Reporte
+                            Enviar Reporte
 
-</button>
+                        </button>
 
-</form>
+                    </form>
 
-<div id="success" class="text-center mt-4" style="display:none">
+                    <div id="success" class="text-center mt-4" style="display:none">
 
-<h3 class="text-success">
+                        <h3 class="text-success">
 
-<i class="fas fa-check-circle"></i>
+                            <i class="fas fa-check-circle"></i>
 
-Reporte enviado
+                            Reporte enviado
 
-<small><a href="index.html">Voltar ao Home</a></small>
+                            <small><a href="index.html" class="text-white text-decoration-none">Voltar ao
+                                    Home</a></small>
 
-</h3>
+                        </h3>
 
-</div>
+                    </div>
 
-</div>
+                </div>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script>
+    <script>
 
-/* FIREBASE CONFIG */
+        /* FIREBASE CONFIG */
 
-const firebaseConfig = {
+        const firebaseConfig = {
 
-apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-authDomain: "smartlight-pap-2026.firebaseapp.com",
-projectId: "smartlight-pap-2026",
-storageBucket: "smartlight-pap-2026.appspot.com",
-messagingSenderId: "953509556806",
-appId: "1:953509556806:web:96ed896142e7b5433f5047"
+            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+            authDomain: "smartlight-pap-2026.firebaseapp.com",
+            projectId: "smartlight-pap-2026",
+            storageBucket: "smartlight-pap-2026.appspot.com",
+            messagingSenderId: "953509556806",
+            appId: "1:953509556806:web:96ed896142e7b5433f5047"
 
-};
+        };
 
-firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
 
-const db = firebase.firestore();
+        const db = firebase.firestore();
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-/* IDENTIFICADOR ANONIMO */
+        /* IDENTIFICADOR ANONIMO */
 
-let userId = localStorage.getItem("smartlightUser");
+        let userId = localStorage.getItem("smartlightUser");
 
-if(!userId){
+        if (!userId) {
 
-userId="user_"+Math.random().toString(36).substr(2,9);
+            userId = "user_" + Math.random().toString(36).substr(2, 9);
 
-localStorage.setItem("smartlightUser",userId);
+            localStorage.setItem("smartlightUser", userId);
 
-}
+        }
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-/* GEOLOCALIZAÇÃO */
+        /* GEOLOCALIZAÇÃO */
 
-document.getElementById("getLocation").onclick=()=>{
+        document.getElementById("getLocation").onclick = () => {
 
-navigator.geolocation.getCurrentPosition(pos=>{
+            navigator.geolocation.getCurrentPosition(pos => {
 
-let lat=pos.coords.latitude;
+                let lat = pos.coords.latitude;
 
-let lon=pos.coords.longitude;
+                let lon = pos.coords.longitude;
 
-document.getElementById("coords").value=lat+","+lon;
+                document.getElementById("coords").value = lat + "," + lon;
 
-alert("Localização capturada");
+                alert("Localização capturada");
 
-});
+            });
 
-}
+        }
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-/* SCANNER QR */
+        /* SCANNER QR */
 
-let qrScanner;
+        let qrScanner;
 
-function abrirScanner(){
+        function abrirScanner() {
 
-document.getElementById("reader").style.display="block";
+            document.getElementById("reader").style.display = "block";
 
-qrScanner=new Html5Qrcode("reader");
+            qrScanner = new Html5Qrcode("reader");
 
-qrScanner.start(
+            qrScanner.start(
 
-{ facingMode:"environment" },
+                { facingMode: "environment" },
 
-{ fps:10, qrbox:250 },
+                { fps: 10, qrbox: 250 },
 
-qrCodeMessage =>{
+                qrCodeMessage => {
 
-document.getElementById("posteId").value=qrCodeMessage;
+                    document.getElementById("posteId").value = qrCodeMessage;
 
-qrScanner.stop();
+                    qrScanner.stop();
 
-document.getElementById("reader").style.display="none";
+                    document.getElementById("reader").style.display = "none";
 
-}
+                }
 
-);
+            );
 
-}
+        }
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-/* PREVIEW FOTO */
+        /* PREVIEW FOTO */
 
-document.getElementById("foto").addEventListener("change",e=>{
+        document.getElementById("foto").addEventListener("change", e => {
 
-let file=e.target.files[0];
+            let file = e.target.files[0];
 
-if(!file)return;
+            if (!file) return;
 
-let reader=new FileReader();
+            let reader = new FileReader();
 
-reader.onload=function(ev){
+            reader.onload = function (ev) {
 
-document.getElementById("preview").innerHTML="<img src='"+ev.target.result+"' style='max-height:200px'>";
+                document.getElementById("preview").innerHTML = "<img src='" + ev.target.result + "' style='max-height:200px'>";
 
-}
+            }
 
-reader.readAsDataURL(file);
+            reader.readAsDataURL(file);
 
-});
+        });
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-/* ENVIAR REPORTE */
+        /* ENVIAR REPORTE */
 
-document.getElementById("formReporte").addEventListener("submit",async e=>{
+        document.getElementById("formReporte").addEventListener("submit", async e => {
 
-e.preventDefault();
+            e.preventDefault();
 
-let posteId=document.getElementById("posteId").value;
+            let posteId = document.getElementById("posteId").value;
 
-let coords=document.getElementById("coords").value;
+            let coords = document.getElementById("coords").value;
 
-let tipo=document.getElementById("tipoProblema").value;
+            let tipo = document.getElementById("tipoProblema").value;
 
-let descricao=document.getElementById("descricao").value;
+            let descricao = document.getElementById("descricao").value;
 
-if(posteId===""){
+            if (posteId === "") {
 
-alert("Informe o ID do poste");
+                alert("Informe o ID do poste");
 
-return;
+                return;
 
-}
+            }
 
-/* SALVAR REPORTE */
+            /* SALVAR REPORTE */
 
-await db.collection("reports").add({
+            await db.collection("reports").add({
 
-posteId,
+                posteId,
 
-coords,
+                coords,
 
-tipo,
+                tipo,
 
-descricao,
+                descricao,
 
-userId,
+                userId,
 
-status:"normal",
+                status: "normal",
 
-data:firebase.firestore.FieldValue.serverTimestamp()
+                data: firebase.firestore.FieldValue.serverTimestamp()
 
-});
+            });
 
-/* CONTAR REPORTS DO POSTE */
+            /* CONTAR REPORTS DO POSTE */
 
-let snapshot=await db.collection("reports")
+            let snapshot = await db.collection("reports")
 
-.where("posteId","==",posteId)
+                .where("posteId", "==", posteId)
 
-.get();
+                .get();
 
-let total=snapshot.size;
+            let total = snapshot.size;
 
-/* SE 3 REPORTS → ALERTA URGENTE */
+            /* SE 3 REPORTS → ALERTA URGENTE */
 
-if(total>=3){
+            if (total >= 3) {
 
-await db.collection("alertas").doc(posteId).set({
+                await db.collection("alertas").doc(posteId).set({
 
-posteId,
+                    posteId,
 
-status:"urgente",
+                    status: "urgente",
 
-totalReports:total,
+                    totalReports: total,
 
-data:firebase.firestore.FieldValue.serverTimestamp()
+                    data: firebase.firestore.FieldValue.serverTimestamp()
 
-});
+                });
 
-}
+            }
 
-document.getElementById("formReporte").style.display="none";
+            document.getElementById("formReporte").style.display = "none";
 
-document.getElementById("success").style.display="block";
+            document.getElementById("success").style.display = "block";
 
-});
+        });
 
-</script>
+    </script>
 
 </body>
+
 </html>
