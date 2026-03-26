@@ -1,436 +1,390 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Técnico | SmartLight</title>
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- CSS personalizado -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        body{background:#f0f2f5;font-family:"Segoe UI",sans-serif;}
+        header{background:white;border-bottom:1px solid #e4e6eb;}
+        .nav-btn{cursor:pointer;font-weight:500;padding:8px 16px;border-radius:8px;transition:0.2s;}
+        .nav-btn:hover{background:#f2f2f2;}
+        .nav-btn.active{background:#e7f3ff;color:#1877f2!important;}
+        .page-section{display:none;animation:fade 0.3s;}
+        .page-section.active{display:block;}
+        @keyframes fade{from{opacity:0}to{opacity:1}}
+        .card-poste{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);transition:0.2s;}
+        .card-poste:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,0,0,0.1);}
+        .map-wrapper{background:white;border-radius:12px;padding:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
+        /* PUSH BANNER */
+        #pushBanner{display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:white;border-radius:12px;padding:16px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.18);max-width:310px;border-left:4px solid #1877f2;}
+        /* CHAT */
+        .chat-wrapper{max-width:700px;}
+        .chat-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;border-radius:12px 12px 0 0;border-bottom:1px solid #e4e6eb;}
+        .chat-avatar{width:40px;height:40px;border-radius:50%;background:#1877f2;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;}
+        .chat-body{height:420px;overflow-y:auto;background:#eae9e3;padding:16px;display:flex;flex-direction:column;gap:6px;}
+        .chat-footer{background:white;border-radius:0 0 12px 12px;padding:10px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid #e4e6eb;}
+        .chat-footer input{flex:1;border:none;outline:none;background:#f0f2f5;border-radius:20px;padding:10px 16px;font-size:14px;}
+        .chat-footer button{width:40px;height:40px;border-radius:50%;border:none;background:#1877f2;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.2s;flex-shrink:0;}
+        .chat-footer button:hover{background:#166fe5;}
+        .chat-footer button:disabled{background:#b0b3b8;cursor:not-allowed;}
+        .msg-row{display:flex;flex-direction:column;max-width:72%;}
+        .msg-row.mine{align-self:flex-end;align-items:flex-end;}
+        .msg-row.theirs{align-self:flex-start;align-items:flex-start;}
+        .msg-bubble{padding:9px 13px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word;}
+        .msg-row.mine .msg-bubble{background:#1877f2;color:white;border-bottom-right-radius:4px;}
+        .msg-row.theirs .msg-bubble{background:white;color:#1c1e21;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,0.12);}
+        .msg-time{font-size:10px;opacity:0.55;margin-top:3px;padding:0 4px;}
+        .msg-sender{font-size:11px;font-weight:600;color:#65676b;margin-bottom:3px;padding:0 4px;}
+        .chat-status-line{font-size:12px;color:#8a8d91;text-align:center;padding:6px 0;}
+        .notificacoes-container .card{border-radius:10px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    </style>
 </head>
+<body style="display:none;">
 
-<body style="display:none;"> <!-- Body escondido inicialmente -->
+<!-- PUSH BANNER -->
+<div id="pushBanner">
+    <div class="fw-bold mb-1"><i class="fas fa-bell text-primary"></i> Notificações Push</div>
+    <div style="font-size:13px;color:#65676b;margin-bottom:10px;">Activa para receber mensagens mesmo com o site fechado.</div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" id="btnAceitarPush">Activar</button>
+        <button class="btn btn-light btn-sm" id="btnRecusarPush">Agora não</button>
+    </div>
+</div>
 
-    <!-- ================= HEADER ================= -->
-    <header class="fixed-top shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center py-2">
-            <div class="logo d-flex align-items-center gap-2">
-                <img class="logoImg" src="img/icone.PNG" alt="logotipo" style="height:40px;">
-                <a href="#" class="text-decoration-none">
-                    <h1 class="m-0">SmartLight</h1>
-                </a>
-            </div>
-
-            <nav class="navbar navbar-expand-lg p-0">
-                <div class="container-fluid p-0">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-                        aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarMenu">
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-3">
-                            <li class="nav-item">
-                                <a class="nav-link text-primary" href="#mapa-section"><i
-                                        class="fas fa-map-marked-alt"></i> Mapa</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-primary" href="#dashboard"><i class="fas fa-chart-line"></i>
-                                    Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-primary" href="#manutencao-rapida"><i class="fas fa-tools"></i>
-                                    Manutenção</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="dropdown">
-                <button class="btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown"
-                    data-bs-auto-close="outside">
-                    <i class="fas fa-user-circle fa-2x text-primary"></i>
-                    <div class="text-start d-none d-md-block">
-                        <strong class="d-block" id="userName">Carregando...</strong>
-                        <small class="text-muted" id="userEmail"></small>
-                    </div>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width: 250px;">
-                    <li class="text-center mb-2">
-                        <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
-                        <h6 id="userNameDrop">Carregando...</h6>
-                        <small class="text-muted" id="userEmailDrop"></small>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li>
-                        <button class="btn btn-danger w-100" onclick="logout()">
-                            <i class="fas fa-sign-out-alt me-2"></i> Terminar Sessão
-                        </button>
-                    </li>
-                </ul>
-            </div>
+<header class="fixed-top shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+        <div class="logo d-flex align-items-center gap-2">
+            <img class="logoImg" src="img/icone.PNG" alt="logotipo" style="height:40px;">
+            <a href="#" class="text-decoration-none"><h1 class="m-0">SmartLight</h1></a>
         </div>
-    </header>
+        <nav class="navbar navbar-expand-lg p-0">
+            <div class="container-fluid p-0">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarMenu">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-3">
+                        <li class="nav-item"><a class="nav-link nav-btn text-primary" data-section="mapa"><i class="fas fa-map-marked-alt"></i> Mapa</a></li>
+                        <li class="nav-item"><a class="nav-link nav-btn text-primary" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link nav-btn text-primary" data-section="manutencao"><i class="fas fa-tools"></i> Manutenção</a></li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link nav-btn text-primary" data-section="chat"><i class="fas fa-comment-dots"></i> Chat
+                                <span id="chatBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link nav-btn text-primary" data-section="notificacoes"><i class="fas fa-bell"></i> Notificações
+                                <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="dropdown">
+            <button class="btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <i class="fas fa-user-circle fa-2x text-primary"></i>
+                <div class="text-start d-none d-md-block">
+                    <strong class="d-block" id="userName">Carregando...</strong>
+                    <small class="text-muted" id="userEmail"></small>
+                </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width:250px;">
+                <li class="text-center mb-2"><i class="fas fa-user-circle fa-3x text-primary mb-2"></i><h6 id="userNameDrop">Carregando...</h6><small class="text-muted" id="userEmailDrop"></small></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="btn btn-danger w-100" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Terminar Sessão</button></li>
+            </ul>
+        </div>
+    </div>
+</header>
 
-    <!-- ================= MAIN ================= -->
-    <main class="container py-5" style="margin-top: 100px;">
+<main class="container py-5" style="margin-top:100px;">
+
+    <section class="medicoes px-3 page-section active" id="dashboard-section">
         <div class="mb-5">
             <h1 class="fw-bold">Olá, Técnico <span id="primeiroNome">...</span>!</h1>
             <p class="text-muted">Área de atuação: <strong>Região de Talatona, Luanda</strong></p>
         </div>
-
-        <!-- Dashboard -->
-        <section class="medicoes px-3"  id="dashboard">
-            <div class="container py-5">
-                <h1 class="mb-4">Dashboard - SmartLight</h1>
-
-                <div class="mb-4 d-flex gap-2 align-items-center">
-                    <label class="fw-bold">Pesquisar Poste:</label>
-                    <input type="text" id="searchPoste" class="form-control w-auto" placeholder="Digite: e:2 ou 2">
-                    <button id="btnReset" class="btn btn-secondary">Mostrar Todos</button>
-                </div>
-
-                <!-- CONTAINER POSTES -->
-                <div id="container-postes" class="row g-4"></div>
-
+        <div class="container py-5">
+            <h1 class="mb-4">Dashboard - SmartLight</h1>
+            <div class="mb-4 d-flex gap-2 align-items-center">
+                <label class="fw-bold">Pesquisar Poste:</label>
+                <input type="text" id="searchPoste" class="form-control w-auto" placeholder="Digite: e:2 ou 2">
+                <button id="btnReset" class="btn btn-secondary">Mostrar Todos</button>
             </div>
-        </section>
+            <div id="container-postes" class="row g-4"></div>
+        </div>
+    </section>
 
-        <!-- Mapa -->
-        <section id="mapa-section" class="mb-5">
-            <div class="desiderio">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Estado dos Postes na Região
-                    </h4>
-                    <span class="badge bg-primary">Clique no marcador</span>
-                </div>
-                <div class="map-wrapper">
-                    <div id="mapa-postes" style="height:400px;"></div>
-                </div>
-            </div>
-        </section>
+    <section id="mapa-section" class="mb-5 page-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Estado dos Postes na Região</h4>
+            <span class="badge bg-primary">Clique no marcador</span>
+        </div>
+        <div class="map-wrapper"><div id="mapa-postes" style="height:400px;"></div></div>
+    </section>
 
-        <!-- Manutenção Rápida -->
-        <section id="manutencao-rapida" class="mb-5">
-            <h2 class="fw-bold text-center mb-4">Ações de Manutenção Rápida</h2>
-            <div class="container">
-                <!-- Controle do Poste -->
-                <div class="row mt-4 justify-content-center">
-                    <div class="col-12">
-                        <div class="onildo text-center p-4 shadow rounded w-100" style="background-color:#f8f9fa;">
-                            <img id="posteImg" src="img/poste_em_pe.png" alt="Poste" class="img-fluid"
-                                style="transition: transform 0.5s;">
-                            <h5 class="mt-2">Controle do Poste</h5>
-                            <p class="text-muted small">Baixar ou subir o poste remotamente.</p>
-                            <button id="togglePosteBtn" class="btn btn-secondary w-100">Baixar Poste</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+    <section id="manutencao-section" class="mb-5 page-section">
+        <h2 class="fw-bold text-center mb-4">Ações de Manutenção Rápida</h2>
+        <div class="container"><div class="row mt-4 justify-content-center">
+            <div class="col-md-4"><div class="text-center p-4 shadow rounded" style="background:#f8f9fa;"><img id="posteImg1" src="img/poste_em_pe.png" class="img-fluid"><h5 class="mt-2">Poste 1</h5><button class="btn btn-secondary w-100 btnPoste" data-poste="poste01">Baixar Poste</button></div></div>
+            <div class="col-md-4"><div class="text-center p-4 shadow rounded" style="background:#f8f9fa;"><img id="posteImg2" src="img/poste_em_pe.png" class="img-fluid"><h5 class="mt-2">Poste 2</h5><button class="btn btn-secondary w-100 btnPoste" data-poste="poste02">Baixar Poste</button></div></div>
+            <div class="col-md-4"><div class="text-center p-4 shadow rounded" style="background:#f8f9fa;"><img id="posteImg3" src="img/poste_em_pe.png" class="img-fluid"><h5 class="mt-2">Poste 3</h5><button class="btn btn-secondary w-100 btnPoste" data-poste="poste03">Baixar Poste</button></div></div>
+        </div></div>
+    </section>
 
-    <!-- Footer Responsivo -->
-    <footer>
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-md-6">
-                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p>Sistema Inteligente de Gestão Urbana.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <h4>Links Rápidos</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="about.html">Sobre</a></li>
-                        <li><a href="termos.html">Termos</a></li>
-                        <li><a href="#">Contactos</a></li>
-                    </ul>
-                </div>
+    <section class="page-section" id="chat-section">
+        <div class="container py-4 chat-wrapper">
+            <div class="chat-header">
+                <div class="chat-avatar"><i class="fas fa-user-shield"></i></div>
+                <div><div style="font-weight:600;font-size:15px;">Admin</div><div style="font-size:12px;color:#42b72a;"><i class="fas fa-circle" style="font-size:8px;"></i> Online</div></div>
             </div>
-            <hr class="mt-4">
-            <div class="text-center">
-                <p class="small m-0">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            <div class="chat-body" id="chatBody"><div class="chat-status-line"><i class="fas fa-spinner fa-spin"></i> A carregar...</div></div>
+            <div class="chat-footer">
+                <input type="text" id="chatInput" placeholder="Escreve uma mensagem..." maxlength="500">
+                <button id="sendChatBtn"><i class="fas fa-paper-plane" style="font-size:13px;margin-left:2px;"></i></button>
             </div>
         </div>
-    </footer>
+    </section>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <section id="notificacoes-section" class="container mb-5 page-section">
+        <h3 class="fw-bold mb-3"><i class="fas fa-bell text-warning"></i> Notificações</h3>
+        <div class="notificacoes-container"></div>
+    </section>
+</main>
 
-    <script>
-        // Inicializar mapa
-        const map = L.map('mapa-postes').setView([-8.916, 13.184], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-        L.marker([-8.918, 13.186]).addTo(map).bindPopup(`
-        <div class="text-center">
-            <strong>Poste 07 - ALERTA</strong><br>
-            Falha na Corrente Detectada<br>
-            <a class="btn btn-primary btn-sm mt-2" href="#dashboard">Ver Detalhes</a>
-        </div>
-    `);
-    </script>
+<footer><div class="container"><div class="row gy-4"><div class="col-md-6"><h3><i class="fas fa-lightbulb"></i> SmartLight</h3><p>Sistema Inteligente de Gestão Urbana.</p></div><div class="col-md-6 text-md-end"><h4>Links Rápidos</h4><ul class="list-unstyled"><li><a href="about.html">Sobre</a></li><li><a href="termos.html">Termos</a></li><li><a href="#">Contactos</a></li></ul></div></div><hr class="mt-4"><div class="text-center"><p class="small m-0">&copy; 2026 SmartLight. Todos os direitos reservados.</p></div></div></footer>
 
-    <script>
-        // Controle do poste
-        const toggleBtn = document.getElementById('togglePosteBtn');
-        const posteImg = document.getElementById('posteImg');
-        let posteBaixado = false;
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const map=L.map('mapa-postes').setView([-8.916,13.184],14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+    L.marker([-8.918,13.186]).addTo(map).bindPopup('<div class="text-center"><strong>Poste 07 - ALERTA</strong><br>Falha na Corrente Detectada</div>');
+</script>
 
-        toggleBtn.addEventListener('click', () => {
-            posteBaixado = !posteBaixado;
-            if (posteBaixado) {
-                posteImg.src = 'img/poste_inclinado.png';
-                toggleBtn.innerText = 'Subir Poste';
-            } else {
-                posteImg.src = 'img/poste_em_pe.png';
-                toggleBtn.innerText = 'Baixar Poste';
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, set, push, onValue, update, query, orderByChild, limitToLast }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getMessaging, getToken, onMessage }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+// ══════════════════════════════════════════════════
+// PASSO 1: Substitui pela tua VAPID KEY do Firebase Console
+// Project Settings → Cloud Messaging → Web Push Certificates → Generate key pair
+// ══════════════════════════════════════════════════
+const VAPID_KEY = "K5g-mj43N95CHc8pYKsaE_bKbdY9Q12yg_Khurk2lxI";
+
+// PASSO 2: URL da Cloud Function após firebase deploy --only functions
+const CF_URL = "https://us-central1-smartlight-pap-2026.cloudfunctions.net/sendPush";
+
+const cfg = {
+    apiKey:"AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+    authDomain:"smartlight-pap-2026.firebaseapp.com",
+    projectId:"smartlight-pap-2026",
+    storageBucket:"smartlight-pap-2026.appspot.com",
+    messagingSenderId:"953509556806",
+    appId:"1:953509556806:web:96ed896142e7b5433f5047",
+    databaseURL:"https://smartlight-pap-2026-default-rtdb.firebaseio.com"
+};
+const app=initializeApp(cfg);
+const db=getDatabase(app);
+const auth=getAuth(app);
+const messaging=getMessaging(app);
+
+let meuUid=null;
+
+// ── PUSH ──────────────────────────────────────────
+async function activarPush(){
+    if(!("Notification" in window)||!("serviceWorker" in navigator))return;
+    try{
+        const swReg=await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        await navigator.serviceWorker.ready;
+        const perm=await Notification.requestPermission();
+        if(perm!=="granted")return;
+        const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:swReg});
+        if(!token||!meuUid)return;
+        await set(ref(db,`fcmTokens/${meuUid}`),{token,perfil:"tecnico",ts:Date.now()});
+        document.getElementById("pushBanner").style.display="none";
+        console.log("Push activado.");
+    }catch(e){console.error("Push erro:",e);}
+}
+
+// Notificação com o site ABERTO
+onMessage(messaging,payload=>{
+    const{title,body}=payload.notification??{};
+    if(Notification.permission==="granted") new Notification(title??"SmartLight",{body:body??"",icon:"/img/icone.PNG"});
+});
+
+document.getElementById("btnAceitarPush").onclick=()=>activarPush();
+document.getElementById("btnRecusarPush").onclick=()=>{document.getElementById("pushBanner").style.display="none";};
+
+// Envia push ao admin quando técnico escreve
+async function notificarAdmin(texto){
+    onValue(ref(db,"fcmTokens"),async snap=>{
+        if(!snap.exists())return;
+        snap.forEach(c=>{
+            const d=c.val();
+            if(d.perfil==="admin"&&d.token){
+                fetch(CF_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+                    body:JSON.stringify({token:d.token,titulo:"Mensagem do Técnico",corpo:texto.length>80?texto.slice(0,77)+"...":texto})
+                }).catch(()=>{});
             }
-            console.log('Comando enviado: ' + toggleBtn.innerText);
         });
-    </script>
+    },{onlyOnce:true});
+}
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-            authDomain: "smartlight-pap-2026.firebaseapp.com",
-            projectId: "smartlight-pap-2026",
-            storageBucket: "smartlight-pap-2026.firebasestorage.app",
-            messagingSenderId: "953509556806",
-            appId: "1:953509556806:web:96ed896142e7b5433f5047"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-
-        const container = document.getElementById('container-postes');
-        const searchPoste = document.getElementById('searchPoste');
-        const btnReset = document.getElementById('btnReset');
-
-        let postesData = {};  // Armazena todos os postes
-        let filtroAtual = '';
-        const tecnicoUid = auth.currentUser?.uid || null;
-const notifContainer = document.querySelector(".notificacoes-container");
-
-function criarCardNotificacao(notifId, dados) {
-    const div = document.createElement("div");
-    div.className = "card shadow-sm mb-2 p-2";
-    div.innerHTML = `
-        <strong>${dados.mensagem}</strong>
-        <div class="mt-2 d-flex justify-content-between">
-            <button class="btn btn-success btn-sm">Aceitar</button>
-            <button class="btn btn-danger btn-sm">Recusar</button>
-        </div>
-        <div class="mt-2 d-none">
-            <input type="text" class="form-control form-control-sm" placeholder="Justificativa">
-            <button class="btn btn-primary btn-sm mt-1">Enviar</button>
-        </div>
-    `;
-
-    // Aceitar
-    div.querySelector(".btn-success").addEventListener("click", async () => {
-        await update(ref(db, `notificacoes/${tecnicoUid}/${notifId}`), { status: "aceito" });
-        div.remove();
-        alert("Reporte aceito!");
+// ── POSTES ────────────────────────────────────────
+const estadoPostes={poste01:false,poste02:false,poste03:false};
+document.querySelectorAll(".btnPoste").forEach(btn=>{
+    btn.addEventListener("click",async()=>{
+        const poste=btn.dataset.poste;
+        estadoPostes[poste]=!estadoPostes[poste];
+        const n=poste.replace("poste0","");
+        const img=document.getElementById("posteImg"+n);
+        let cmd;
+        if(estadoPostes[poste]){cmd="BAIXAR";btn.innerText="Subir Poste";img.src="img/poste_inclinado.png";}
+        else{cmd="SUBIR";btn.innerText="Baixar Poste";img.src="img/poste_em_pe.png";}
+        await set(ref(db,"comandos/"+poste),cmd);
     });
+});
 
-    // Recusar
-    const recusarBtn = div.querySelector(".btn-danger");
-    const justificativaDiv = div.querySelector("div.d-none");
-    const enviarJustBtn = justificativaDiv.querySelector("button");
-    const inputJust = justificativaDiv.querySelector("input");
+// ── DASHBOARD ─────────────────────────────────────
+const container=document.getElementById("container-postes");
+const notifContainer=document.querySelector(".notificacoes-container");
+let postesData={},filtroAtual="";
 
-    recusarBtn.addEventListener("click", () => {
-        recusarBtn.style.display = "none";
-        div.querySelector(".btn-success").style.display = "none";
-        justificativaDiv.classList.remove("d-none");
+function renderPostes(){
+    container.innerHTML="";
+    Object.keys(postesData).forEach(id=>{
+        if(filtroAtual){const ff=filtroAtual.startsWith("poste")?filtroAtual:"poste0"+filtroAtual;if(id!==ff)return;}
+        const d=postesData[id]||{};
+        const col=document.createElement("div");col.className="col-12 col-md-4";
+        col.innerHTML=`<div class="card-poste"><h1>${id.replace("poste0","")}</h1><p><i class="fas fa-sun text-warning"></i> Luminosidade: ${d.luminosidade??0}%</p><p><i class="fas fa-bolt text-primary"></i> Corrente: ${d.corrente??0} A</p><p><i class="fas fa-plug text-success"></i> Potência: ${parseFloat(d.potencia??0).toFixed(2)} W</p><p class="text-muted small"><i class="fas fa-clock"></i> ${d.hora??"--"}</p></div>`;
+        container.appendChild(col);
     });
+}
+document.getElementById("searchPoste").addEventListener("input",e=>{filtroAtual=e.target.value.trim();renderPostes();});
+document.getElementById("btnReset").addEventListener("click",()=>{filtroAtual="";document.getElementById("searchPoste").value="";renderPostes();});
 
-    enviarJustBtn.addEventListener("click", async () => {
-        const just = inputJust.value.trim();
-        if (!just) return alert("Digite a justificativa");
-        await update(ref(db, `notificacoes/${tecnicoUid}/${notifId}`), { status: "recusado", justificativa: just });
-        div.remove();
-        alert("Reporte recusado com justificativa!");
-    });
-
+// ── NOTIFICAÇÕES INTERNAS ─────────────────────────
+function criarCardNotif(id,dados,uid){
+    const div=document.createElement("div");div.className="card shadow-sm mb-2 p-2";
+    div.innerHTML=`<div class="d-flex align-items-center gap-2"><i class="fas fa-user rounded-circle" style="width:35px;height:35px;background:#0b93f6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;"></i><div><strong>Admin enviou uma mensagem</strong><br><small class="text-muted">${dados.mensagem}</small></div></div><div class="mt-2 d-flex justify-content-end gap-2"><button class="btn btn-success btn-sm aceitar">Aceitar</button><button class="btn btn-danger btn-sm recusar">Recusar</button></div>`;
+    div.querySelector(".aceitar").addEventListener("click",async()=>{await update(ref(db,`notificacoes/${uid}/${id}`),{status:"aceito"});div.remove();alert("Aceito!");});
+    div.querySelector(".recusar").addEventListener("click",async()=>{await update(ref(db,`notificacoes/${uid}/${id}`),{status:"recusado"});div.remove();alert("Recusado!");});
     notifContainer.appendChild(div);
 }
 
-if (tecnicoUid) {
-    const notifRefDB = ref(db, `notificacoes/${tecnicoUid}`);
-    onValue(notifRefDB, snapshot => {
-        notifContainer.innerHTML = ""; // limpa antes
-        snapshot.forEach(childSnap => {
-            const notifId = childSnap.key;
-            const dados = childSnap.val();
-            if (dados.status === "pendente") {
-                criarCardNotificacao(notifId, dados);
-            }
+// ── NAVEGAÇÃO ─────────────────────────────────────
+const chatBadge=document.getElementById("chatBadge");
+const notifBadge=document.getElementById("notifBadge");
+let novasMensagens=0;
+
+document.querySelectorAll(".nav-btn").forEach(b=>{
+    b.addEventListener("click",function(e){
+        e.preventDefault();
+        const t=this.dataset.section+"-section";
+        document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+        document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+        document.getElementById(t).classList.add("active");
+        this.classList.add("active");
+        if(t==="chat-section"){novasMensagens=0;chatBadge.classList.add("d-none");marcarComoLidas();setTimeout(scrollChat,80);}
+        if(t==="notificacoes-section"){novasMensagens=0;notifBadge.classList.add("d-none");}
+    });
+});
+
+// ── CHAT ──────────────────────────────────────────
+const chatBody=document.getElementById("chatBody");
+const chatInput=document.getElementById("chatInput");
+const sendChatBtn=document.getElementById("sendChatBtn");
+let chatUid=null,primeiroLoad=true;
+
+function scrollChat(){chatBody.scrollTop=chatBody.scrollHeight;}
+function fmtH(ts){if(!ts)return"";const d=new Date(ts);return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function criarBolha(msg){
+    const mine=msg.de==="tecnico";
+    const row=document.createElement("div");row.className=`msg-row ${mine?"mine":"theirs"}`;
+    row.innerHTML=`${!mine?`<span class="msg-sender">Admin</span>`:""}<div class="msg-bubble">${esc(msg.texto)}</div><span class="msg-time">${fmtH(msg.timestamp)}</span>`;
+    return row;
+}
+
+function iniciarChat(uid){
+    chatUid=uid;
+    const chatRef=query(ref(db,`chat/${uid}/mensagens`),orderByChild("timestamp"),limitToLast(100));
+    onValue(chatRef,snapshot=>{
+        chatBody.innerHTML="";
+        if(!snapshot.exists()){chatBody.innerHTML=`<div class="chat-status-line">Sem mensagens ainda.</div>`;primeiroLoad=false;return;}
+        let novas=0;
+        const aberto=document.getElementById("chat-section").classList.contains("active");
+        snapshot.forEach(c=>{
+            const msg={id:c.key,...c.val()};
+            chatBody.appendChild(criarBolha(msg));
+            if(!primeiroLoad&&msg.de==="admin"&&!msg.lida)novas++;
         });
+        if(aberto){marcarComoLidas();}
+        else if(novas>0){
+            novasMensagens+=novas;
+            chatBadge.textContent=novasMensagens;chatBadge.classList.remove("d-none");
+            notifBadge.textContent=novasMensagens;notifBadge.classList.remove("d-none");
+        }
+        primeiroLoad=false;scrollChat();
     });
 }
-        // Função para atualizar a tela
-        /*function atualizarDashboard() {
-            container.innerHTML = ''; // Limpa container
-    
-            // Filtrar postes
-            const ids = Object.keys(postesData).filter(id => id.includes(filtroAtual));
-            ids.forEach(id => {
-                const data = postesData[id];
-                const div = document.createElement('div');
-                div.className = 'col-12 col-md-4';
-    
-                div.innerHTML = `
-                    <div class="card-poste">
-                        <h1>POSTE ${id.replace('e:', '').padStart(3,'0')}</h1>
-                        <p><i class="fas fa-sun"></i> Luminosidade: ${data.luminosidade}%</p>
-                        <p><i class="fas fa-bolt"></i> Corrente: ${data.corrente} A</p>
-                        <p><i class="fas fa-plug"></i> Potência: ${parseFloat(data.potencia).toFixed(2)} W</p>
-                        <p><i class="fas fa-clock"></i> Última atualização: ${data.hora}</p>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }*/
-        /* ========================
-       FUNÇÃO RENDER DASHBOARD
-    ======================== */
-        function renderPostes() {
 
-            container.innerHTML = "";
+function marcarComoLidas(){
+    if(!chatUid)return;
+    onValue(ref(db,`chat/${chatUid}/mensagens`),snap=>{
+        if(!snap.exists())return;
+        const u={};snap.forEach(c=>{if(c.val().de==="admin"&&!c.val().lida)u[`${c.key}/lida`]=true;});
+        if(Object.keys(u).length)update(ref(db,`chat/${chatUid}/mensagens`),u);
+    },{onlyOnce:true});
+}
 
-            Object.keys(postesData).forEach(id => {
+async function enviar(){
+    const texto=chatInput.value.trim();if(!texto||!chatUid)return;
+    sendChatBtn.disabled=true;
+    try{
+        await push(ref(db,`chat/${chatUid}/mensagens`),{de:"tecnico",texto,timestamp:Date.now(),lida:true});
+        chatInput.value="";scrollChat();
+        await notificarAdmin(texto);
+    }catch(e){console.error(e);}
+    finally{sendChatBtn.disabled=false;chatInput.focus();}
+}
 
-                // Se houver filtro, verifica se corresponde
-                if (filtroAtual !== "") {
+sendChatBtn.addEventListener("click",enviar);
+chatInput.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();enviar();}});
 
-                    const filtroFormatado = filtroAtual.startsWith("e:")
-                        ? filtroAtual
-                        : "e:" + filtroAtual;
+// ── AUTH ──────────────────────────────────────────
+onAuthStateChanged(auth,user=>{
+    if(!user){window.location.href="login.html";return;}
+    meuUid=user.uid;
+    const nome=user.displayName||user.email.split("@")[0];
+    document.getElementById("userName").innerText=nome;
+    document.getElementById("userEmail").innerText=user.email;
+    document.getElementById("userNameDrop").innerText=nome;
+    document.getElementById("userEmailDrop").innerText=user.email;
+    document.getElementById("primeiroNome").innerText=nome.split(" ")[0];
+    onValue(ref(db,"postes/"),snap=>{postesData=snap.val()||{};renderPostes();});
+    onValue(ref(db,`notificacoes/${user.uid}`),snap=>{
+        notifContainer.innerHTML="";
+        snap.forEach(c=>{if(c.val().status==="pendente")criarCardNotif(c.key,c.val(),user.uid);});
+    });
+    iniciarChat(user.uid);
+    document.body.style.display="block";
+    // Mostra banner push após 3s
+    setTimeout(()=>{if(Notification.permission==="default")document.getElementById("pushBanner").style.display="block";},3000);
+});
 
-                    if (id !== filtroFormatado) return;
-                }
-
-                const data = postesData[id];
-
-                const numeroPoste = id.replace("e:", "");
-
-                const col = document.createElement("div");
-                col.className = "col-12 col-md-4";
-
-                col.innerHTML = `
-            <div class="card-poste">
-                <h1>POSTE ${numeroPoste}</h1>
-                <p><i class="fas fa-sun text-warning"></i> Luminosidade: ${data.luminosidade}%</p>
-                <p><i class="fas fa-bolt text-primary"></i> Corrente: ${data.corrente} A</p>
-                <p><i class="fas fa-plug text-success"></i> Potência: ${parseFloat(data.potencia).toFixed(2)} W</p>
-                <p class="text-muted small">
-                    <i class="fas fa-clock"></i> ${data.hora}
-                </p>
-            </div>
-        `;
-
-                container.appendChild(col);
-            });
-        }
-        /* ========================
-           FIREBASE LISTENER
-        ======================== */
-        const posteRef = ref(db, "postes/");
-        onValue(posteRef, snapshot => {
-            postesData = snapshot.val() || {};
-            renderPostes();
-        });
-
-        /* ========================
-           FILTRO EM TEMPO REAL
-        ======================== */
-        searchPoste.addEventListener("input", () => {
-            filtroAtual = searchPoste.value.trim();
-            renderPostes();
-        });
-
-        /* ========================
-           RESET FILTRO
-        ======================== */
-        btnReset.addEventListener("click", () => {
-            filtroAtual = "";
-            searchPoste.value = "";
-            renderPostes();
-        });
-
-
-        /*/ Firebase: pega dados de todos os postes
-        const posteRef = ref(db, 'postes/');
-        onValue(posteRef, (snapshot) => {
-            postesData = snapshot.val() || {};
-            atualizarDashboard();
-            document.body.style.display = 'block'; // mostra body após carregar
-        });
-    
-        // Pesquisa em tempo real
-        searchPoste.addEventListener('input', () => {
-            filtroAtual = searchPoste.value.trim() ? 'poste_' + searchPoste.value.trim() : '';
-            atualizarDashboard();
-        });
-    
-        // Reset
-        btnReset.addEventListener('click', () => {
-            filtroAtual = '';
-            searchPoste.value = '';
-            atualizarDashboard();
-        });
-    */
-        onAuthStateChanged(auth, (user) => {
-            if (!user) return window.location.href = "login.html";
-
-            const nomeCompleto = user.displayName || user.email.split("@")[0];
-            const email = user.email;
-            const primeiroNome = nomeCompleto.split(" ")[0];
-
-            document.getElementById("userName").innerText = nomeCompleto;
-            document.getElementById("userEmail").innerText = email;
-            document.getElementById("userNameDrop").innerText = nomeCompleto;
-            document.getElementById("userEmailDrop").innerText = email;
-            document.getElementById("primeiroNome").innerText = primeiroNome;
-
-            /*const posteRef = ref(db, 'postes/poste_principal');
-            onValue(posteRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('valor-luminosidade').innerText = data.luminosidade + "%";
-                    document.getElementById('valor-corrente').innerText = data.corrente + " A";
-                    document.getElementById('valor-potencia').innerText = parseFloat(data.potencia).toFixed(2) + " W";
-                    document.getElementById('ultima-atualiacao').innerText = data.hora;
-                }
-            });*/
-
-            // Mostrar body após carregar dados
-            document.body.style.display = 'block';
-        });
-
-        window.logout = () => signOut(auth).then(() => window.location.href = "index.html");
-    </script>
+window.logout=()=>signOut(auth).then(()=>window.location.href="index.html");
+</script>
 </body>
-
 </html>

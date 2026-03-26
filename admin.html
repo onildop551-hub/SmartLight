@@ -1,404 +1,395 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Admin - SmartLight</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-    <style>
-        body {
-            background: linear-gradient(135deg, #4a90e2 0%, #1e3c72 100%);
-            min-height: 100vh;
-            display: none;
-        }
-
-        .navbar {
-            background: #1e3c72;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-        }
-
-        .card-dashboard {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .table img {
-            width: 60px;
-            border-radius: 6px;
-        }
-
-        .section-title {
-            font-weight: 600;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Admin - SmartLight</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f0f2f5;min-height:100vh;display:none;font-family:"Segoe UI",sans-serif;}
+.navbar{background:#1e3c72;}
+.page-section{display:none;}.page-section.active{display:block;}
+.nav-tab-btn{cursor:pointer;color:rgba(255,255,255,0.75);background:none;border:none;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;transition:0.2s;}
+.nav-tab-btn:hover{background:rgba(255,255,255,0.1);color:white;}
+.nav-tab-btn.active{background:rgba(255,255,255,0.2);color:white;}
+.card-dashboard{border-radius:12px;border:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+/* PUSH BANNER */
+#pushBanner{display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:white;border-radius:12px;padding:16px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.18);max-width:310px;border-left:4px solid #1e3c72;}
+/* CHAT */
+.tecnico-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid #e4e6eb;}
+.tecnico-item:hover{background:#e7f3ff;}.tecnico-item.active{background:#e7f3ff;}
+.tec-avatar{width:42px;height:42px;border-radius:50%;background:#1877f2;display:flex;align-items:center;justify-content:center;color:white;font-size:17px;flex-shrink:0;}
+.chat-panel{display:flex;flex-direction:column;height:520px;background:white;border-radius:12px;border:1px solid #e4e6eb;overflow:hidden;}
+.chat-panel-header{padding:14px 16px;background:#f8f9fa;border-bottom:1px solid #e4e6eb;display:flex;align-items:center;gap:10px;}
+.chat-messages{flex:1;overflow-y:auto;background:#eae9e3;padding:16px;display:flex;flex-direction:column;gap:6px;}
+.chat-input-row{padding:10px 12px;background:white;border-top:1px solid #e4e6eb;display:flex;gap:8px;align-items:center;}
+.chat-input-row input{flex:1;border:none;outline:none;background:#f0f2f5;border-radius:20px;padding:10px 16px;font-size:14px;}
+.chat-input-row button{width:40px;height:40px;border-radius:50%;border:none;background:#1877f2;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.2s;flex-shrink:0;}
+.chat-input-row button:hover{background:#166fe5;}.chat-input-row button:disabled{background:#b0b3b8;cursor:not-allowed;}
+.msg-row{display:flex;flex-direction:column;max-width:72%;}
+.msg-row.mine{align-self:flex-end;align-items:flex-end;}.msg-row.theirs{align-self:flex-start;align-items:flex-start;}
+.msg-bubble{padding:9px 13px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word;}
+.msg-row.mine .msg-bubble{background:#1877f2;color:white;border-bottom-right-radius:4px;}
+.msg-row.theirs .msg-bubble{background:white;color:#1c1e21;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,0.1);}
+.msg-time{font-size:10px;opacity:0.55;margin-top:3px;padding:0 4px;}
+.msg-sender{font-size:11px;font-weight:600;color:#65676b;margin-bottom:3px;padding:0 4px;}
+.chat-empty{font-size:13px;color:#8a8d91;text-align:center;padding:16px;}
+.unread-dot{width:10px;height:10px;border-radius:50%;background:#e3291a;margin-left:auto;flex-shrink:0;}
+/* NOTIFICAÇÕES */
+.notif-card{background:white;border-radius:10px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;transition:0.2s;}
+.notif-card:hover{box-shadow:0 4px 14px rgba(0,0,0,0.12);}
+.notif-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.notif-icon.alerta{background:#fff3cd;color:#856404;}.notif-icon.info{background:#cfe2ff;color:#084298;}.notif-icon.sucesso{background:#d1e7dd;color:#0f5132;}
+</style>
 </head>
-
 <body>
 
-    <!-- NAVBAR -->
+<!-- PUSH BANNER -->
+<div id="pushBanner">
+    <div class="fw-bold mb-1"><i class="bi bi-bell-fill text-primary"></i> Notificações Push</div>
+    <div style="font-size:13px;color:#65676b;margin-bottom:10px;">Activa para receber mensagens mesmo com o site fechado.</div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" id="btnAceitarPush">Activar</button>
+        <button class="btn btn-light btn-sm" id="btnRecusarPush">Agora não</button>
+    </div>
+</div>
 
-    <nav class="navbar navbar-dark fixed-top">
-        <div class="container-fluid">
-
-            <a class="navbar-brand">
-                <i class="bi bi-lightbulb"></i>
-                SmartLight Admin
-            </a>
-
-            <div class="d-flex align-items-center">
-                <span class="text-white me-3" id="userName"></span>
-
-                <button class="btn btn-outline-light btn-sm" id="btnLogout">
-                    Terminar Sessão
-                </button>
-            </div>
-
+<nav class="navbar navbar-dark fixed-top shadow">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold"><i class="bi bi-lightbulb-fill me-1"></i> SmartLight Admin</a>
+        <div class="d-flex align-items-center gap-2">
+            <button class="nav-tab-btn active" data-section="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
+            <button class="nav-tab-btn" data-section="chat"><i class="bi bi-chat-dots"></i> Chat <span id="chatBadgeNav" class="badge bg-danger ms-1 d-none">0</span></button>
+            <button class="nav-tab-btn" data-section="notificacoes"><i class="bi bi-bell"></i> Notificações <span id="notifBadgeNav" class="badge bg-danger ms-1 d-none">0</span></button>
+            <span class="text-white small ms-2" id="userName"></span>
+            <button class="btn btn-outline-light btn-sm" id="btnLogout"><i class="bi bi-box-arrow-right"></i> Sair</button>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container mt-5 pt-5">
+<div class="container mt-5 pt-5 pb-5">
 
-        <!-- DASHBOARD -->
-
-        <div class="row mb-4">
-
-            <div class="col-md-4">
-                <div class="card card-dashboard p-3 text-center">
-                    <h6>Total Reportes</h6>
-                    <h3 id="totalReportes">0</h3>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card card-dashboard p-3 text-center">
-                    <h6>Pendentes</h6>
-                    <h3 id="totalPendentes">0</h3>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card card-dashboard p-3 text-center">
-                    <h6>Resolvidos</h6>
-                    <h3 id="totalResolvidos">0</h3>
-                </div>
-            </div>
-
+    <!-- DASHBOARD -->
+    <div class="page-section active" id="dashboard-section">
+        <div class="row mb-4 g-3">
+            <div class="col-md-4"><div class="card card-dashboard p-3 text-center"><h6 class="text-muted">Total Reportes</h6><h3 id="totalReportes" class="fw-bold text-primary">0</h3></div></div>
+            <div class="col-md-4"><div class="card card-dashboard p-3 text-center"><h6 class="text-muted">Pendentes</h6><h3 id="totalPendentes" class="fw-bold text-warning">0</h3></div></div>
+            <div class="col-md-4"><div class="card card-dashboard p-3 text-center"><h6 class="text-muted">Resolvidos</h6><h3 id="totalResolvidos" class="fw-bold text-success">0</h3></div></div>
         </div>
-
-        <!-- TABELA -->
-
         <div class="card card-dashboard p-4">
-
-            <h5 class="section-title mb-3">
-                <i class="bi bi-list-ul"></i>
-                Lista de Reportes
-            </h5>
-
+            <h5 class="mb-3"><i class="bi bi-list-ul"></i> Lista de Reportes</h5>
             <div class="table-responsive">
-
                 <table class="table table-hover align-middle">
-
-                    <thead class="table-dark">
-                        <tr>
-
-                            <th>Poste</th>
-                            <th>Problema</th>
-                            <th>Coordenadas</th>
-                            <th>Status</th>
-                            <th>Data</th>
-                            <th>Ação</th>
-
-                        </tr>
-                    </thead>
-
+                    <thead class="table-dark"><tr><th>Poste</th><th>Problema</th><th>Coordenadas</th><th>Status</th><th>Data</th><th>Ação</th></tr></thead>
                     <tbody id="listaReportes"></tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </div>
 
-    <!-- MODAL TÉCNICOS -->
-
-    <div class="modal fade" id="modalTecnico">
-
-        <div class="modal-dialog">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h5>Encaminhar para Técnico</h5>
-
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-
+    <!-- CHAT -->
+    <div class="page-section" id="chat-section">
+        <div class="row g-3" style="height:560px;">
+            <div class="col-md-4">
+                <div class="card card-dashboard h-100" style="overflow:hidden;">
+                    <div class="p-3 border-bottom"><h6 class="mb-0 fw-bold"><i class="bi bi-people"></i> Técnicos</h6></div>
+                    <div id="listaTecnicosChat" style="overflow-y:auto;flex:1;"><div class="p-3 text-muted small">A carregar...</div></div>
                 </div>
-
-                <div class="modal-body">
-
-                    <select class="form-select mb-3" id="listaTecnicos"></select>
-
-                    <textarea class="form-control" id="mensagemTecnico"
-                        placeholder="Mensagem para o técnico"></textarea>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <button class="btn btn-primary" onclick="confirmarEncaminhamento()">
-                        Enviar
-                    </button>
-
-                </div>
-
             </div>
-
+            <div class="col-md-8">
+                <div class="chat-panel">
+                    <div class="chat-panel-header" id="chatPainelHeader">
+                        <div class="tec-avatar" style="background:#8a8d91;"><i class="bi bi-chat-dots"></i></div>
+                        <div><div style="font-weight:600;">Selecciona um técnico</div><div style="font-size:12px;color:#65676b;">para ver o chat</div></div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages"><div class="chat-empty">Selecciona um técnico à esquerda.</div></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Escreve uma mensagem..." maxlength="500" disabled>
+                        <button id="sendBtn" disabled><i class="bi bi-send-fill" style="font-size:13px;margin-left:2px;"></i></button>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
 
-    <script type="module">
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import {
-            getFirestore,
-            collection,
-            getDocs,
-            onSnapshot,
-            doc,
-            updateDoc,
-            addDoc
-        }
-
-            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-            authDomain: "smartlight-pap-2026.firebaseapp.com",
-            projectId: "smartlight-pap-2026",
-            storageBucket: "smartlight-pap-2026.appspot.com",
-            messagingSenderId: "953509556806",
-            appId: "1:953509556806:web:96ed896142e7b5433f5047"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const dbRealtime = getDatabase(app);
-        const auth = getAuth(app);
-
-        const db = getFirestore(app);
-
-        const adminEmail = "adminsmartlight@gmail.com";
-
-        let reporteSelecionado = null;
-
-        document.body.style.display = "block";
-
-        onAuthStateChanged(auth, (user) => {
-
-            if (!user || user.email !== adminEmail) {
-
-                window.location.href = "index.html";
-
-            }
-
-        });
-
-        document.getElementById("btnLogout").onclick = async () => {
-
-            await signOut(auth);
-
-            window.location.href = "index.html";
-
-        };
-
-        /* LISTAR REPORTES */
-
-        const tabela = document.getElementById("listaReportes");
-
-        const reportsRef = collection(db, "reports");
-
-        onSnapshot(reportsRef, (snapshot) => {
-
-            tabela.innerHTML = "";
-
-            let total = 0;
-
-            let pendentes = 0;
-
-            let resolvidos = 0;
-
-            snapshot.forEach(docSnap => {
-
-                const data = docSnap.data();
-
-                const id = docSnap.id;
-
-                total++;
-
-                if (data.status === "pendente") pendentes++;
-
-                if (data.status === "resolvido") resolvidos++;
-
-                tabela.innerHTML += `
-
-<tr>
-
-<td>${data.posteId}</td>
-
-<td>${data.tipo}</td>
-
-<td>${data.coords || ""}</td>
-
-<td>
-
-<span class="badge ${data.status === "resolvido"
-                        ? "bg-success"
-                        : data.status === "encaminhado"
-                            ? "bg-info"
-                            : "bg-warning"}">
-
-${data.status || "pendente"}
-
-</span>
-
-</td>
-
-<td>
-
-${data.data?.toDate().toLocaleString() || ""}
-
-</td>
-
-<td>
-
-<button class="btn btn-sm btn-primary"
-onclick="abrirModal('${id}')">
-
-Encaminhar
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-            });
-
-            document.getElementById("totalReportes").innerText = total;
-            document.getElementById("totalPendentes").innerText = pendentes;
-            document.getElementById("totalResolvidos").innerText = resolvidos;
-
-        });
-
-        /* ABRIR MODAL */
-
-        window.abrirModal = async (id) => {
-
-reporteSelecionado = id;
-
-const select = document.getElementById("listaTecnicos");
-
-select.innerHTML = "<option>Carregando técnicos...</option>";
-
-try{
-
-const snapshot = await get(ref(dbRealtime,"usuarios"));
-
-select.innerHTML = "";
-
-if(!snapshot.exists()){
-
-select.innerHTML = "<option>Nenhum técnico encontrado</option>";
-
-return;
-
+    <!-- NOTIFICAÇÕES -->
+    <div class="page-section" id="notificacoes-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold"><i class="bi bi-bell-fill text-warning"></i> Notificações</h4>
+            <button class="btn btn-outline-secondary btn-sm" id="btnLimparNotif"><i class="bi bi-trash"></i> Limpar todas</button>
+        </div>
+        <div id="notifContainer"><div class="text-muted">Sem notificações.</div></div>
+    </div>
+</div>
+
+<!-- MODAL ENCAMINHAR -->
+<div class="modal fade" id="modalTecnico">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5>Encaminhar para Técnico</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <select class="form-select mb-3" id="listaTecnicosModal"></select>
+            <textarea class="form-control" id="mensagemTecnico" placeholder="Mensagem para o técnico" rows="3"></textarea>
+        </div>
+        <div class="modal-footer"><button class="btn btn-primary" onclick="confirmarEncaminhamento()">Enviar</button></div>
+    </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getDatabase, ref, set, push, onValue, update, query, orderByChild, limitToLast }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getMessaging, getToken, onMessage }
+                           from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+// ══════════════════════════════════════════════════
+// PASSO 1: Substitui pela tua VAPID KEY
+// Firebase Console → Project Settings → Cloud Messaging → Web Push Certificates
+// ══════════════════════════════════════════════════
+const VAPID_KEY = "K5g-mj43N95CHc8pYKsaE_bKbdY9Q12yg_Khurk2lxI";
+const CF_URL = "https://us-central1-smartlight-pap-2026.cloudfunctions.net/sendPush";
+
+const cfg={
+    apiKey:"AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+    authDomain:"smartlight-pap-2026.firebaseapp.com",
+    projectId:"smartlight-pap-2026",
+    storageBucket:"smartlight-pap-2026.appspot.com",
+    messagingSenderId:"953509556806",
+    appId:"1:953509556806:web:96ed896142e7b5433f5047",
+    databaseURL:"https://smartlight-pap-2026-default-rtdb.firebaseio.com"
+};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const fsdb=getFirestore(app);
+const rtdb=getDatabase(app);
+const messaging=getMessaging(app);
+
+let adminUid=null,reporteSelecionado=null,tecnicoAtualUid=null,tecnicosMap={},unsubChat=null,novasMsgsTotal=0,notificacoes=[];
+
+// ── PUSH ──────────────────────────────────────────
+async function activarPush(){
+    if(!("Notification" in window)||!("serviceWorker" in navigator))return;
+    try{
+        const swReg=await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        await navigator.serviceWorker.ready;
+        const perm=await Notification.requestPermission();
+        if(perm!=="granted")return;
+        const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:swReg});
+        if(!token||!adminUid)return;
+        await set(ref(rtdb,`fcmTokens/${adminUid}`),{token,perfil:"admin",ts:Date.now()});
+        document.getElementById("pushBanner").style.display="none";
+        console.log("Push activado — admin.");
+    }catch(e){console.error("Push erro:",e);}
 }
 
-const usuarios = snapshot.val();
-
-Object.keys(usuarios).forEach(uid => {
-
-const user = usuarios[uid];
-
-if(user.tipoConta === "tecnico"){
-
-const option = document.createElement("option");
-
-option.value = uid;
-
-option.textContent = `${user.nome || "Técnico"} - ${user.bairro || ""}`;
-
-select.appendChild(option);
-
-}
-
+onMessage(messaging,payload=>{
+    const{title,body}=payload.notification??{};
+    if(Notification.permission==="granted") new Notification(title??"SmartLight",{body:body??"",icon:"/img/icone.PNG"});
 });
 
-}catch(err){
+document.getElementById("btnAceitarPush").onclick=()=>activarPush();
+document.getElementById("btnRecusarPush").onclick=()=>{document.getElementById("pushBanner").style.display="none";};
 
-console.error(err);
-
-select.innerHTML = "<option>Erro ao carregar técnicos</option>";
-
+// Envia push ao técnico quando admin escreve
+async function notificarTecnico(uid,texto){
+    onValue(ref(rtdb,`fcmTokens/${uid}`),snap=>{
+        if(!snap.exists())return;
+        const d=snap.val();
+        if(d.token){
+            fetch(CF_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({token:d.token,titulo:"Mensagem do Admin",corpo:texto.length>80?texto.slice(0,77)+"...":texto})
+            }).catch(()=>{});
+        }
+    },{onlyOnce:true});
 }
 
-new bootstrap.Modal(document.getElementById("modalTecnico")).show();
+// ── NAVEGAÇÃO ─────────────────────────────────────
+document.querySelectorAll(".nav-tab-btn[data-section]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+        document.querySelectorAll(".nav-tab-btn").forEach(b=>b.classList.remove("active"));
+        document.getElementById(btn.dataset.section+"-section").classList.add("active");
+        btn.classList.add("active");
+        if(btn.dataset.section==="chat"){novasMsgsTotal=0;document.getElementById("chatBadgeNav").classList.add("d-none");if(tecnicoAtualUid)marcarComoLidas(tecnicoAtualUid);}
+        if(btn.dataset.section==="notificacoes"){document.getElementById("notifBadgeNav").classList.add("d-none");}
+    });
+});
 
+// ── AUTH ──────────────────────────────────────────
+onAuthStateChanged(auth,user=>{
+    if(!user){window.location.href="index.html";return;}
+    adminUid=user.uid;
+    document.getElementById("userName").innerText=user.email;
+    document.body.style.display="block";
+    carregarReportes();
+    carregarTecnicos();
+    setTimeout(()=>{if(Notification.permission==="default")document.getElementById("pushBanner").style.display="block";},3000);
+});
+document.getElementById("btnLogout").onclick=()=>signOut(auth).then(()=>window.location.href="index.html");
+
+// ── REPORTES ──────────────────────────────────────
+function carregarReportes(){
+    onSnapshot(collection(fsdb,"reports"),snapshot=>{
+        const tabela=document.getElementById("listaReportes");
+        tabela.innerHTML="";
+        let total=0,pend=0,res=0;
+        snapshot.forEach(d=>{
+            const dd=d.data();const id=d.id;total++;
+            if(dd.status==="pendente"||dd.status==="encaminhado")pend++;
+            if(dd.status==="resolvido")res++;
+            const cor=dd.status==="resolvido"?"success":dd.status==="encaminhado"?"info":"warning";
+            tabela.innerHTML+=`<tr><td>${dd.posteId??""}</td><td>${dd.tipo??""}</td><td>${dd.coords??""}</td><td><span class="badge bg-${cor}">${dd.status}</span></td><td>${dd.data?.toDate().toLocaleString()??""}</td><td><button class="btn btn-sm btn-primary" onclick="abrirModalEncaminhar('${id}')">Encaminhar</button></td></tr>`;
+        });
+        document.getElementById("totalReportes").innerText=total;
+        document.getElementById("totalPendentes").innerText=pend;
+        document.getElementById("totalResolvidos").innerText=res;
+    });
+}
+
+window.abrirModalEncaminhar=async id=>{
+    reporteSelecionado=id;
+    const sel=document.getElementById("listaTecnicosModal");sel.innerHTML="";
+    Object.keys(tecnicosMap).forEach(uid=>{const o=document.createElement("option");o.value=uid;o.textContent=tecnicosMap[uid].nome||tecnicosMap[uid].email||uid;sel.appendChild(o);});
+    if(sel.options.length===0)sel.innerHTML="<option disabled>Sem técnicos</option>";
+    new bootstrap.Modal(document.getElementById("modalTecnico")).show();
 };
 
-        /* CONFIRMAR ENCAMINHAMENTO */
+window.confirmarEncaminhamento=async()=>{
+    const tecId=document.getElementById("listaTecnicosModal").value;
+    const msg=document.getElementById("mensagemTecnico").value.trim();
+    if(!msg){alert("Escreve uma mensagem.");return;}
+    await updateDoc(doc(fsdb,"reports",reporteSelecionado),{status:"encaminhado",tecnico:tecId});
+    await push(ref(rtdb,`chat/${tecId}/mensagens`),{de:"admin",texto:msg,timestamp:Date.now(),lida:false});
+    await notificarTecnico(tecId,msg);
+    adicionarNotif("info",`Reporte encaminhado ao técnico ${tecnicosMap[tecId]?.nome??tecId}.`,msg);
+    bootstrap.Modal.getInstance(document.getElementById("modalTecnico")).hide();
+    document.getElementById("mensagemTecnico").value="";
+    alert("Mensagem enviada!");
+};
 
-        window.confirmarEncaminhamento = async () => {
-
-            const tecnicoId = document.getElementById("listaTecnicos").value;
-
-            const mensagem = document.getElementById("mensagemTecnico").value;
-
-            if (!tecnicoId) return alert("Selecione um técnico");
-
-            await updateDoc(doc(db, "reports", reporteSelecionado), {
-
-                status: "encaminhado",
-                tecnico: tecnicoId
-
+// ── TÉCNICOS ──────────────────────────────────────
+function carregarTecnicos(){
+    onValue(ref(rtdb,"usuarios"),snapshot=>{
+        tecnicosMap={};
+        const lista=document.getElementById("listaTecnicosChat");lista.innerHTML="";
+        if(!snapshot.exists()){lista.innerHTML=`<div class="p-3 text-muted small">Sem técnicos.</div>`;return;}
+        snapshot.forEach(child=>{
+            const uid=child.key,data=child.val();
+            if(data.tipoConta!=="tecnico")return;
+            tecnicosMap[uid]=data;
+            const item=document.createElement("div");item.className="tecnico-item";item.dataset.uid=uid;
+            item.innerHTML=`<div class="tec-avatar"><i class="bi bi-person-fill"></i></div><div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${data.nome||data.email||uid}</div><div style="font-size:11px;color:#65676b;">Técnico</div></div><span class="unread-dot d-none" id="dot-${uid}"></span>`;
+            item.addEventListener("click",()=>{
+                document.querySelectorAll(".tecnico-item").forEach(i=>i.classList.remove("active"));
+                item.classList.add("active");
+                document.getElementById("dot-"+uid)?.classList.add("d-none");
+                abrirChatTecnico(uid,data.nome||data.email||uid);
             });
+            lista.appendChild(item);
+            escutarNaoLidas(uid);
+        });
+    });
+}
 
-            /* CRIAR NOTIFICAÇÃO PARA TÉCNICO */
+function escutarNaoLidas(uid){
+    onValue(ref(rtdb,`chat/${uid}/mensagens`),snap=>{
+        if(!snap.exists())return;
+        let n=0;snap.forEach(c=>{const m=c.val();if(m.de==="tecnico"&&!m.lida)n++;});
+        const dot=document.getElementById("dot-"+uid);
+        if(dot)dot.classList.toggle("d-none",n===0);
+        if(n>0&&uid!==tecnicoAtualUid){
+            novasMsgsTotal++;
+            const b=document.getElementById("chatBadgeNav");b.textContent=novasMsgsTotal;b.classList.remove("d-none");
+            adicionarNotif("info",`Nova mensagem do técnico ${tecnicosMap[uid]?.nome??uid}.`);
+        }
+    });
+}
 
-            await addDoc(collection(db, "tecnicos", tecnicoId, "notificacoes"), {
+function abrirChatTecnico(uid,nome){
+    if(unsubChat){unsubChat();unsubChat=null;}
+    tecnicoAtualUid=uid;
+    document.getElementById("chatPainelHeader").innerHTML=`<div class="tec-avatar"><i class="bi bi-person-fill"></i></div><div><div style="font-weight:600;">${esc(nome)}</div><div style="font-size:12px;color:#42b72a;"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Online</div></div>`;
+    document.getElementById("chatInput").disabled=false;
+    document.getElementById("sendBtn").disabled=false;
+    document.getElementById("chatInput").focus();
+    const msgBox=document.getElementById("chatMessages");
+    const chatRef=query(ref(rtdb,`chat/${uid}/mensagens`),orderByChild("timestamp"),limitToLast(100));
+    unsubChat=onValue(chatRef,snap=>{
+        msgBox.innerHTML="";
+        if(!snap.exists()){msgBox.innerHTML=`<div class="chat-empty">Sem mensagens ainda.</div>`;return;}
+        snap.forEach(c=>{
+            const msg={id:c.key,...c.val()};const mine=msg.de==="admin";
+            const row=document.createElement("div");row.className=`msg-row ${mine?"mine":"theirs"}`;
+            row.innerHTML=`${!mine?`<span class="msg-sender">${esc(nome)}</span>`:""}<div class="msg-bubble">${esc(msg.texto)}</div><span class="msg-time">${fmtH(msg.timestamp)}</span>`;
+            msgBox.appendChild(row);
+        });
+        msgBox.scrollTop=msgBox.scrollHeight;
+        marcarComoLidas(uid);
+    });
+}
 
-                reporteId: reporteSelecionado,
-                mensagem: mensagem,
-                status: "pendente",
-                data: new Date()
+function marcarComoLidas(uid){
+    onValue(ref(rtdb,`chat/${uid}/mensagens`),snap=>{
+        if(!snap.exists())return;
+        const u={};snap.forEach(c=>{if(c.val().de==="tecnico"&&!c.val().lida)u[`${c.key}/lida`]=true;});
+        if(Object.keys(u).length)update(ref(rtdb,`chat/${uid}/mensagens`),u);
+    },{onlyOnce:true});
+}
 
-            });
+async function enviar(){
+    const texto=document.getElementById("chatInput").value.trim();
+    if(!texto||!tecnicoAtualUid)return;
+    document.getElementById("sendBtn").disabled=true;
+    try{
+        await push(ref(rtdb,`chat/${tecnicoAtualUid}/mensagens`),{de:"admin",texto,timestamp:Date.now(),lida:false});
+        document.getElementById("chatInput").value="";
+        document.getElementById("chatMessages").scrollTop=document.getElementById("chatMessages").scrollHeight;
+        await notificarTecnico(tecnicoAtualUid,texto);
+    }catch(e){console.error(e);}
+    finally{document.getElementById("sendBtn").disabled=false;document.getElementById("chatInput").focus();}
+}
+document.getElementById("sendBtn").addEventListener("click",enviar);
+document.getElementById("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();enviar();}});
 
-            alert("Reporte encaminhado!");
+// ── NOTIFICAÇÕES ──────────────────────────────────
+function adicionarNotif(tipo,titulo,detalhe=""){
+    const hora=new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
+    notificacoes.unshift({tipo,titulo,detalhe,hora});
+    renderNotifs();
+    const notifAberto=document.getElementById("notificacoes-section").classList.contains("active");
+    if(!notifAberto){const b=document.getElementById("notifBadgeNav");b.textContent=notificacoes.length;b.classList.remove("d-none");}
+}
 
-            location.reload();
+function renderNotifs(){
+    const cont=document.getElementById("notifContainer");
+    if(notificacoes.length===0){cont.innerHTML=`<div class="text-muted">Sem notificações.</div>`;return;}
+    cont.innerHTML="";
+    notificacoes.forEach((n,i)=>{
+        const ic=n.tipo==="alerta"?"bi-exclamation-triangle-fill":n.tipo==="sucesso"?"bi-check-circle-fill":"bi-info-circle-fill";
+        const card=document.createElement("div");card.className="notif-card";
+        card.innerHTML=`<div class="notif-icon ${n.tipo}"><i class="bi ${ic}"></i></div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${esc(n.titulo)}</div>${n.detalhe?`<div style="font-size:13px;color:#65676b;margin-top:2px;">"${esc(n.detalhe)}"</div>`:""}<div style="font-size:11px;color:#8a8d91;margin-top:4px;"><i class="bi bi-clock"></i> ${n.hora}</div></div><button class="btn btn-sm btn-light ms-2" onclick="removerNotif(${i})"><i class="bi bi-x"></i></button>`;
+        cont.appendChild(card);
+    });
+}
 
-        };
+window.removerNotif=i=>{notificacoes.splice(i,1);renderNotifs();};
+document.getElementById("btnLimparNotif").onclick=()=>{notificacoes=[];renderNotifs();document.getElementById("notifBadgeNav").classList.add("d-none");};
 
-    </script>
+// Alertas dos postes
+onValue(ref(rtdb,"postes"),snap=>{
+    if(!snap.exists())return;
+    snap.forEach(c=>{const d=c.val();if(d.alerta&&d.alerta!=="normal")adicionarNotif("alerta",`Alerta no ${c.key}: ${d.alerta}`,`Corrente: ${d.corrente??"?"}A — ${d.hora??""}` );});
+},{onlyOnce:true});
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+// ── UTILITÁRIOS ───────────────────────────────────
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmtH(ts){if(!ts)return"";const d=new Date(ts);return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");}
+</script>
 </body>
-
 </html>

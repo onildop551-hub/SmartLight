@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calibrar Data/Hora | SmartLight</title>
+    <!-- CSS Externo (Assumindo que o teu style.css tem as cores do footer/header) -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Mantendo a consistência com a UI de Login enviada */
+        body {
+            background: #fdfdfd;
+        }
+
+        .calibrationSection {
+            padding: 60px 0;
+            min-height: 70vh;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Estilo para o visor da hora */
+        #horaAtualizada {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            color: #0d6efd;
+            border: 1px solid #dee2e6;
+        }
+
+        /* Estilização do Header/Footer baseada no teu snippet */
+        header { background: #fff; }
+        footer {
+            background: #333;
+            color: white;
+            padding: 40px 0 20px;
+        }
+        footer a { color: #bbb; text-decoration: none; }
+        footer a:hover { color: #fff; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header (Igual ao Login) -->
+    <header class="py-3 border-bottom">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <div class="logo d-flex align-items-center">
+                <img class="logoImg me-2" src="img/icone.PNG" alt="logotipo" style="max-width: 40px;">
+                <a href="index.html" class="text-decoration-none text-dark">
+                    <h1 class="h4 m-0">SmartLight</h1>
+                </a>
+            </div>
+            <nav class="mt-2 mt-sm-0">
+                <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Seção de Calibração (Estrutura idêntica ao loginSection) -->
+    <section class="calibrationSection px-3">
+        <div class="container">
+            <div class="form-container">
+                <h1 class="text-center text-primary mb-4 fw-bold">Calibrar Poste</h1>
+                <p class="text-center text-muted small mb-4">Sincronize a data e hora do sistema para o poste selecionado.</p>
+
+                <form id="calibrationForm">
+                    <!-- Input Data/Hora -->
+                    <div class="form-floating mb-4">
+                        <input type="datetime-local" class="form-control" id="manualHora">
+                        <label for="manualHora"><i class="fas fa-calendar-alt me-2"></i>Data e Hora Manual</label>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="d-grid gap-3">
+                        <button type="button" id="btnAtualizarManual" class="btn btn-primary py-3 fw-bold">
+                            <i class="fas fa-sync-alt me-2"></i> Atualizar Manualmente
+                        </button>
+                        
+                        <button type="button" id="btnHoraAtual" class="btn btn-outline-primary py-3 fw-bold">
+                            <i class="fas fa-clock me-2"></i> Usar Hora do Dispositivo
+                        </button>
+                    </div>
+
+                    <!-- Display de Resultado -->
+                    <div id="horaAtualizada" class="mt-4">
+                        Aguardando Sincronização...
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Igual ao Login) -->
+    <footer>
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-6">
+                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
+                    <p>Sistema Inteligente de Gestão Urbana.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h4>Links Rápidos</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="about.html">Sobre</a></li>
+                        <li><a href="termos.html">Termos</a></li>
+                        <li><a href="#">Contactos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4" style="border-color: #555;">
+            <div class="text-center">
+                <p class="small m-0 text-muted">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
+            authDomain: "smartlight-pap-2026.firebaseapp.com",
+            projectId: "smartlight-pap-2026",
+            storageBucket: "smartlight-pap-2026.firebasestorage.app",
+            messagingSenderId: "953509556806",
+            appId: "1:953509556806:web:96ed896142e7b5433f5047"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        const manualInput = document.getElementById('manualHora');
+        const btnManual = document.getElementById('btnAtualizarManual');
+        const btnAtual = document.getElementById('btnHoraAtual');
+        const horaDiv = document.getElementById('horaAtualizada');
+
+        let horaCalibrada = null;
+
+        function mostrarHora() {
+            if (!horaCalibrada) return;
+            const d = horaCalibrada.getDate().toString().padStart(2, '0');
+            const M = (horaCalibrada.getMonth() + 1).toString().padStart(2, '0');
+            const y = horaCalibrada.getFullYear();
+            const h = horaCalibrada.getHours().toString().padStart(2, '0');
+            const m = horaCalibrada.getMinutes().toString().padStart(2, '0');
+            const s = horaCalibrada.getSeconds().toString().padStart(2, '0');
+            horaDiv.innerText = `${d}/${M}/${y} ${h}:${m}:${s}`;
+        }
+
+        setInterval(() => {
+            if (horaCalibrada) {
+                horaCalibrada.setSeconds(horaCalibrada.getSeconds() + 1);
+                mostrarHora();
+            }
+        }, 1000);
+
+        async function enviarHoraFirebase(posteId) {
+            if (!horaCalibrada) return;
+            const h = horaCalibrada.getHours().toString().padStart(2, '0');
+            const m = horaCalibrada.getMinutes().toString().padStart(2, '0');
+
+            const horaFormatada = `${h}:${m}`;
+            try {
+                await set(ref(db, `horarios/${posteId}`), horaFormatada);
+                console.log("Enviado:", horaFormatada);
+            } catch (e) {
+                console.error("Erro ao enviar:", e);
+            }
+        }
+
+        btnManual.addEventListener('click', () => {
+            if (!manualInput.value) return alert("Selecione uma data!");
+            horaCalibrada = new Date(manualInput.value);
+            mostrarHora();
+            enviarHoraFirebase('poste01');
+            enviarHoraFirebase('poste02');
+            enviarHoraFirebase('poste03');
+        });
+
+        btnAtual.addEventListener('click', () => {
+            horaCalibrada = new Date();
+            mostrarHora();
+            enviarHoraFirebase('poste01');
+            enviarHoraFirebase('poste02');
+            enviarHoraFirebase('poste03');
+        });
+    </script>
+</body>
+
+</html>
