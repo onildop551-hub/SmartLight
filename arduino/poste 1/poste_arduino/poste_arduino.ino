@@ -1,12 +1,19 @@
 #include <SPI.h>
 #include <LoRa.h>
-#include "RTClib.h"
-#include <Wire.h>
+#include <ThreeWire.h>      // dependência da RtcDS1302
+#include <RtcDS1302.h>      // biblioteca Makuna/RTC — instalar via Library Manager
 #include "EmonLib.h"
 
 // =================== OBJETOS ===================
 EnergyMonitor emon1;
-RTC_DS3231 rtc;
+
+// =================== PINOS RTC DS1302 ===================
+// Ligação física:
+//   CLK  → pino 6  (relógio)
+//   DAT  → pino 5  (dados bidireccionais)
+//   RST  → pino 8  (chip enable — NÃO é o RST do LoRa)
+ThreeWire rtcWire(5, 6, 8);   // (DAT, CLK, CE)
+RtcDS1302<ThreeWire> rtc(rtcWire);
 
 // =================== PINOS ===================
 #define LDR_PIN        A1
@@ -21,7 +28,7 @@ RTC_DS3231 rtc;
 const float CORRENTE_MAX = 2.0;
 const float LUM_MIN      = 20.0;
 
-const unsigned long INTERVALO_ENVIO_MS = 6000UL;
+const unsigned long INTERVALO_ENVIO_MS = 4000UL;
 const unsigned long DESFASAGEM_MS      = (POSTE_ID - 1) * 2000UL;
 
 // =================== ANTI-COLISÃO ===================
@@ -34,7 +41,7 @@ String motorState = "parado";
 String alerta     = "normal";
 
 const unsigned long TEMPO_MOTOR_MS = 13000UL;
-unsigned long inicioMotor  = 0;
+unsigned long inicioMotor = 0;
 bool motorLigado = false;
 
 float luminosidade = 0.0;
@@ -44,11 +51,10 @@ int   contadorPacotes = 0;
 unsigned long ultimoEnvio = 0;
 
 // =================== HORA VIA LORA ===================
-int horaLoRa    = -1;
-int minutoLoRa  = -1;
+int  horaLoRa   = -1;
+int  minutoLoRa = -1;
 bool horaValida = false;
 
-// 🔥 TIMEOUT DE VALIDADE DA HORA LORA (10 minutos)
 unsigned long ultimaHoraRecebida    = 0;
 const unsigned long TIMEOUT_HORA_MS = 600000UL; // 10 min
 
@@ -67,15 +73,27 @@ void setup() {
 
   emon1.current(CURRENT_PIN, 60.6);
 
-  // RTC
-  if (!rtc.begin()) {
-    Serial.println("ERRO RTC");
-    while (1);
+  // =================== INIT DS1302 ===================
+  rtc.Begin();
+
+  // Verifica se o RTC está a correr; se não, acerta com a hora de compilação
+  if (!rtc.IsDateTimeValid()) {
+    Serial.println("RTC sem hora válida — a acertar com hora de compilação");
+    RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+    rtc.SetDateTime(compiled);
   }
 
-  if (rtc.lostPower()) {
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  // Garante que o oscilador está activo (pode ter sido desligado por software)
+  if (rtc.GetIsWriteProtected()) {
+    rtc.SetIsWriteProtected(false);
   }
+
+  if (!rtc.GetIsRunning()) {
+    Serial.println("DS1302 estava parado — a iniciar");
+    rtc.SetIsRunning(true);
+  }
+
+  Serial.println("DS1302 OK");
 
   // LoRa
   LoRa.setPins(10, 9, 2);
@@ -88,7 +106,7 @@ void setup() {
   LoRa.setSignalBandwidth(125E3);
   LoRa.setCodingRate4(5);
 
-  randomSeed(analogRead(2)); // semente diferente do ESP32
+  randomSeed(analogRead(2));
 
   ultimoEnvio = millis() - INTERVALO_ENVIO_MS + DESFASAGEM_MS;
 
@@ -98,11 +116,11 @@ void setup() {
 
 // ===================================================
 void loop() {
-  DateTime agora = rtc.now();
 
-  // 🔥 Verificar timeout da hora LoRa
+  // Lê hora actual do DS1302
+  RtcDateTime agora = rtc.GetDateTime();
+
   verificarTimeoutHora();
-
   lerSensores();
   receberComandos();
   controlarLampada(agora);
@@ -114,12 +132,12 @@ void loop() {
 }
 
 // ===================================================
-// 🔥 TIMEOUT — invalida hora LoRa após 10 minutos sem receber
+// TIMEOUT — invalida hora LoRa após 10 min sem receber
 // ===================================================
 void verificarTimeoutHora() {
   if (horaValida && millis() - ultimaHoraRecebida >= TIMEOUT_HORA_MS) {
     horaValida = false;
-    Serial.println("Hora LoRa expirada — a usar RTC como fallback");
+    Serial.println("Hora LoRa expirada — a usar DS1302 como fallback");
   }
 }
 
@@ -135,17 +153,18 @@ void lerSensores() {
 }
 
 // ===================================================
-// CONTROLO DA LÂMPADA — usa hora LoRa se válida, RTC se não
+// CONTROLO DA LÂMPADA
+// RtcDateTime usa .Hour() com H maiúsculo (diferença da RTClib)
 // ===================================================
-void controlarLampada(DateTime agora) {
+void controlarLampada(RtcDateTime agora) {
 
   int horaAtual;
 
   if (horaValida) {
     horaAtual = horaLoRa;
   } else {
-    horaAtual = agora.hour(); // fallback RTC
-    Serial.println("[fallback RTC] hora: " + String(horaAtual));
+    horaAtual = agora.Hour(); // fallback DS1302 — .Hour() com H maiúsculo
+    Serial.println("[fallback DS1302] hora: " + String(horaAtual));
   }
 
   if (horaAtual >= 18 || horaAtual < 6) {
@@ -171,7 +190,7 @@ void verificarAlertas() {
 }
 
 // ===================================================
-// RECEBER COMANDOS + HORA (com anti-colisão no envio do ACK)
+// RECEBER COMANDOS + HORA
 // ===================================================
 void receberComandos() {
   int packetSize = LoRa.parsePacket();
@@ -183,70 +202,44 @@ void receberComandos() {
 
   Serial.println("Recebido: " + comando);
 
-  // ================= RECEBER HORA =================
+  // ================= HORA =================
   int posHora = comando.indexOf("HORA:");
   if (posHora != -1) {
-    // Aceita formato "ID:X|HORA:HH:MM" e "HORA:HH:MM" isolado
     String horaStr = comando.substring(posHora + 5, posHora + 10);
-
     int sep = horaStr.indexOf(":");
     if (sep != -1) {
       int h = horaStr.substring(0, sep).toInt();
       int m = horaStr.substring(sep + 1).toInt();
 
-      // Valida intervalo antes de aceitar
       if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
         horaLoRa           = h;
         minutoLoRa         = m;
         horaValida         = true;
-        ultimaHoraRecebida = millis(); // 🔥 reinicia o timeout
+        ultimaHoraRecebida = millis();
 
-        Serial.print("Hora LoRa actualizada: ");
-        Serial.print(horaLoRa);
-        Serial.print(":");
-        if (minutoLoRa < 10) Serial.print("0");
-        Serial.println(minutoLoRa);
+        // 🔥 Sincroniza também o DS1302 com a hora recebida via LoRa
+        // Mantém a data actual do RTC, só actualiza hora e minuto
+        RtcDateTime atual = rtc.GetDateTime();
+        RtcDateTime sync(
+          atual.Year(), atual.Month(), atual.Day(),
+          h, m, 0
+        );
+        if (rtc.GetIsWriteProtected()) rtc.SetIsWriteProtected(false);
+        rtc.SetDateTime(sync);
+
+        Serial.print("Hora LoRa aceite e sincronizada no DS1302: ");
+        Serial.print(h); Serial.print(":");
+        if (m < 10) Serial.print("0");
+        Serial.println(m);
       } else {
         Serial.println("Hora LoRa inválida — ignorada");
       }
     }
   }
 
-  // ================= COMANDOS =================
-  int posID  = comando.indexOf("ID:");
-  int posCMD = comando.indexOf("|CMD:");
-  if (posID == -1 || posCMD == -1) return;
-
-  int id = comando.substring(posID + 3, posCMD).toInt();
-  if (id != POSTE_ID) return;
-
-  String cmd = comando.substring(posCMD + 5);
-  cmd.trim();
-  Serial.println("Comando recebido: " + cmd);
-  executarComando(cmd);
 }
 
 // ===================================================
-void executarComando(String cmd) {
-  if (cmd == "SUBIR") {
-    digitalWrite(MOTOR_UP_PIN, LOW);
-    digitalWrite(MOTOR_DOWN_PIN, HIGH);
-    motorState = "subindo";
-    Serial.println("motor " + motorState);
-    iniciarMotor();
-  }
-  else if (cmd == "BAIXAR") {
-    digitalWrite(MOTOR_UP_PIN, HIGH);
-    digitalWrite(MOTOR_DOWN_PIN, LOW);
-    motorState = "descendo";
-    Serial.println("motor " + motorState);
-    iniciarMotor();
-  }
-  else if (cmd == "PARAR") {
-    pararMotor();
-  }
-}
-
 void iniciarMotor() {
   inicioMotor = millis();
   motorLigado = true;
@@ -256,7 +249,6 @@ void pararMotor() {
   digitalWrite(MOTOR_UP_PIN, HIGH);
   digitalWrite(MOTOR_DOWN_PIN, HIGH);
   motorState = "parado";
-  Serial.println("motor " + motorState);
   motorLigado = false;
 }
 
@@ -267,17 +259,17 @@ void controlarMotorTempo() {
 }
 
 // ===================================================
-// ENVIAR DADOS LORA com anti-colisão
+// ENVIAR DADOS com anti-colisão
 // ===================================================
-void enviarDadosLoRa(DateTime agora) {
+void enviarDadosLoRa(RtcDateTime agora) {
 
   if (millis() - ultimoEnvio < INTERVALO_ENVIO_MS) return;
   ultimoEnvio = millis();
 
-  // 🔥 Anti-colisão: verifica canal antes de transmitir
+  // Anti-colisão
   int tentativas = 0;
   while (LoRa.parsePacket() > 0 && tentativas < 5) {
-    while (LoRa.available()) LoRa.read(); // drena pacote em curso
+    while (LoRa.available()) LoRa.read();
     unsigned long espera = random(BACKOFF_MIN_MS, BACKOFF_MAX_MS);
     unsigned long t = millis();
     while (millis() - t < espera) {}
@@ -297,13 +289,15 @@ void enviarDadosLoRa(DateTime agora) {
 }
 
 // ===================================================
-String montarPacote(DateTime agora) {
+// RtcDateTime usa .Hour() .Minute() com maiúscula
+// ===================================================
+String montarPacote(RtcDateTime agora) {
 
   String hora = "";
-  if (agora.hour() < 10) hora += "0";
-  hora += String(agora.hour()) + ":";
-  if (agora.minute() < 10) hora += "0";
-  hora += String(agora.minute());
+  if (agora.Hour() < 10) hora += "0";
+  hora += String(agora.Hour()) + ":";
+  if (agora.Minute() < 10) hora += "0";
+  hora += String(agora.Minute());
 
   String p = "";
   p += "ID_PACOTE:" + String(contadorPacotes);
@@ -320,12 +314,10 @@ String montarPacote(DateTime agora) {
 }
 
 // ===================================================
-// ESPERAR ACK (sem bloquear para sempre)
-// ===================================================
 void esperarACK() {
   unsigned long inicio = millis();
 
-  while (millis() - inicio < 400) { // ligeiramente mais folgado (300→400ms)
+  while (millis() - inicio < 400) {
     if (LoRa.parsePacket()) {
       String r = "";
       while (LoRa.available()) r += (char)LoRa.read();
@@ -338,6 +330,6 @@ void esperarACK() {
     }
   }
 
-  Serial.println("Sem ACK — próxima tentativa no próximo ciclo");
-  LoRa.receive(); // garante modo escuta
+  Serial.println("Sem ACK");
+  LoRa.receive();
 }

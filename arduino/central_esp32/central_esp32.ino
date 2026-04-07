@@ -80,11 +80,6 @@ void loop() {
   receberEProcessarLoRa();
 
   enviarHoraPostes();
-
-  if (millis() - ultimaLeituraComandos >= INTERVALO_COMANDOS) {
-    ultimaLeituraComandos = millis();
-    lerComandosFirebase();
-  }
 }
 
 // ===================================================
@@ -263,31 +258,6 @@ void enviarHoraPostes() {
   }
 }
 
-// ===================================================
-// COMANDOS
-// ===================================================
-void lerComandosFirebase() {
-
-  for (int i = 1; i <= 3; i++) {
-
-    String path = "/comandos/poste0" + String(i);
-
-    if (!Firebase.getString(fbdoLeitura, path)) continue;
-
-    String cmd = fbdoLeitura.stringData();
-    cmd.trim();
-
-    if (cmd == "" || cmd == CMD_VAZIO) continue;
-
-    Firebase.setString(fbdoEscrita, path, CMD_VAZIO);
-
-    String pacote = "ID:" + String(i) + "|CMD:" + cmd;
-    enviarLoRa(pacote);
-    LoRa.receive();
-
-    Serial.println("CMD enviado: " + pacote);
-  }
-}
 
 // ===================================================
 void conectarWiFi() {
