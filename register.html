@@ -1,178 +1,146 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Técnico | SmartLight</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .registerSection { padding: 50px 0; background: #fdfdfd; min-height: 80vh; }
-        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .error { color: #dc3545; font-size: 0.85rem; margin-top: 5px; display: none; }
-        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Registrar Técnico | SmartLight</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.registerSection{padding:50px 0;background:#fdfdfd;min-height:80vh;}
+.form-container{max-width:600px;margin:0 auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.error{color:#dc3545;font-size:.85rem;margin-top:5px;display:none;}
+.loader-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;}
+/* Div pendente */
+#divPendente{max-width:560px;margin:50px auto;text-align:center;padding:40px 30px;background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.10);}
+.ico-relogio{width:80px;height:80px;background:#fff3cd;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;}
+.passo-item{display:flex;align-items:center;gap:12px;text-align:left;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;color:#555;}
+.passo-num{width:28px;height:28px;border-radius:50%;background:#1877f2;color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+</style>
 </head>
-
 <body>
-    <!-- Overlay de Carregamento -->
-    <div id="loader-overlay" class="loader-overlay d-none">
-        <div class="text-center text-white">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-            <h5 class="mt-3">Criando conta...</h5>
+
+<div id="loader-overlay" class="loader-overlay d-none">
+  <div class="text-center text-white">
+    <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+    <h5 class="mt-3">A criar conta...</h5>
+  </div>
+</div>
+
+<header class="py-3">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center">
+    <div class="logo d-flex align-items-center">
+      <img src="img/icone.PNG" alt="logo" style="max-width:40px;" class="me-2">
+      <a href="index.html" class="text-decoration-none text-dark"><h1 class="h4 m-0 fw-bold">SmartLight</h1></a>
+    </div>
+    <nav class="mt-2 mt-sm-0">
+      <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Registrar</a>
+    </nav>
+  </div>
+</header>
+
+<section class="registerSection px-3">
+  <div class="container">
+
+    <!-- FORMULÁRIO -->
+    <div class="form-container" id="formContainer">
+      <h1 class="text-center mb-4 fw-bold">Registrar Técnico</h1>
+      <form id="formRegister">
+        <div id="error-register" class="alert alert-danger text-center d-none">Erro ao criar conta. Tente novamente.</div>
+
+        <div class="form-floating mb-3">
+          <input type="text" id="name" class="form-control" placeholder="Nome" required>
+          <label><i class="fas fa-user me-2"></i>Nome Completo</label>
+          <div id="name-error" class="error">O nome deve ter mais de 3 caracteres.</div>
         </div>
+
+        <div class="form-floating mb-3">
+          <input type="email" id="email" class="form-control" placeholder="Email" required>
+          <label><i class="fas fa-envelope me-2"></i>Email</label>
+          <div id="email-error" class="error">Introduza um e-mail válido.</div>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="tel" id="telefone" class="form-control" placeholder="Telefone" required>
+          <label><i class="fas fa-phone me-2"></i>Telefone</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <select id="provincia" class="form-select" required>
+            <option value="" disabled selected>Selecione a Província</option>
+            <option>Bengo</option><option>Benguela</option><option>Bié</option>
+            <option>Cabinda</option><option>Cuando-Cubango</option><option>Cuanza Norte</option>
+            <option>Cuanza Sul</option><option>Cunene</option><option>Huambo</option>
+            <option>Huíla</option><option>Icolo e Bengo</option><option>Luanda</option>
+            <option>Lunda Norte</option><option>Lunda Sul</option><option>Malanje</option>
+            <option>Moxico</option><option>Moxico Leste</option><option>Namibe</option>
+            <option>Uíge</option><option>Zaire</option>
+          </select>
+          <label><i class="fas fa-city me-2"></i>Província</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="text" id="id_tecnico" class="form-control" placeholder="ID ENDE" required>
+          <label><i class="fa-solid fa-fingerprint me-2"></i>ID do Técnico reconhecido pela ENDE</label>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input type="password" id="password" class="form-control" placeholder="Senha" required>
+              <label><i class="fas fa-lock me-2"></i>Senha</label>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar" required>
+              <label>Confirmar Senha</label>
+            </div>
+          </div>
+        </div>
+        <div id="pw-error"     class="error mb-2">Senha deve ter 8+ caracteres, 1 maiúscula e 1 símbolo.</div>
+        <div id="pw-conf-error"class="error mb-3">As senhas não coincidem.</div>
+
+        <div class="form-check mb-4">
+          <input type="checkbox" id="terms" class="form-check-input" required>
+          <label for="terms" class="form-check-label small text-muted">
+            Concordo com os <a href="termos.html">Termos de Uso</a> e Políticas de Privacidade.
+          </label>
+        </div>
+
+        <button type="submit" id="btnRegister" class="btn btn-primary w-100 py-3 fw-bold">
+          <i class="fas fa-user-plus me-2"></i>Finalizar Registo
+        </button>
+        <p class="text-center mt-4 small text-muted">Já tem conta? <a href="login.html" class="fw-bold">Faça login</a></p>
+      </form>
     </div>
 
-    <header class="py-3">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center">
-            <div class="logo d-flex align-items-center">
-                <img class="logoImg me-2" src="img/icone.PNG" alt="logotipo" style="max-width: 40px;">
-                <a href="index.html" class="text-decoration-none text-dark"><h1 class="h4 m-0 fw-bold">SmartLight</h1></a>
-            </div>
-            <nav class="mt-2 mt-sm-0">
-                <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
-                <a href="register.html" class="btn btn-primary btn-sm">Registrar</a>
-            </nav>
-        </div>
-    </header>
+    <!-- DIV PENDENTE — aparece após registo -->
+    <div id="divPendente" class="d-none">
+      <div class="ico-relogio">⏳</div>
+      <h3 class="fw-bold mb-2">Pedido enviado!</h3>
+      <p class="text-muted mb-4">A tua conta foi criada.<br>O teu pedido foi enviado ao <strong>Administrador SmartLight</strong> para análise.</p>
+      <div style="max-width:380px;margin:0 auto;" class="mb-4">
+        <div class="passo-item"><div class="passo-num">1</div><span>O Admin irá rever os teus dados e credenciais.</span></div>
+        <div class="passo-item"><div class="passo-num">2</div><span>Receberás um <strong>email</strong> com a decisão (aprovado ou recusado).</span></div>
+        <div class="passo-item"><div class="passo-num">3</div><span>Se aprovado, podes fazer login e aceder ao sistema.</span></div>
+      </div>
+      <div class="alert alert-warning" style="font-size:13px;max-width:400px;margin:0 auto;">
+        <i class="fas fa-envelope me-2"></i>Verifica a caixa de entrada e spam. A resposta pode demorar até 24h.
+      </div>
+      <a href="index.html" class="btn btn-outline-primary mt-4"><i class="fas fa-home me-2"></i>Voltar ao Início</a>
+    </div>
 
-    <section class="registerSection px-3">
-        <div class="container">
-            <div class="form-container">
-                <h1 class="text-center mb-4 fw-bold">Registrar Técnico</h1>
+  </div>
+</section>
 
-                <form id="formRegister">
-                    <div id="error-register" class="alert alert-danger text-center d-none">
-                        Erro ao realizar registro. Verifique os dados.
-                    </div>
+<footer><div class="container"><div class="row gy-4">
+  <div class="col-md-6"><h3><i class="fas fa-lightbulb"></i> SmartLight</h3><p>Sistema Inteligente de Gestão Urbana.</p></div>
+  <div class="col-md-6 text-md-end"><h4>Links Rápidos</h4><ul class="list-unstyled"><li><a href="about.html">Sobre</a></li><li><a href="termos.html">Termos</a></li></ul></div>
+</div><hr><div class="text-center"><p class="small m-0">&copy; 2026 SmartLight.</p></div></div></footer>
 
-                    <!-- Nome -->
-                    <div class="form-floating mb-3">
-                        <input type="text" id="name" placeholder="Nome Completo" class="form-control" required>
-                        <label for="name"><i class="fas fa-user me-2"></i>Nome Completo</label>
-                        <div id="name-error" class="error">O nome é obrigatório e deve ter mais de 3 caracteres.</div>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="form-floating mb-3">
-                        <input type="email" id="email" placeholder="Email" class="form-control" required>
-                        <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
-                        <div id="email-invalid-error" class="error">Introduza um e-mail válido.</div>
-                    </div>
-
-                    <!-- Telefone -->
-                    <div class="form-floating mb-3">
-                        <input type="tel" id="telefone" placeholder="Telefone" class="form-control" required>
-                        <label for="telefone"><i class="fas fa-phone me-2"></i>Telefone</label>
-                        <div id="pw-confirm-error" class="error">As senhas não coincidem.</div>
-                    </div>
-
-                    <!-- Cidade/Província -->
-                    <div class="form-floating mb-3">
-                        <select id="provincia" class="form-select" required>
-                            <option value="" selected disabled>Selecione a Província</option>
-                            <option value="Bengo">Bengo</option>
-                            <option value="Benguela">Benguela</option>
-                            <option value="Bié">Bié</option>
-                            <option value="Cabinda">Cabinda</option>
-                            <option value="Cuando-Cubango">Cuando</option>
-                            <option value="Niassa">Cubango</option>
-                            <option value="Cuanza-Norte">Cuanza Norte</option>
-                            <option value="Cuanza-Sul">Cuanza Sul</option>
-                            <option value="Cunene">Cunene</option>
-                            <option value="Huambo">Huambo</option>
-                            <option value="Huíla">Huíla</option>
-                            <option value="Cabo-Delgado">Icolo e Bengo</option>
-                            <option value="Luanda">Luanda</option>
-                            <option value="Lunda-Norte">Lunda Norte</option>
-                            <option value="Lunda-Sul">Lunda Sul</option>
-                            <option value="Malanje">Malanje</option>
-                            <option value="Moxico">Moxico</option>
-                            <option value="Maputo">Moxico-Leste</option>
-                            <option value="Namibe">Namibe</option>
-                            <option value="Uíge">Uíge</option>
-                            <option value="Zaire">Zaire</option>
-                        </select>
-                        <label for="provincia"><i class="fas fa-city me-2"></i>Província</label>
-                    </div>
-
-                    <!-- Upload do ID do técnico -->
-                    <div class="form-floating mb-3">
-                        <input type="tel" id="id_tecnico" placeholder="Telefone" class="form-control" required>
-                        <label for="id_tecnico"><i class="fa-solid fa-fingerprint"></i>  ID do Técnico Reconhecido pela ENDE</label>
-                    </div>
-
-                    <!-- Senha -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating">
-                                <input type="password" id="password" placeholder="Senha" class="form-control" required>
-                                <label for="password"><i class="fas fa-lock me-2"></i>Senha</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating">
-                                <input type="password" id="confirmPassword" placeholder="Confirmar" class="form-control" required>
-                                <label for="confirmPassword">Confirmar Senha</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="error mb-3" id="pw-error">A senha deve ter 8+ caracteres, maiúscula e símbolo.</div>
-                    <div class="error mb-3" id="pw-confirm-error">As senhas não coincidem.</div>
-
-                    <!-- Termos -->
-                    <div class="form-check mb-4">
-                        <input type="checkbox" id="terms" class="form-check-input" required>
-                        <label for="terms" class="form-check-label small text-muted">
-                            Concordo com os <a href="termos.html" class="text-decoration-none">Termos de Uso</a> e Políticas de Privacidade.
-                        </label>
-                    </div>
-
-                    <button type="submit" id="btnRegister" class="btn btn-primary w-100 py-3 fw-bold shadow-sm">
-                        <i class="fas fa-user-plus me-2"></i>Finalizar Registro
-                    </button>
-
-                    <p class="text-center mt-4 small text-muted">
-                        Já tem uma conta? <a href="login.html" class="text-decoration-none fw-bold">Faça login</a>
-                    </p>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer Responsivo -->
-    <footer>
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-md-6">
-                    <h3><i class="fas fa-lightbulb"></i> SmartLight</h3>
-                    <p>Sistema Inteligente de Gestão Urbana.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <h4>Links Rápidos</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="about.html">Sobre</a></li>
-                        <li><a href="termos.html">Termos</a></li>
-                        <li><a href="#">Contactos</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="mt-4">
-            <div class="text-center">
-                <p class="small m-0">&copy; 2026 SmartLight. Todos os direitos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-storage-compat.js"></script>
-    <script src="js/register.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/register.js"></script>
 </body>
 </html>

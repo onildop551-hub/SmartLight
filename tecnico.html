@@ -1,744 +1,556 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Técnico | SmartLight</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body { background:#f0f2f5; font-family:"Segoe UI",sans-serif; }
-        header { background:white; border-bottom:1px solid #e4e6eb; }
-        .nav-btn { cursor:pointer; font-weight:500; padding:8px 16px; border-radius:8px; transition:0.2s; }
-        .nav-btn:hover { background:#f2f2f2; }
-        .nav-btn.active { background:#e7f3ff; color:#1877f2!important; }
-        .page-section { display:none; animation:fade 0.3s; }
-        .page-section.active { display:block; }
-        @keyframes fade { from{opacity:0} to{opacity:1} }
-        .map-wrapper { background:white; border-radius:12px; padding:10px; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Painel do Técnico | SmartLight</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+body{background:#f0f2f5;font-family:"Segoe UI",sans-serif;}
+header{background:white;border-bottom:1px solid #e4e6eb;}
+.nav-btn{cursor:pointer;font-weight:500;padding:8px 16px;border-radius:8px;transition:.2s;}
+.nav-btn:hover{background:#f2f2f2;}.nav-btn.active{background:#e7f3ff;color:#1877f2!important;}
+.page-section{display:none;animation:fade .3s;}.page-section.active{display:block;}
+@keyframes fade{from{opacity:0}to{opacity:1}}
 
-        /* ── CARD POSTE ── */
-        .card-poste {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            transition: 0.2s;
-            border-left: 5px solid #28a745;
-        }
-        .card-poste:hover { transform:translateY(-3px); box-shadow:0 5px 20px rgba(0,0,0,0.1); }
+/* MAPA */
+.map-wrapper{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+#mapa-postes{height:460px;width:100%;}
 
-        .card-poste.alerta-normal        { border-left-color: #28a745; }
-        .card-poste.alerta-info          { border-left-color: #0dcaf0; }
-        .card-poste.alerta-aviso         { border-left-color: #ffc107; }
-        .card-poste.alerta-critico       { border-left-color: #dc3545; }
+/* CARDS */
+.card-poste{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);transition:.2s;border-left:5px solid #28a745;position:relative;}
+.card-poste:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,0,0,.1);}
+.card-poste.alerta-normal  {border-left-color:#28a745;}
+.card-poste.alerta-info    {border-left-color:#0dcaf0;}
+.card-poste.alerta-aviso   {border-left-color:#ffc107;}
+.card-poste.alerta-critico {border-left-color:#dc3545;}
 
-        .badge-alerta {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        .badge-normal   { background:#d1e7dd; color:#0f5132; }
-        .badge-info     { background:#cff4fc; color:#055160; }
-        .badge-aviso    { background:#fff3cd; color:#664d03; }
-        .badge-critico  { background:#f8d7da; color:#842029; }
+.badge-alerta{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;margin-bottom:6px;font-weight:600;}
+.badge-normal {background:#d1e7dd;color:#0f5132;}
+.badge-info   {background:#cff4fc;color:#055160;}
+.badge-aviso  {background:#fff3cd;color:#664d03;}
+.badge-critico{background:#f8d7da;color:#842029;}
 
-        /* Badge de fonte de dados (real vs simulado) */
-        .badge-fonte {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-            float: right;
-            margin-top: 2px;
-        }
-        .badge-fonte-real { background:#d1e7dd; color:#0a3622; }
-        .badge-fonte-sim  { background:#e2e3e5; color:#41464b; }
+.badge-fonte{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;}
+.bf-real      {background:#d1e7dd;color:#0a3622;}
+.bf-congelado {background:#fff3cd;color:#664d03;}
+.bf-sim       {background:#e2e3e5;color:#41464b;}
 
-        .lum-bar { height:6px; border-radius:3px; background:#e9ecef; margin-top:4px; margin-bottom:2px; }
-        .lum-fill { height:100%; border-radius:3px; transition:width 0.4s; }
+.lum-bar {height:6px;border-radius:3px;background:#e9ecef;margin:4px 0 2px;}
+.lum-fill{height:100%;border-radius:3px;transition:width .6s;}
 
-        /* PUSH BANNER */
-        #pushBanner { display:none; position:fixed; bottom:20px; right:20px; z-index:9999; background:white; border-radius:12px; padding:16px 18px; box-shadow:0 4px 20px rgba(0,0,0,0.18); max-width:310px; border-left:4px solid #1877f2; }
+/* PUSH */
+#pushBanner{display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:white;border-radius:12px;padding:16px 18px;box-shadow:0 4px 20px rgba(0,0,0,.18);max-width:310px;border-left:4px solid #1877f2;}
 
-        /* CHAT */
-        .chat-wrapper { max-width:700px; }
-        .chat-header { display:flex; align-items:center; gap:12px; padding:14px 16px; background:white; border-radius:12px 12px 0 0; border-bottom:1px solid #e4e6eb; }
-        .chat-avatar { width:40px; height:40px; border-radius:50%; background:#1877f2; display:flex; align-items:center; justify-content:center; color:white; font-size:16px; flex-shrink:0; }
-        .chat-body { height:420px; overflow-y:auto; background:#eae9e3; padding:16px; display:flex; flex-direction:column; gap:6px; }
-        .chat-footer { background:white; border-radius:0 0 12px 12px; padding:10px 12px; display:flex; gap:8px; align-items:center; border-top:1px solid #e4e6eb; }
-        .chat-footer input { flex:1; border:none; outline:none; background:#f0f2f5; border-radius:20px; padding:10px 16px; font-size:14px; }
-        .chat-footer button { width:40px; height:40px; border-radius:50%; border:none; background:#1877f2; color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; flex-shrink:0; }
-        .chat-footer button:hover { background:#166fe5; }
-        .chat-footer button:disabled { background:#b0b3b8; cursor:not-allowed; }
-        .msg-row { display:flex; flex-direction:column; max-width:72%; }
-        .msg-row.mine { align-self:flex-end; align-items:flex-end; }
-        .msg-row.theirs { align-self:flex-start; align-items:flex-start; }
-        .msg-bubble { padding:9px 13px; border-radius:18px; font-size:14px; line-height:1.5; word-break:break-word; }
-        .msg-row.mine .msg-bubble { background:#1877f2; color:white; border-bottom-right-radius:4px; }
-        .msg-row.theirs .msg-bubble { background:white; color:#1c1e21; border-bottom-left-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.12); }
-        .msg-time { font-size:10px; opacity:0.55; margin-top:3px; padding:0 4px; }
-        .msg-sender { font-size:11px; font-weight:600; color:#65676b; margin-bottom:3px; padding:0 4px; }
-        .chat-status-line { font-size:12px; color:#8a8d91; text-align:center; padding:6px 0; }
+/* CHAT */
+.chat-wrapper{max-width:700px;}
+.chat-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;border-radius:12px 12px 0 0;border-bottom:1px solid #e4e6eb;}
+.chat-avatar{width:40px;height:40px;border-radius:50%;background:#1877f2;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;}
+.chat-body{height:420px;overflow-y:auto;background:#eae9e3;padding:16px;display:flex;flex-direction:column;gap:6px;}
+.chat-footer{background:white;border-radius:0 0 12px 12px;padding:10px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid #e4e6eb;}
+.chat-footer input{flex:1;border:none;outline:none;background:#f0f2f5;border-radius:20px;padding:10px 16px;font-size:14px;}
+.chat-footer button{width:40px;height:40px;border-radius:50%;border:none;background:#1877f2;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.chat-footer button:disabled{background:#b0b3b8;cursor:not-allowed;}
+.msg-row{display:flex;flex-direction:column;max-width:72%;}
+.msg-row.mine{align-self:flex-end;align-items:flex-end;}.msg-row.theirs{align-self:flex-start;align-items:flex-start;}
+.msg-bubble{padding:9px 13px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word;}
+.msg-row.mine .msg-bubble{background:#1877f2;color:white;border-bottom-right-radius:4px;}
+.msg-row.theirs .msg-bubble{background:white;color:#1c1e21;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.12);}
+.msg-time{font-size:10px;opacity:.55;margin-top:3px;padding:0 4px;}
+.msg-sender{font-size:11px;font-weight:600;color:#65676b;margin-bottom:3px;padding:0 4px;}
 
-        /* NOTIFICAÇÕES */
-        .notif-card { background:white; border-radius:10px; padding:14px 16px; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; transition:0.2s; }
-        .notif-card:hover { box-shadow:0 4px 14px rgba(0,0,0,0.12); }
-        .notif-icon { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-        .notif-icon.alerta { background:#fff3cd; color:#856404; }
-        .notif-icon.info   { background:#cfe2ff; color:#084298; }
-        .notif-icon.sucesso{ background:#d1e7dd; color:#0f5132; }
-        .notif-icon.erro   { background:#f8d7da; color:#842029; }
-
-        #statusConnection .badge { font-size:11px; padding:4px 10px; }
-    </style>
+/* NOTIFICAÇÕES */
+.notif-card{background:white;border-radius:10px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.notif-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.notif-icon.alerta{background:#fff3cd;color:#856404;}
+.notif-icon.info  {background:#cfe2ff;color:#084298;}
+.notif-icon.sucesso{background:#d1e7dd;color:#0f5132;}
+</style>
 </head>
 <body style="display:none;">
 
-<!-- PUSH BANNER -->
 <div id="pushBanner">
-    <div class="fw-bold mb-1"><i class="fas fa-bell text-primary"></i> Notificações Push</div>
-    <div style="font-size:13px;color:#65676b;margin-bottom:10px;">Activa para receber mensagens mesmo com o site fechado.</div>
-    <div class="d-flex gap-2">
-        <button class="btn btn-primary btn-sm" id="btnAceitarPush">Activar</button>
-        <button class="btn btn-light btn-sm" id="btnRecusarPush">Agora não</button>
-    </div>
+  <div class="fw-bold mb-1"><i class="fas fa-bell text-primary"></i> Notificações Push</div>
+  <div style="font-size:13px;color:#65676b;margin-bottom:10px;">Activa para receber mensagens mesmo com o site fechado.</div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary btn-sm" id="btnAceitarPush">Activar</button>
+    <button class="btn btn-light btn-sm" id="btnRecusarPush">Agora não</button>
+  </div>
 </div>
 
 <header class="fixed-top shadow-sm">
-    <div class="container d-flex justify-content-between align-items-center py-2">
-        <div class="logo d-flex align-items-center gap-2">
-            <img class="logoImg" src="img/icone.PNG" alt="logotipo" style="height:40px;">
-            <a href="#" class="text-decoration-none"><h1 class="m-0">SmartLight</h1></a>
-        </div>
-        <nav class="navbar navbar-expand-lg p-0">
-            <div class="container-fluid p-0">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse" id="navbarMenu">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-3">
-                        <li class="nav-item"><a class="nav-link nav-btn text-primary" data-section="mapa"><i class="fas fa-map-marked-alt"></i> Mapa</a></li>
-                        <li class="nav-item"><a class="nav-link nav-btn text-primary" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                        <li class="nav-item position-relative">
-                            <a class="nav-link nav-btn text-primary" data-section="chat"><i class="fas fa-comment-dots"></i> Chat
-                                <span id="chatBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
-                            </a>
-                        </li>
-                        <li class="nav-item position-relative">
-                            <a class="nav-link nav-btn text-primary" data-section="notificacoes"><i class="fas fa-bell"></i> Notificações
-                                <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="dropdown">
-            <button class="btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                <i class="fas fa-user-circle fa-2x text-primary"></i>
-                <div class="text-start d-none d-md-block">
-                    <strong class="d-block" id="userName">Carregando...</strong>
-                    <small class="text-muted" id="userEmail"></small>
-                </div>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width:250px;">
-                <li class="text-center mb-2"><i class="fas fa-user-circle fa-3x text-primary mb-2"></i><h6 id="userNameDrop">Carregando...</h6><small class="text-muted" id="userEmailDrop"></small></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><button class="btn btn-danger w-100" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Terminar Sessão</button></li>
-            </ul>
-        </div>
+  <div class="container d-flex justify-content-between align-items-center py-2">
+    <div class="d-flex align-items-center gap-2">
+      <img src="img/icone.PNG" style="height:40px;" alt="logo">
+      <a href="#" class="text-decoration-none"><h1 class="m-0">SmartLight</h1></a>
     </div>
+    <nav class="navbar navbar-expand-lg p-0">
+      <div class="container-fluid p-0">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nm"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="nm">
+          <ul class="navbar-nav ms-auto d-flex align-items-center gap-3">
+            <li><a class="nav-link nav-btn text-primary" data-section="mapa"><i class="fas fa-map-marked-alt"></i> Mapa</a></li>
+            <li><a class="nav-link nav-btn text-primary" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li class="position-relative"><a class="nav-link nav-btn text-primary" data-section="chat"><i class="fas fa-comment-dots"></i> Chat<span id="chatBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span></a></li>
+            <li class="position-relative"><a class="nav-link nav-btn text-primary" data-section="notificacoes"><i class="fas fa-bell"></i> Notificações<span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="dropdown">
+      <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+        <i class="fas fa-user-circle fa-2x text-primary"></i>
+        <div class="text-start d-none d-md-block"><strong id="userName">...</strong><br><small class="text-muted" id="userEmail"></small></div>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="min-width:240px;">
+        <li class="text-center mb-2"><i class="fas fa-user-circle fa-3x text-primary"></i><h6 id="userNameDrop"></h6><small class="text-muted" id="userEmailDrop"></small></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="btn btn-danger w-100" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Sair</button></li>
+      </ul>
+    </div>
+  </div>
 </header>
 
 <main class="container py-5" style="margin-top:100px;">
 
-    <!-- Dashboard -->
-    <section class="medicoes px-3 page-section active" id="dashboard-section">
-        <div class="mb-4">
-            <h1 class="fw-bold">Olá, Técnico <span id="primeiroNome">...</span>!</h1>
-            <p class="text-muted mb-2">Área de atuação: <strong>Região de Talatona, Luanda</strong></p>
-            <div id="statusConnection"></div>
-        </div>
-        <div class="container py-3">
-            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <h4 class="fw-bold mb-0">Dashboard — SmartLight</h4>
-                <div class="d-flex gap-2 align-items-center">
-                    <label class="fw-bold small mb-0">Poste:</label>
-                    <input type="text" id="searchPoste" class="form-control form-control-sm w-auto" placeholder="1, 2 ou 3">
-                    <button id="btnReset" class="btn btn-sm btn-secondary">Todos</button>
-                </div>
-            </div>
-            <div id="container-postes" class="row g-4"></div>
-        </div>
-    </section>
+  <!-- DASHBOARD -->
+  <section class="page-section active" id="dashboard-section">
+    <div class="mb-4">
+      <h1 class="fw-bold">Olá, <span id="primeiroNome">...</span>!</h1>
+      <p class="text-muted mb-2">Sistema SmartLight — Angola</p>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <h4 class="fw-bold mb-0">Dashboard — 3 Postes</h4>
+      <div class="d-flex gap-2 align-items-center">
+        <input type="text" id="searchPoste" class="form-control form-control-sm w-auto" placeholder="Poste 1, 2 ou 3">
+        <button id="btnReset" class="btn btn-sm btn-secondary">Todos</button>
+      </div>
+    </div>
+    <div id="container-postes" class="row g-4"></div>
+  </section>
 
-    <!-- Mapa -->
-    <section id="mapa-section" class="mb-5 page-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Estado dos Postes na Região</h4>
-            <span class="badge bg-primary">Clique no marcador</span>
-        </div>
-        <div class="map-wrapper"><div id="mapa-postes" style="height:400px;"></div></div>
-    </section>
+  <!-- MAPA -->
+  <section class="page-section mb-5" id="mapa-section">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-danger"></i> Localização dos Postes</h4>
+      <span class="badge bg-primary">Clique no marcador para detalhes</span>
+    </div>
+    <div class="map-wrapper"><div id="mapa-postes"></div></div>
+  </section>
 
-    <!-- Chat -->
-    <section class="page-section" id="chat-section">
-        <div class="container py-4 chat-wrapper">
-            <div class="chat-header">
-                <div class="chat-avatar"><i class="fas fa-user-shield"></i></div>
-                <div><div style="font-weight:600;font-size:15px;">Admin</div><div style="font-size:12px;color:#42b72a;"><i class="fas fa-circle" style="font-size:8px;"></i> Online</div></div>
-            </div>
-            <div class="chat-body" id="chatBody"><div class="chat-status-line"><i class="fas fa-spinner fa-spin"></i> A carregar...</div></div>
-            <div class="chat-footer">
-                <input type="text" id="chatInput" placeholder="Escreve uma mensagem..." maxlength="500">
-                <button id="sendChatBtn"><i class="fas fa-paper-plane" style="font-size:13px;margin-left:2px;"></i></button>
-            </div>
-        </div>
-    </section>
+  <!-- CHAT -->
+  <section class="page-section" id="chat-section">
+    <div class="chat-wrapper container py-4">
+      <div class="chat-header">
+        <div class="chat-avatar"><i class="fas fa-user-shield"></i></div>
+        <div><div style="font-weight:600;">Admin</div><div style="font-size:12px;color:#42b72a;"><i class="fas fa-circle" style="font-size:8px;"></i> Online</div></div>
+      </div>
+      <div class="chat-body" id="chatBody"><div style="font-size:12px;color:#8a8d91;text-align:center;padding:6px 0;"><i class="fas fa-spinner fa-spin"></i> A carregar...</div></div>
+      <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="Escreve uma mensagem..." maxlength="500">
+        <button id="sendChatBtn"><i class="fas fa-paper-plane" style="font-size:13px;"></i></button>
+      </div>
+    </div>
+  </section>
 
-    <!-- Notificações -->
-    <section id="notificacoes-section" class="container mb-5 page-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="fw-bold"><i class="fas fa-bell text-warning"></i> Notificações</h3>
-            <button class="btn btn-outline-secondary btn-sm" id="btnLimparNotif"><i class="fas fa-trash"></i> Limpar todas</button>
-        </div>
-        <div id="notifContainer"><div class="text-muted">Sem notificações.</div></div>
-    </section>
+  <!-- NOTIFICAÇÕES -->
+  <section class="page-section container mb-5" id="notificacoes-section">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold"><i class="fas fa-bell text-warning"></i> Notificações</h3>
+      <button class="btn btn-outline-secondary btn-sm" id="btnLimparNotif"><i class="fas fa-trash"></i> Limpar</button>
+    </div>
+    <div id="notifContainer"><div class="text-muted">Sem notificações.</div></div>
+  </section>
 </main>
 
 <footer><div class="container"><div class="row gy-4">
-    <div class="col-md-6"><h3><i class="fas fa-lightbulb"></i> SmartLight</h3><p>Sistema Inteligente de Gestão Urbana.</p></div>
-    <div class="col-md-6 text-md-end"><h4>Links Rápidos</h4><ul class="list-unstyled"><li><a href="about.html">Sobre</a></li><li><a href="termos.html">Termos</a></li><li><a href="#">Contactos</a></li></ul></div>
-</div><hr class="mt-4"><div class="text-center"><p class="small m-0">&copy; 2026 SmartLight. Todos os direitos reservados.</p></div></div></footer>
+  <div class="col-md-6"><h3><i class="fas fa-lightbulb"></i> SmartLight</h3><p>Sistema Inteligente de Gestão Urbana.</p></div>
+  <div class="col-md-6 text-md-end"><h4>Links Rápidos</h4><ul class="list-unstyled"><li><a href="about.html">Sobre</a></li><li><a href="termos.html">Termos</a></li></ul></div>
+</div><hr><div class="text-center"><p class="small m-0">&copy; 2026 SmartLight.</p></div></div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ══════════════════════════════════════════════════════
+     MAPA — inicializado apenas quando a secção fica visível
+     Localização real de cada poste virtual
+══════════════════════════════════════════════════════ -->
 <script>
-    const map = L.map('mapa-postes').setView([-8.916,13.184],14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
-    L.marker([-8.918,13.186]).addTo(map).bindPopup('<div class="text-center"><strong>Poste 07 - ALERTA</strong><br>Falha na Corrente Detectada</div>');
+const LOCAIS_POSTES = [
+  { fbId:"poste01", label:"Poste 1 — Rangel",      lat:-8.8419,  lng:13.2498, local:"Rangel, Luanda"     },
+  { fbId:"poste02", label:"Poste 2 — Moçâmedes",   lat:-15.1961, lng:12.1522, local:"Moçâmedes, Namibe"  },
+  { fbId:"poste03", label:"Poste 3 — Moxico Leste",lat:-11.7094, lng:22.2094, local:"Léua, Moxico Leste" }
+];
+
+let mapIniciado = false, leafMap = null;
+const marcadores = {};
+
+function iniciarMapa() {
+  if (mapIniciado) return;
+  mapIniciado = true;
+  leafMap = L.map('mapa-postes', { center:[-11.5, 17.5], zoom:5 });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom:18
+  }).addTo(leafMap);
+
+  LOCAIS_POSTES.forEach(p => {
+    const m = L.marker([p.lat, p.lng], { icon: mkIcon('#6c757d') })
+      .addTo(leafMap)
+      .bindPopup(`<b>${p.label}</b><br><small>${p.local}</small><div id="pop-${p.fbId}" style="margin-top:6px;font-size:12px;color:#555;">A aguardar dados...</div>`);
+    marcadores[p.fbId] = m;
+  });
+}
+
+function mkIcon(cor) {
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:16px;height:16px;border-radius:50%;background:${cor};border:3px solid white;box-shadow:0 2px 5px rgba(0,0,0,.4);"></div>`,
+    iconSize:[16,16], iconAnchor:[8,8], popupAnchor:[0,-10]
+  });
+}
+
+// Chamada pelo JS do módulo para actualizar cada marcador
+window.actualizarMarcador = function(fbId, d, diag) {
+  const m = marcadores[fbId]; if (!m) return;
+  const CORES = { normal:'#28a745', info:'#0dcaf0', aviso:'#ffc107', critico:'#dc3545' };
+  const cor = CORES[diag.severidade] || '#6c757d';
+  m.setIcon(mkIcon(cor));
+  // Actualiza popup se estiver aberto
+  const el = document.getElementById('pop-' + fbId);
+  if (!el) return;
+  el.innerHTML = `
+    <b style="color:${cor}">${diag.label}</b><br>
+    <i class="fas fa-sun" style="color:#f59e0b;"></i> ${parseFloat(d.luminosidade||0).toFixed(1)}%<br>
+    <i class="fas fa-lightbulb" style="color:#6366f1;"></i> Lamp: ${d.lampada||'?'}<br>
+    <i class="fas fa-clock" style="color:#64748b;"></i> ${d.hora||'--'}
+  `;
+};
+
+// Inicializa mapa só quando clicar em "Mapa"
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.addEventListener('click', function() {
+      if (this.dataset.section === 'mapa') {
+        setTimeout(() => { iniciarMapa(); if(leafMap) leafMap.invalidateSize(); }, 150);
+      }
+    });
+  });
+});
 </script>
 
+<!-- ══════════════════════════════════════════════════════
+     LÓGICA PRINCIPAL (Firebase, diagnóstico, render)
+══════════════════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, set, push, onValue, get, update, query, orderByChild, limitToLast }
+import { getDatabase, ref, set, push, onValue, update, query, orderByChild, limitToLast }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getMessaging, getToken, onMessage }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
 const VAPID_KEY = "SUBSTITUI_PELA_TUA_VAPID_KEY";
 const CF_URL    = "https://us-central1-smartlight-pap-2026.cloudfunctions.net/sendPush";
-
+const CORRENTE_MIN = 0;
+const CORRENTE_MAX = 2.0; // ajusta ao teu sistema real
 const cfg = {
-    apiKey:"AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",
-    authDomain:"smartlight-pap-2026.firebaseapp.com",
-    projectId:"smartlight-pap-2026",
-    storageBucket:"smartlight-pap-2026.appspot.com",
-    messagingSenderId:"953509556806",
-    appId:"1:953509556806:web:96ed896142e7b5433f5047",
-    databaseURL:"https://smartlight-pap-2026-default-rtdb.firebaseio.com"
+  apiKey:"AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",authDomain:"smartlight-pap-2026.firebaseapp.com",
+  projectId:"smartlight-pap-2026",storageBucket:"smartlight-pap-2026.appspot.com",
+  messagingSenderId:"953509556806",appId:"1:953509556806:web:96ed896142e7b5433f5047",
+  databaseURL:"https://smartlight-pap-2026-default-rtdb.firebaseio.com"
 };
-const app       = initializeApp(cfg);
-const db        = getDatabase(app);
-const auth      = getAuth(app);
-const messaging = getMessaging(app);
+const app = initializeApp(cfg);
+const db  = getDatabase(app);
+const auth = getAuth(app);
+const msg = getMessaging(app);
 
 // ═══════════════════════════════════════════════════════════════
-// LISTA DE TODOS OS POSTES ESPERADOS
-// Adiciona ou remove IDs conforme o teu projecto
+// DEFINIÇÃO DOS 3 POSTES VIRTUAIS
+// fbId  → caminho no Firebase (/postes/{fbId})
+// label → nome apresentado no card
 // ═══════════════════════════════════════════════════════════════
-const POSTES_ESPERADOS = ["poste1", "poste2", "poste3"];
+const POSTES = [
+  { fbId:"poste01", label:"Poste 1", num:1 },
+  { fbId:"poste02", label:"Poste 2", num:2 },
+  { fbId:"poste03", label:"Poste 3", num:3 }
+];
 
-// Corrente base simulada (fixa por sessão, tal como estava no original)
-const corrente = (1 + Math.random() * (2.10 - 1)).toFixed(2);
+// Corrente simulada fixa por sessão (só usada no modo simulado)
+const CORRENTE_SIM = parseFloat((1.0 + Math.random() * 1.0).toFixed(2));
 
-let meuUid         = null;
-let notificacoes   = [];
-let novasMensagens = 0;
-let filtroAtual    = "";
+let meuUid = null, filtro = "", notificacoes = [], novasMsgs = 0;
 
-// ═══════════════════════════════════════════════════════════════
-// ESTADO POR POSTE
-// postesReal  → dados vindos do Firebase (apenas os que chegaram)
-// postesSim   → dados simulados para os postes sem Firebase
-// postesFonte → "real" | "sim" por ID
-// simIntervals → intervalos de simulação individuais por poste
-// ═══════════════════════════════════════════════════════════════
-const postesReal      = {};   // dados reais vindos do Firebase
-const postesSim       = {};   // dados simulados por poste
-const postesFonte     = {};   // "real" | "sim" por poste
-const simIntervals    = {};   // intervalos de simulação por poste
-const ultimaLuminosidade = {}; // última luminosidade válida recebida por poste
-const alertasJaNotificados = {};
+// ─── Estado INDIVIDUAL por poste ─────────────────────────────
+// Cada poste tem o seu próprio estado completamente isolado.
+// Nunca partilham dados entre si.
 
-// ── Hora actual formatada ──────────────────────────────────────
+const estado = {}; // estado[fbId] = { fonte, dadosReais, simObj, ultimaLum, tsUltimo, hashUltimo }
+
+POSTES.forEach(p => {
+  estado[p.fbId] = {
+    fonte:      "sim",   // "real" | "congelado" | "sim"
+    dadosReais: null,    // último dado real do Firebase
+    simObj:     null,    // { _dados, _interval } — só se fonte==="sim"
+    ultimaLum:  0,       // última luminosidade válida
+    tsUltimo:   0,       // timestamp do último dado real
+    hashUltimo: ""       // hash do último valor real
+  };
+});
+
+const alertasAtivos = {}; // { fbId: codigo } — evita notificações duplicadas
+
+const TIMEOUT_CONGELA = 20000; // 20s
+
+// ─── Utilitários ─────────────────────────────────────────────
 function horaAgora() {
-    const n = new Date();
-    return `${n.getHours().toString().padStart(2,"0")}:${n.getMinutes().toString().padStart(2,"0")}`;
+  const n = new Date();
+  return n.getHours().toString().padStart(2,"0")+":"+n.getMinutes().toString().padStart(2,"0");
+}
+function hashDados(d) { return `${d.luminosidade}|${d.lampada}|${d.hora}`; }
+function esc(s) { return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fmtH(ts) { if(!ts)return""; const d=new Date(ts); return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0"); }
+
+function dadoEfectivo(fbId) {
+  const e = estado[fbId];
+  if (e.fonte==="real"||e.fonte==="congelado") return e.dadosReais;
+  return e.simObj?._dados ?? null;
 }
 
-// ── Gera um snapshot simulado para UM único poste ──────────────
-function gerarSimuladoPoste() {
-    const h      = new Date().getHours();
-    const eNoite = (h >= 18 || h < 6);
-    const lampada      = eNoite ? "ON" : "OFF";
-    const luminosidade = eNoite
-        ? Math.floor(50 + Math.random() * 50)
-        : Math.floor(Math.random() * 15);
-    return {
-        hora: horaAgora(),
-        lampada,
-        luminosidade,
-        corrente,
-        potencia: parseFloat((corrente * 220).toFixed(2)),
-        _simulado: true   // marcador interno — não aparece no card
-    };
+
+// ─── Motor de diagnóstico — INDIVIDUAL por poste ──────────────
+// Cada poste calcula o seu alerta com os SEUS dados únicos.
+// Nunca usa dados de outro poste.
+const LUM_ALTA=40, LUM_BAIXA=15, CORR_MIN=0.05, CORR_MAX=2.0;
+
+// ─── Render de um card individual ────────────────────────────
+function corLum(l) { return l>2.0?"#dc3545":l>1.8?"#ffc107":"#28a745"; }
+function correnteParaPercent(corr) {
+  const c = Math.max(CORRENTE_MIN, Math.min(corr, CORRENTE_MAX));
+  return ((c - CORRENTE_MIN) / (CORRENTE_MAX - CORRENTE_MIN)) * 100;
+}
+function renderCard(fbId, alerta) {
+
+  const poste = POSTES.find(p => p.fbId === fbId);
+  if (!poste) return;
+
+  const col = document.getElementById("card-col-" + fbId);
+  if (!col) return;
+
+  let cor = "alerta-normal";
+  let icone = "fa-check-circle";
+
+  if (alerta.includes("fundida")) {
+    cor = "alerta-critico";
+    icone = "fa-exclamation-triangle";
+  }
+
+  col.innerHTML = `
+    <div class="card-poste ${cor}">
+      <h2>${poste.label}</h2>
+
+      <p>
+        <i class="fas ${icone}"></i>
+        ${alerta}
+      </p>
+    </div>
+  `;
 }
 
-// ── Inicia simulação individual para um poste ──────────────────
-function iniciarSimPoste(id) {
-    if (simIntervals[id]) return;
-    postesSim[id]   = gerarSimuladoPoste();
-    postesFonte[id] = "sim";
-    simIntervals[id] = setInterval(() => {
-        postesSim[id] = gerarSimuladoPoste();
-        verificarENotificar(id, postesSim[id]);
-        renderPostes();
-    }, 8000);
-}
-
-// ── Para simulação individual de um poste ─────────────────────
-function pararSimPoste(id) {
-    if (simIntervals[id]) {
-        clearInterval(simIntervals[id]);
-        delete simIntervals[id];
+// Constrói a grelha de cards (estrutura fixa, actualizada individualmente)
+function construirGrelha() {
+  const container = document.getElementById("container-postes");
+  container.innerHTML = "";
+  POSTES.forEach(p => {
+    // Aplica filtro
+    if (filtro) {
+      const ff = filtro.startsWith("poste") ? filtro : "poste" + filtro.padStart(2,"0");
+      if (p.fbId !== ff) return;
     }
-    delete postesSim[id];
-    postesFonte[id] = "real";
+    const col = document.createElement("div");
+    col.className = "col-12 col-md-4";
+    col.id = "card-col-" + p.fbId;
+    col.innerHTML = `<div class="card-poste alerta-normal"><p class="text-muted small">A aguardar dados do ${p.label}...</p></div>`;
+    container.appendChild(col);
+  });
 }
 
-// ── Volta um poste ao modo simulado (perdeu ligação Firebase) ──
-function voltarSimPoste(id) {
-    console.warn(`[SmartLight] Poste ${id} sem actualizações — modo simulado`);
-    delete postesReal[id];
-    delete ultimoTimestampFirebase[id];
-    delete ultimoValorFirebase[id];
-    postesFonte[id] = "sim";
-    if (!simIntervals[id]) iniciarSimPoste(id);
-    renderPostes();
-    actualizarBadgeConexao();
-}
+// ─── Badge de conexão geral ───────────────────────────────────
+/*function atualizarBadge() {
+  const nr = POSTES.filter(p=>estado[p.fbId].fonte==="real").length;
+  const nc = POSTES.filter(p=>estado[p.fbId].fonte==="congelado").length;
+  const ns = POSTES.filter(p=>estado[p.fbId].fonte==="sim").length;
+  let h = "";
+  if (nr) h += `<span class="badge bg-success me-1"><i class="fas fa-wifi me-1"></i>${nr} real</span>`;
+  if (nc) h += `<span class="badge bg-warning text-dark me-1"><i class="fas fa-lock me-1"></i>${nc} guardado</span>`;
+  if (ns) h += `<span class="badge bg-secondary me-1"><i class="fas fa-sync me-1"></i>${ns} simulado</span>`;
+  document.getElementById("statusConnection").innerHTML = h || `<span class="badge bg-secondary">A aguardar...</span>`;
+}*/
 
-// ── Retorna os dados efectivos de um poste (real > sim) ────────
-function dadosPoste(id) {
-    return postesReal[id] ?? postesSim[id] ?? null;
-}
+// ─── Firebase — escuta INDEPENDENTE por poste ─────────────────
+// Cada poste tem o seu listener onValue isolado.
+// Actualizar o poste 1 NÃO afecta o poste 2 ou 3.
+function iniciarEscuta() {
 
-// ═══════════════════════════════════════════════════════════════
-// MOTOR DE DIAGNÓSTICO
-// ═══════════════════════════════════════════════════════════════
-const LUM_ALTA  = 40;
-const LUM_BAIXA = 19;
-const CORR_MIN  = 0.05;
-const CORR_MAX  = 2.0;
+  POSTES.forEach(p => {
+    const fbId = p.fbId;
 
-function calcularAlerta(dados) {
-    const lampada      = String(dados.lampada ?? dados.lampState ?? "OFF").toUpperCase();
-    const luminosidade = parseFloat(dados.luminosidade ?? 0);
-    const corr         = corrente;
-    const horaStr      = String(dados.hora ?? "12:00");
-    const horaNum      = parseInt(horaStr.split(":")[0], 10);
-    const eNoite       = (horaNum >= 18 || horaNum < 6);
+    onValue(ref(db, `postes/${fbId}`), snap => {
+      const dados = snap.val();
 
-    if (corr > CORR_MAX)
-        return { codigo:"sobrecarga",     label:"Sobrecarga",          descricao:`Corrente elevada: ${corr.toFixed(2)} A`,                                     severidade:"critico", icone:"fa-bolt" };
-    if (eNoite && lampada==="ON" && corr < CORR_MIN && luminosidade < LUM_BAIXA)
-        return { codigo:"lampada_fundida",label:"Lâmpada fundida",     descricao:`Sem corrente (${corr.toFixed(2)} A) e sem luz (${luminosidade.toFixed(0)}%)`, severidade:"critico", icone:"fa-exclamation-circle" };
-    if (eNoite && lampada==="ON" && corr >= CORR_MIN && luminosidade < LUM_BAIXA)
-        return { codigo:"mau_contacto",   label:"Mau contacto",        descricao:`Corrente OK (${corr.toFixed(2)} A) mas sem luz (${luminosidade.toFixed(0)}%)`,severidade:"aviso",  icone:"fa-unlink" };
-    if (!eNoite && lampada==="ON")
-        return { codigo:"falha_controlo", label:"Falha no controlo",   descricao:`Lâmpada ligada durante o dia (${horaStr})`,                                   severidade:"aviso",  icone:"fa-exclamation-triangle" };
-    if (eNoite && lampada==="ON" && corr < CORR_MIN)
-        return { codigo:"tensao_ausente", label:"Tensão ausente",      descricao:`Sem corrente de alimentação às ${horaStr}`,                                   severidade:"critico",icone:"fa-power-off" };
-    if (eNoite && lampada==="ON" && corr >= CORR_MIN && luminosidade < LUM_ALTA)
-        return { codigo:"luz_fraca",      label:"Luz fraca",           descricao:`Luminosidade apenas ${luminosidade.toFixed(0)}% — verificar LDR/lâmpada`,    severidade:"info",   icone:"fa-sun" };
+      if (!dados) return;
 
-    return {
-        codigo:"normal", label:"Normal",
-        descricao: eNoite ? `Lâmpada ON — luminosidade ${luminosidade.toFixed(0)}%` : `Período diurno — lâmpada desligada`,
-        severidade:"normal", icone:"fa-check-circle"
-    };
-}
+      // Pegando apenas o alerta
+      const alerta = dados.alerta || "Sem dados";
 
-// ═══════════════════════════════════════════════════════════════
-// RENDER DOS CARDS
-// ═══════════════════════════════════════════════════════════════
-const container = document.getElementById("container-postes");
-
-function corBarra(lum) {
-    if (lum > 60) return "#dc3545";
-    if (lum > 30) return "#ffc107";
-    return "#28a745";
-}
-
-function renderPostes() {
-    container.innerHTML = "";
-
-    // Garante que todos os postes esperados aparecem
-    const ids = POSTES_ESPERADOS;
-
-    ids.forEach(id => {
-        if (filtroAtual) {
-            const ff = filtroAtual.startsWith("poste") ? filtroAtual : "poste" + filtroAtual;
-            if (id !== ff) return;
-        }
-
-        const d = dadosPoste(id);
-        if (!d) return;   // poste sem qualquer dado ainda
-
-        const diag  = calcularAlerta(d);
-        const fonte = postesFonte[id] ?? "sim";   // "real" ou "sim"
-
-        const badgeClass = {
-            normal:"badge-normal", info:"badge-info", aviso:"badge-aviso", critico:"badge-critico"
-        }[diag.severidade] || "badge-normal";
-
-        const lumVal  = parseFloat(d.luminosidade ?? 0);
-        const corrVal = parseFloat(d.corrente ?? corrente);
-        const potVal  = parseFloat(d.potencia  ?? (corrente * 220)).toFixed(2);
-
-        // Badge de fonte: Firebase (real) vs Simulado
-        const badgeFonteHtml = fonte === "real"
-            ? `<span class="badge-fonte badge-fonte-real"><i class="fas fa-wifi"></i> Firebase</span>`
-            : `<span class="badge-fonte badge-fonte-sim"><i class="fas fa-sync fa-spin" style="font-size:9px;"></i> Simulado</span>`;
-
-        const col = document.createElement("div");
-        col.className = "col-12 col-md-4";
-        col.innerHTML = `
-            <div class="card-poste alerta-${diag.severidade}">
-
-                <div class="d-flex justify-content-between align-items-start mb-1">
-                    <span class="badge-alerta ${badgeClass}">
-                        <i class="fas ${diag.icone}"></i>
-                        ${diag.label}
-                    </span>
-                </div>
-
-                <h2 class="fw-bold mb-3" style="font-size:2rem;">
-                    ${id.replace("poste","")}
-                </h2>
-
-                <div class="mb-2">
-                    <div class="d-flex justify-content-between">
-                        <span class="small text-muted"><i class="fas fa-sun text-warning me-1"></i>Luminosidade</span>
-                        <span class="small fw-bold">${lumVal.toFixed(1)}%</span>
-                    </div>
-                    <div class="lum-bar">
-                        <div class="lum-fill" style="width:${Math.min(lumVal,100)}%;background:${corBarra(lumVal)};"></div>
-                    </div>
-                </div>
-
-                <p class="mb-1">
-                    <i class="fas fa-bolt text-primary me-2"></i>
-                    Corrente: <strong>${corrente} A</strong>
-                </p>
-                <p class="mb-1">
-                    <i class="fas fa-plug text-success me-2"></i>
-                    Potência: <strong>${potVal} W</strong>
-                </p>
-
-                <p class="text-muted small mt-2 mb-1">
-                    <i class="fas fa-info-circle me-1"></i>
-                    <em>${diag.descricao}</em>
-                </p>
-
-                <p class="text-muted small mb-0">
-                    <i class="fas fa-clock me-1"></i>${d.hora ?? "--"}
-                </p>
-            </div>`;
-        container.appendChild(col);
+      renderCard(fbId, alerta);
     });
-
-    if (container.children.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center text-muted py-4">Nenhum poste com esse filtro.</div>`;
-    }
+  });
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ALERTAS AUTOMÁTICOS → NOTIFICAÇÕES
-// ═══════════════════════════════════════════════════════════════
-function verificarENotificar(id, dados) {
-    const diag = calcularAlerta(dados);
-    if (diag.codigo !== "normal" && alertasJaNotificados[id] !== diag.codigo) {
-        alertasJaNotificados[id] = diag.codigo;
-        const tipoNotif = diag.severidade === "critico" ? "alerta"
-                        : diag.severidade === "aviso"   ? "alerta"
-                        : "info";
-        adicionarNotif(tipoNotif, `${diag.label} — Poste ${id.replace("poste","")}`, diag.descricao);
-    } else if (diag.codigo === "normal") {
-        delete alertasJaNotificados[id];
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// FIREBASE — escuta postes em tempo real
-// Só actualiza os postes que chegam; os restantes ficam simulados
-// ═══════════════════════════════════════════════════════════════
-function actualizarBadgeConexao() {
-    const totalReal = Object.keys(postesReal).length;
-    const totalSim  = POSTES_ESPERADOS.filter(id => !postesReal[id]).length;
-
-    let html = "";
-    if (totalReal > 0)
-        html += ``;
-    if (totalSim > 0)
-        html += ``;
-    if (!html)
-        html = ``;
-
-    document.getElementById("statusConnection").innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// WATCHDOG — verifica a cada 10 s se cada poste real continua
-// a receber dados novos. Se não houver mudança → modo simulado.
-// ═══════════════════════════════════════════════════════════════
-const ultimoTimestampFirebase = {};  // { poste1: Date.now() }
-const ultimoValorFirebase     = {};  // { poste1: "hash" }
-const TIMEOUT_REAL = 10000;          // 10 segundos sem mudança → simulado
-
-function hashDados(d) {
-    // Stringify simples para detectar se os dados mudaram
-    return JSON.stringify({ lum: d.luminosidade, corr: d.corrente, hora: d.hora, lamp: d.lampada });
-}
-
-function iniciarWatchdog() {
-    setInterval(() => {
-        POSTES_ESPERADOS.forEach(id => {
-            if (postesFonte[id] !== "real") return;  // já simulado, ignora
-            const agora    = Date.now();
-            const ultimo   = ultimoTimestampFirebase[id] ?? 0;
-            if (agora - ultimo > TIMEOUT_REAL) {
-                voltarSimPoste(id);
-            }
-        });
-    }, 10000);
-}
-
-function iniciarEscutaPostes() {
-    // Cada poste arranca em simulação e tem o seu próprio listener
-    // onValue independente. Receber poste1 NÃO afecta poste2/poste3.
-    POSTES_ESPERADOS.forEach(id => {
-        postesFonte[id] = "sim";
-        iniciarSimPoste(id);
-
-        onValue(ref(db, `postes/${id}`), snap => {
-            const dados = snap.val();
-
-            if (!dados || typeof dados !== "object") {
-                // Firebase não tem nada para este poste
-                if (postesFonte[id] === "real") voltarSimPoste(id);
-                return;
-            }
-
-            // ── Valida a hora recebida ──────────────────────────────
-            // Aceita "HH:MM" ou "HH:MM:SS" com horas 0-23 e minutos 0-59
-            const horaRaw = String(dados.hora ?? "");
-            const horaValida = /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(horaRaw.trim());
-            const horaFinal  = horaValida ? horaRaw.trim() : horaAgora();
-
-            // ── Mantém a última luminosidade válida do Firebase ─────
-            // Se o campo vier em falta ou inválido, usa o último valor guardado
-            const lumRaw    = parseFloat(dados.luminosidade);
-            const lumValida = !isNaN(lumRaw) && lumRaw >= 0 && lumRaw <= 100;
-            const lumFinal  = lumValida ? lumRaw : (ultimaLuminosidade[id] ?? 0);
-            if (lumValida) ultimaLuminosidade[id] = lumRaw;   // guarda última boa
-
-            // Dados normalizados que entram no sistema
-            const dadosNorm = { ...dados, hora: horaFinal, luminosidade: lumFinal };
-
-            const novoHash = hashDados(dadosNorm);
-
-            // Só considera "actualização real" se o valor mudou OU
-            // se é a primeira vez que recebemos dados deste poste
-            if (novoHash !== ultimoValorFirebase[id] || !postesReal[id]) {
-                ultimoValorFirebase[id]     = novoHash;
-                ultimoTimestampFirebase[id] = Date.now();
-                postesReal[id]              = dadosNorm;
-
-                if (postesFonte[id] !== "real") {
-                    pararSimPoste(id);       // para SÓ este poste
-                    postesFonte[id] = "real";
-                }
-
-                verificarENotificar(id, dadosNorm);
-                renderPostes();
-                //actualizarBadgeConexao();
-            }
-            // Se o valor NÃO mudou, o watchdog trata de voltar ao simulado
-            // quando o timeout expirar
-        });
-    });
-
-    iniciarWatchdog();
-    renderPostes();
-    actualizarBadgeConexao();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PUSH
-// ═══════════════════════════════════════════════════════════════
+// ─── Push ─────────────────────────────────────────────────────
 async function activarPush() {
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-    try {
-        const sw = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-        await navigator.serviceWorker.ready;
-        if (await Notification.requestPermission() !== "granted") return;
-        const token = await getToken(messaging, { vapidKey:VAPID_KEY, serviceWorkerRegistration:sw });
-        if (!token || !meuUid) return;
-        await set(ref(db, `fcmTokens/${meuUid}`), { token, perfil:"tecnico", ts:Date.now() });
-        document.getElementById("pushBanner").style.display = "none";
-    } catch(e) { console.error("Push:", e); }
+  if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+  try {
+    const sw = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    await navigator.serviceWorker.ready;
+    if (await Notification.requestPermission() !== "granted") return;
+    const token = await getToken(msg, { vapidKey:VAPID_KEY, serviceWorkerRegistration:sw });
+    if (token && meuUid) await set(ref(db, `fcmTokens/${meuUid}`), { token, perfil:"tecnico", ts:Date.now() });
+    document.getElementById("pushBanner").style.display = "none";
+  } catch(e) { console.error(e); }
 }
-onMessage(messaging, payload => {
-    const { title, body } = payload.notification ?? {};
-    if (Notification.permission === "granted") new Notification(title ?? "SmartLight", { body:body??"", icon:"/img/icone.PNG" });
-    adicionarNotif("info", title ?? "Nova mensagem", body ?? "");
+onMessage(msg, p => {
+  const { title, body } = p.notification ?? {};
+  if (Notification.permission === "granted") new Notification(title??"SmartLight",{body:body??"",icon:"/img/icone.PNG"});
+  addNotif("info", title??"Nova mensagem", body??"");
 });
 document.getElementById("btnAceitarPush").onclick = () => activarPush();
-document.getElementById("btnRecusarPush").onclick = () => { document.getElementById("pushBanner").style.display = "none"; };
+document.getElementById("btnRecusarPush").onclick = () => { document.getElementById("pushBanner").style.display="none"; };
 
 async function notificarAdmin(texto) {
-    onValue(ref(db,"fcmTokens"), async snap => {
-        if (!snap.exists()) return;
-        snap.forEach(c => {
-            const d = c.val();
-            if (d.perfil === "admin" && d.token)
-                fetch(CF_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:d.token,titulo:"Mensagem do Técnico",corpo:texto.length>80?texto.slice(0,77)+"...":texto})}).catch(()=>{});
-        });
-    }, {onlyOnce:true});
-}
-
-// ── Hora sistema ──
-function enviarHoraSistema() {
-    const n = new Date();
-    set(ref(db,"/hora_sistema"), `${n.getHours().toString().padStart(2,"0")}:${n.getMinutes().toString().padStart(2,"0")}`);
-}
-enviarHoraSistema();
-setInterval(enviarHoraSistema, 60000);
-
-// ── Filtro ──
-document.getElementById("searchPoste").addEventListener("input", e => { filtroAtual=e.target.value.trim(); renderPostes(); });
-document.getElementById("btnReset").addEventListener("click", () => { filtroAtual=""; document.getElementById("searchPoste").value=""; renderPostes(); });
-
-// ── NOTIFICAÇÕES ──
-function adicionarNotif(tipo, titulo, detalhe="") {
-    const hora = new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
-    notificacoes.unshift({tipo,titulo,detalhe,hora});
-    renderNotifs();
-    if (!document.getElementById("notificacoes-section").classList.contains("active")) {
-        novasMensagens++;
-        const b = document.getElementById("notifBadge");
-        b.textContent = notificacoes.length; b.classList.remove("d-none");
-    }
-}
-function renderNotifs() {
-    const cont = document.getElementById("notifContainer");
-    if (notificacoes.length === 0) { cont.innerHTML=`<div class="text-muted">Sem notificações.</div>`; return; }
-    cont.innerHTML = "";
-    notificacoes.forEach((n,i) => {
-        const ic = n.tipo==="alerta"?"fa-exclamation-triangle":n.tipo==="sucesso"?"fa-check-circle":n.tipo==="erro"?"fa-times-circle":"fa-info-circle";
-        const card = document.createElement("div"); card.className="notif-card";
-        card.innerHTML=`<div class="notif-icon ${n.tipo}"><i class="fas ${ic}"></i></div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${esc(n.titulo)}</div>${n.detalhe?`<div style="font-size:13px;color:#65676b;margin-top:2px;">${esc(n.detalhe)}</div>`:""}<div style="font-size:11px;color:#8a8d91;margin-top:4px;"><i class="fas fa-clock"></i> ${n.hora}</div></div><button class="btn btn-sm btn-light ms-2" onclick="window._rm(${i})"><i class="fas fa-times"></i></button>`;
-        cont.appendChild(card);
+  onValue(ref(db,"fcmTokens"), snap => {
+    if (!snap.exists()) return;
+    snap.forEach(c => {
+      const d = c.val();
+      if (d.perfil==="admin"&&d.token)
+        fetch(CF_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:d.token,titulo:"Mensagem do Técnico",corpo:texto.length>80?texto.slice(0,77)+"...":texto})}).catch(()=>{});
     });
+  }, {onlyOnce:true});
 }
-window._rm = i => { notificacoes.splice(i,1); renderNotifs(); };
-document.getElementById("btnLimparNotif").onclick = () => { notificacoes=[]; renderNotifs(); document.getElementById("notifBadge").classList.add("d-none"); };
 
-// ── NAVEGAÇÃO ──
-const chatBadge  = document.getElementById("chatBadge");
-const notifBadge = document.getElementById("notifBadge");
-document.querySelectorAll(".nav-btn").forEach(b => {
-    b.addEventListener("click", function(e) {
-        e.preventDefault();
-        const t = this.dataset.section+"-section";
-        document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
-        document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
-        document.getElementById(t).classList.add("active"); this.classList.add("active");
-        if (t==="chat-section"){ novasMensagens=0; chatBadge.classList.add("d-none"); marcarComoLidas(); setTimeout(scrollChat,80); }
-        if (t==="notificacoes-section"){ novasMensagens=0; notifBadge.classList.add("d-none"); }
-    });
+// ─── Hora sistema ─────────────────────────────────────────────
+function enviarHora() {
+  const n = new Date();
+  set(ref(db,"/hora_sistema"), n.getHours().toString().padStart(2,"0")+":"+n.getMinutes().toString().padStart(2,"0"));
+}
+enviarHora(); setInterval(enviarHora, 60000);
+
+// ─── Filtro ───────────────────────────────────────────────────
+document.getElementById("searchPoste").addEventListener("input", e => {
+  filtro = e.target.value.trim();
+  construirGrelha();
+  POSTES.forEach(p => renderCard(p.fbId));
+});
+document.getElementById("btnReset").addEventListener("click", () => {
+  filtro = ""; document.getElementById("searchPoste").value = "";
+  construirGrelha(); POSTES.forEach(p => renderCard(p.fbId));
 });
 
-// ── CHAT ──
-const chatBody  = document.getElementById("chatBody");
-const chatInput = document.getElementById("chatInput");
-const sendBtn   = document.getElementById("sendChatBtn");
-let chatUid=null, primeiroLoad=true;
-function scrollChat(){ chatBody.scrollTop=chatBody.scrollHeight; }
-function fmtH(ts){ if(!ts)return""; const d=new Date(ts); return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0"); }
-function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function criarBolha(msg){
-    const mine=msg.de==="tecnico"; const row=document.createElement("div"); row.className=`msg-row ${mine?"mine":"theirs"}`;
-    row.innerHTML=`${!mine?`<span class="msg-sender">Admin</span>`:""}<div class="msg-bubble">${esc(msg.texto)}</div><span class="msg-time">${fmtH(msg.timestamp)}</span>`;
-    return row;
+// ─── Notificações UI ──────────────────────────────────────────
+function addNotif(tipo, titulo, detalhe="") {
+  const hora = new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
+  notificacoes.unshift({tipo,titulo,detalhe,hora});
+  renderNotifs();
+  if (!document.getElementById("notificacoes-section").classList.contains("active")) {
+    novasMsgs++; const b=document.getElementById("notifBadge"); b.textContent=notificacoes.length; b.classList.remove("d-none");
+  }
 }
-function iniciarChat(uid){
-    chatUid=uid;
-    const chatRef=query(ref(db,`chat/${uid}/mensagens`),orderByChild("timestamp"),limitToLast(100));
-    onValue(chatRef,snap=>{
-        chatBody.innerHTML="";
-        if(!snap.exists()){chatBody.innerHTML=`<div class="chat-status-line">Sem mensagens ainda.</div>`;primeiroLoad=false;return;}
-        let novas=0; const ab=document.getElementById("chat-section").classList.contains("active");
-        snap.forEach(c=>{const msg={id:c.key,...c.val()};chatBody.appendChild(criarBolha(msg));if(!primeiroLoad&&msg.de==="admin"&&!msg.lida){novas++;adicionarNotif("info","Nova mensagem do Admin",msg.texto.length>60?msg.texto.slice(0,57)+"...":msg.texto);}});
-        if(ab)marcarComoLidas();
-        else if(novas>0){novasMensagens+=novas;chatBadge.textContent=novasMensagens;chatBadge.classList.remove("d-none");notifBadge.textContent=novasMensagens;notifBadge.classList.remove("d-none");}
-        primeiroLoad=false; scrollChat();
-    });
+function renderNotifs() {
+  const c = document.getElementById("notifContainer");
+  if (!notificacoes.length){c.innerHTML=`<div class="text-muted">Sem notificações.</div>`;return;}
+  c.innerHTML="";
+  notificacoes.forEach((n,i)=>{
+    const ic=n.tipo==="alerta"?"fa-exclamation-triangle":n.tipo==="sucesso"?"fa-check-circle":"fa-info-circle";
+    const card=document.createElement("div"); card.className="notif-card";
+    card.innerHTML=`<div class="notif-icon ${n.tipo}"><i class="fas ${ic}"></i></div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${esc(n.titulo)}</div>${n.detalhe?`<div style="font-size:13px;color:#65676b;margin-top:2px;">${esc(n.detalhe)}</div>`:""}<div style="font-size:11px;color:#8a8d91;margin-top:4px;"><i class="fas fa-clock"></i> ${n.hora}</div></div><button class="btn btn-sm btn-light ms-2" onclick="window._rm(${i})"><i class="fas fa-times"></i></button>`;
+    c.appendChild(card);
+  });
 }
-function marcarComoLidas(){
-    if(!chatUid)return;
-    onValue(ref(db,`chat/${chatUid}/mensagens`),snap=>{if(!snap.exists())return;const u={};snap.forEach(c=>{if(c.val().de==="admin"&&!c.val().lida)u[`${c.key}/lida`]=true;});if(Object.keys(u).length)update(ref(db,`chat/${chatUid}/mensagens`),u);},{onlyOnce:true});
+window._rm = i => { notificacoes.splice(i,1); renderNotifs(); };
+document.getElementById("btnLimparNotif").onclick = () => {
+  notificacoes=[]; renderNotifs(); document.getElementById("notifBadge").classList.add("d-none");
+};
+
+// ─── Navegação ────────────────────────────────────────────────
+const chatBadge=document.getElementById("chatBadge"), notifBadge=document.getElementById("notifBadge");
+document.querySelectorAll(".nav-btn").forEach(b => {
+  b.addEventListener("click", function(e) {
+    e.preventDefault();
+    const t = this.dataset.section+"-section";
+    document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+    document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+    document.getElementById(t).classList.add("active"); this.classList.add("active");
+    if (t==="chat-section")       { novasMsgs=0; chatBadge.classList.add("d-none"); marcarLidas(); setTimeout(()=>chatBody.scrollTop=chatBody.scrollHeight,80); }
+    if (t==="notificacoes-section"){ novasMsgs=0; notifBadge.classList.add("d-none"); }
+  });
+});
+
+// ─── Chat ─────────────────────────────────────────────────────
+const chatBody=document.getElementById("chatBody"), chatInput=document.getElementById("chatInput"), sendBtn=document.getElementById("sendChatBtn");
+let chatUid=null, priLoad=true;
+
+function bolha(msg) {
+  const mine=msg.de==="tecnico"; const r=document.createElement("div"); r.className=`msg-row ${mine?"mine":"theirs"}`;
+  r.innerHTML=`${!mine?`<span class="msg-sender">Admin</span>`:""}<div class="msg-bubble">${esc(msg.texto)}</div><span class="msg-time">${fmtH(msg.timestamp)}</span>`;
+  return r;
 }
-async function enviar(){
-    const texto=chatInput.value.trim(); if(!texto||!chatUid)return;
-    sendBtn.disabled=true;
-    try{await push(ref(db,`chat/${chatUid}/mensagens`),{de:"tecnico",texto,timestamp:Date.now(),lida:true});chatInput.value="";scrollChat();await notificarAdmin(texto);}
-    catch(e){console.error(e);}finally{sendBtn.disabled=false;chatInput.focus();}
+
+function iniciarChat(uid) {
+  chatUid = uid;
+  onValue(query(ref(db,`chat/${uid}/mensagens`),orderByChild("timestamp"),limitToLast(100)), snap => {
+    chatBody.innerHTML="";
+    if (!snap.exists()){chatBody.innerHTML=`<div style="font-size:12px;color:#8a8d91;text-align:center;padding:6px 0;">Sem mensagens.</div>`;priLoad=false;return;}
+    let novas=0; const ab=document.getElementById("chat-section").classList.contains("active");
+    snap.forEach(c=>{const m={id:c.key,...c.val()};chatBody.appendChild(bolha(m));if(!priLoad&&m.de==="admin"&&!m.lida){novas++;addNotif("info","Nova mensagem do Admin",m.texto.length>60?m.texto.slice(0,57)+"...":m.texto);}});
+    if(ab)marcarLidas(); else if(novas>0){novasMsgs+=novas;chatBadge.textContent=novasMsgs;chatBadge.classList.remove("d-none");}
+    priLoad=false; chatBody.scrollTop=chatBody.scrollHeight;
+  });
+}
+function marcarLidas() {
+  if(!chatUid)return;
+  onValue(ref(db,`chat/${chatUid}/mensagens`),snap=>{if(!snap.exists())return;const u={};snap.forEach(c=>{if(c.val().de==="admin"&&!c.val().lida)u[`${c.key}/lida`]=true;});if(Object.keys(u).length)update(ref(db,`chat/${chatUid}/mensagens`),u);},{onlyOnce:true});
+}
+async function enviar() {
+  const t=chatInput.value.trim(); if(!t||!chatUid)return; sendBtn.disabled=true;
+  try{await push(ref(db,`chat/${chatUid}/mensagens`),{de:"tecnico",texto:t,timestamp:Date.now(),lida:true});chatInput.value="";chatBody.scrollTop=chatBody.scrollHeight;await notificarAdmin(t);}
+  catch(e){console.error(e);}finally{sendBtn.disabled=false;chatInput.focus();}
 }
 sendBtn.addEventListener("click",enviar);
 chatInput.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();enviar();}});
 
-// ── AUTH ──
+// ─── Auth ─────────────────────────────────────────────────────
 onAuthStateChanged(auth, user => {
-    if (!user) { window.location.href="login.html"; return; }
-    meuUid=user.uid;
-    const nome=user.displayName||user.email.split("@")[0];
-    document.getElementById("userName").innerText=nome;
-    document.getElementById("userEmail").innerText=user.email;
-    document.getElementById("userNameDrop").innerText=nome;
-    document.getElementById("userEmailDrop").innerText=user.email;
-    document.getElementById("primeiroNome").innerText=nome.split(" ")[0];
+  if (!user) { window.location.href="login.html"; return; }
+  meuUid = user.uid;
+  const nome = user.displayName || user.email.split("@")[0];
+  document.getElementById("userName").innerText      = nome;
+  document.getElementById("userEmail").innerText     = user.email;
+  document.getElementById("userNameDrop").innerText  = nome;
+  document.getElementById("userEmailDrop").innerText = user.email;
+  document.getElementById("primeiroNome").innerText  = nome.split(" ")[0];
 
-    iniciarEscutaPostes();
-    iniciarChat(user.uid);
-    document.body.style.display="block";
+  // Constrói a grelha de cards e inicia escuta por poste
+  construirGrelha();
+  iniciarEscuta();
+  iniciarChat(user.uid);
+  document.body.style.display = "block";
 
-    setTimeout(() => { if(Notification.permission==="default") document.getElementById("pushBanner").style.display="block"; }, 3000);
+  setTimeout(() => { if(Notification.permission==="default") document.getElementById("pushBanner").style.display="block"; }, 3000);
 });
-window.logout=()=>signOut(auth).then(()=>window.location.href="index.html");
+window.logout = () => signOut(auth).then(() => window.location.href="index.html");
 </script>
 </body>
 </html>
