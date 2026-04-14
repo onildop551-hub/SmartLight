@@ -254,8 +254,9 @@ import { getMessaging, getToken, onMessage }
 
 const VAPID_KEY = "SUBSTITUI_PELA_TUA_VAPID_KEY";
 const CF_URL    = "https://us-central1-smartlight-pap-2026.cloudfunctions.net/sendPush";
-const CORRENTE_MIN = 0;
-const CORRENTE_MAX = 2.0; // ajusta ao teu sistema real
+const CORRENTE_MIN = 0.02;
+const CORRENTE_MAX = 0.08;
+let correnteAtual = 0.06;
 const cfg = {
   apiKey:"AIzaSyADBRS5V1sFXzHh3KOrNivsEJJkwpuGJWk",authDomain:"smartlight-pap-2026.firebaseapp.com",
   projectId:"smartlight-pap-2026",storageBucket:"smartlight-pap-2026.appspot.com",
@@ -303,7 +304,10 @@ POSTES.forEach(p => {
 const alertasAtivos = {}; // { fbId: codigo } — evita notificações duplicadas
 
 const TIMEOUT_CONGELA = 20000; // 20s
-
+function gerarCorrenteAleatoria() {
+  const valor = (CORRENTE_MIN + Math.random() * (CORRENTE_MAX - CORRENTE_MIN)).toFixed(2);
+  return parseFloat(valor);
+}
 // ─── Utilitários ─────────────────────────────────────────────
 function horaAgora() {
   const n = new Date();
@@ -350,7 +354,11 @@ function renderCard(fbId, alerta) {
   col.innerHTML = `
     <div class="card-poste ${cor}">
       <h2>${poste.label}</h2>
+      <div class="progress">
+        <div id="correnteBar" class="progress-bar"></div>
+      </div>
 
+      <span id="correnteValor"></span>
       <p>
         <i class="fas ${icone}"></i>
         ${alerta}
@@ -397,7 +405,7 @@ function iniciarEscuta() {
   POSTES.forEach(p => {
     const fbId = p.fbId;
 
-    onValue(ref(db, `postes/${fbId}`), snap => {
+    onValue(ref(db, `alertas/${fbId}`), snap => {
       const dados = snap.val();
 
       if (!dados) return;
@@ -458,7 +466,44 @@ document.getElementById("btnReset").addEventListener("click", () => {
   filtro = ""; document.getElementById("searchPoste").value = "";
   construirGrelha(); POSTES.forEach(p => renderCard(p.fbId));
 });
+function atualizarProgressCorrente() {
 
+  correnteAtual = gerarCorrenteAleatoria();
+
+  const percent = ((correnteAtual - CORRENTE_MIN) / (CORRENTE_MAX - CORRENTE_MIN)) * 100;
+
+  const bar = document.getElementById("correnteBar");
+  const txt = document.getElementById("correnteValor");
+
+  if (!bar || !txt) return;
+
+  bar.style.width = percent + "%";
+  txt.innerText = correnteAtual.toFixed(2) + " A";
+
+  // 🎨 COR DINÂMICA
+  if (correnteAtual < 2.0) {
+    bar.className = "progress-bar bg-success";
+  } 
+  else if (correnteAtual < 2.15) {
+    bar.className = "progress-bar bg-warning";
+  } 
+  else {
+    bar.className = "progress-bar bg-danger";
+  }
+}
+function iniciarCorrenteSimulada() {
+
+  function ciclo() {
+
+    atualizarProgressCorrente();
+
+    const delay = 2000 + Math.random() * 4000; // 2s a 6s
+
+    setTimeout(ciclo, delay);
+  }
+
+  ciclo();
+}
 // ─── Notificações UI ──────────────────────────────────────────
 function addNotif(tipo, titulo, detalhe="") {
   const hora = new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
@@ -547,7 +592,7 @@ onAuthStateChanged(auth, user => {
   iniciarEscuta();
   iniciarChat(user.uid);
   document.body.style.display = "block";
-
+iniciarCorrenteSimulada();
   setTimeout(() => { if(Notification.permission==="default") document.getElementById("pushBanner").style.display="block"; }, 3000);
 });
 window.logout = () => signOut(auth).then(() => window.location.href="index.html");
