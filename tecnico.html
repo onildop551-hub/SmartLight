@@ -335,6 +335,13 @@ function correnteParaPercent(corr) {
   const c = Math.max(CORRENTE_MIN, Math.min(corr, CORRENTE_MAX));
   return ((c - CORRENTE_MIN) / (CORRENTE_MAX - CORRENTE_MIN)) * 100;
 }
+function getCorGradiente(percent) {
+  if (percent < 25) return "#28a745";     // verde
+  if (percent < 50) return "#ffc107";     // amarelo
+  if (percent < 75) return "#fd7e14";     // laranja
+  return "#dc3545";                       // vermelho
+}
+
 function renderCard(fbId, alerta) {
 
   const poste = POSTES.find(p => p.fbId === fbId);
@@ -343,26 +350,65 @@ function renderCard(fbId, alerta) {
   const col = document.getElementById("card-col-" + fbId);
   if (!col) return;
 
+  // 🔌 Corrente simulada
+  const corrente = gerarCorrenteAleatoria(); // em A
+  const corrente_mA = corrente * 1000;
+
+  // ⚡ Potência (P = V * I)
+  const potencia = 220 * corrente;
+
+  const percent = correnteParaPercent(corrente);
+  const corBarra = getCorGradiente(percent);
+
+  // 🎯 Estado visual
   let cor = "alerta-normal";
   let icone = "fa-check-circle";
+  let img = "img/lampok.png";
 
-  if (alerta.includes("fundida")) {
+  if (alerta.toLowerCase().includes("fundida") || alerta.toLowerCase().includes("danificada")) {
     cor = "alerta-critico";
     icone = "fa-exclamation-triangle";
+    img = "img/lampoff.png";
   }
 
+  // 🗺️ Atualizar MAPA
+  const diag = {
+    label: alerta,
+    severidade: cor === "alerta-critico" ? "critico" : "normal"
+  };
+
+  const dadosFake = {
+    luminosidade: (Math.random() * 100).toFixed(1),
+    lampada: alerta,
+    hora: horaAgora()
+  };
+
+  if (window.actualizarMarcador) {
+    window.actualizarMarcador(fbId, dadosFake, diag);
+  }
+
+  // 🧱 Render do card
   col.innerHTML = `
     <div class="card-poste ${cor}">
       <h2>${poste.label}</h2>
-      <div class="progress">
-        <div id="correnteBar" class="progress-bar"></div>
+
+      <div class="progress mb-2">
+        <div id="correnteBar-${fbId}" 
+             class="progress-bar" 
+             style="width:${percent}%; background:${corBarra}; transition:0.5s;">
+        </div>
       </div>
 
-      <span id="correnteValor"></span>
-      <p>
-        <i class="fas ${icone}"></i>
-        ${alerta}
+      <div style="font-size:14px;">
+        🔌 Corrente: <b>${corrente_mA.toFixed(0)} mA</b><br>
+        ⚡ Potência: <b>${potencia.toFixed(1)} W</b>
+      </div>
+
+      <p class="mt-2">
+        <i class="fas ${icone}"></i> ${alerta}
       </p>
+
+      <img src="${img}" style="width:250px;height:250px; margin:10px auto;display:block;">
     </div>
   `;
 }
